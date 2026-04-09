@@ -1,26 +1,18 @@
-import { useEffect, useState } from 'react'
-import { supabase } from './supabase'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './pages/negocio/Login'
+import Register from './pages/negocio/Register'
+import Dashboard from './pages/negocio/Dashboard'
 
 function App() {
-  const [conexion, setConexion] = useState('Comprobando conexión...')
-
-  useEffect(() => {
-    async function probarConexion() {
-      const { data, error } = await supabase.from('negocios').select('*')
-      if (error) {
-        setConexion('Error de conexión: ' + error.message)
-      } else {
-        setConexion('✅ Conexión con Supabase correcta')
-      }
-    }
-    probarConexion()
-  }, [])
-
   return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif' }}>
-      <h1>SELLO</h1>
-      <p>{conexion}</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/negocio/login" />} />
+        <Route path="/negocio/login" element={<Login />} />
+        <Route path="/negocio/register" element={<Register />} />
+        <Route path="/negocio/dashboard" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
