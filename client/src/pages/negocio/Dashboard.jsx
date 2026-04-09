@@ -60,6 +60,10 @@ export default function Dashboard() {
         <h2 style={styles.welcome}>Bienvenido, {negocio?.nombre} 👋</h2>
         <p style={styles.email}>{user?.email}</p>
 
+        <button onClick={() => navigate('/negocio/escanear')} style={styles.escanearBtn}>
+          Escanear QR de cliente
+        </button>
+
         <div style={styles.grid}>
           {/* Info del negocio */}
           <div style={styles.infoCard}>
@@ -177,6 +181,18 @@ const styles = {
     borderRadius: '12px',
     border: '2px solid #f0f0f0',
     marginBottom: '1rem',
+  },
+  escanearBtn: {
+    width: '100%',
+    padding: '1rem',
+    backgroundColor: '#E8763A',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    marginBottom: '1.5rem',
   },
   qrUrl: {
     fontSize: '0.7rem',

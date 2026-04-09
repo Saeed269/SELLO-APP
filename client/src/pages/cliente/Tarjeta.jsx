@@ -41,7 +41,7 @@ export default function Tarjeta() {
       const { data: tarjetaData } = await supabase
         .from('tarjetas')
         .select('*')
-        .eq('cliente_id', user.id)
+        .eq('cliente_id', clienteData.id)
         .eq('negocio_id', negocioId)
         .single()
       setTarjeta(tarjetaData)

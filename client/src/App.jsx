@@ -6,6 +6,7 @@ import Onboarding from './pages/negocio/onboarding/Onboarding'
 import RegistroCliente from './pages/cliente/RegistroCliente'
 import LoginCliente from './pages/cliente/LoginCliente'
 import Tarjeta from './pages/cliente/Tarjeta'
+import EscanerQR from './pages/negocio/EscanerQR'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/negocio/register" element={<Register />} />
         <Route path="/negocio/dashboard" element={<Dashboard />} />
         <Route path="/negocio/onboarding" element={<Onboarding />} />
+        <Route path="/negocio/escanear" element={<EscanerQR />} />
         <Route path="/cliente/registro" element={<RegistroCliente />} />
         <Route path="/cliente/login" element={<LoginCliente />} />
         <Route path="/cliente/tarjeta" element={<Tarjeta />} />
