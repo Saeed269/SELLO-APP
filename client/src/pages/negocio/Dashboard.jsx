@@ -4,18 +4,33 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
+  const [negocio, setNegocio] = useState(null)
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const getUser = async () => {
+    const init = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         navigate('/negocio/login')
-      } else {
-        setUser(user)
+        return
       }
+      setUser(user)
+
+      const { data } = await supabase
+        .from('negocios')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+
+      if (!data) {
+        navigate('/negocio/onboarding')
+      } else {
+        setNegocio(data)
+      }
+      setLoading(false)
     }
-    getUser()
+    init()
   }, [navigate])
 
   const handleLogout = async () => {
@@ -23,7 +38,11 @@ export default function Dashboard() {
     navigate('/negocio/login')
   }
 
-  if (!user) return null
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ color: '#888' }}>Cargando...</p>
+    </div>
+  )
 
   return (
     <div style={styles.container}>
@@ -35,14 +54,31 @@ export default function Dashboard() {
       </div>
 
       <div style={styles.content}>
-        <h2 style={styles.welcome}>Bienvenido 👋</h2>
-        <p style={styles.email}>{user.email}</p>
+        <h2 style={styles.welcome}>Bienvenido, {negocio?.nombre} 👋</h2>
+        <p style={styles.email}>{user?.email}</p>
+
+        <div style={styles.infoCard}>
+          <div style={styles.infoFila}>
+            <span style={styles.infoLabel}>Tipo de negocio</span>
+            <span style={styles.infoValor}>{negocio?.tipo}</span>
+          </div>
+          <div style={styles.infoFila}>
+            <span style={styles.infoLabel}>Sellos para el premio</span>
+            <span style={styles.infoValor}>{negocio?.num_sellos}</span>
+          </div>
+          <div style={styles.infoFila}>
+            <span style={styles.infoLabel}>Premio</span>
+            <span style={styles.infoValor}>{negocio?.premio}</span>
+          </div>
+          <div style={styles.infoFila}>
+            <span style={styles.infoLabel}>Caducidad</span>
+            <span style={styles.infoValor}>{negocio?.caducidad_meses} meses</span>
+          </div>
+        </div>
 
         <div style={styles.emptyCard}>
-          <p style={styles.emptyText}>
-            Aquí aparecerá la configuración de tu tarjeta de sellos.
-          </p>
-          <p style={styles.emptySubtext}>Próximamente...</p>
+          <p style={styles.emptyText}>Tu QR del negocio aparecerá aquí próximamente.</p>
+          <p style={styles.emptySubtext}>Semana 2 →</p>
         </div>
       </div>
     </div>
@@ -50,10 +86,7 @@ export default function Dashboard() {
 }
 
 const styles = {
-  container: {
-    minHeight: '100vh',
-    backgroundColor: '#f5f5f5',
-  },
+  container: { minHeight: '100vh', backgroundColor: '#f5f5f5' },
   header: {
     backgroundColor: '#fff',
     padding: '1rem 2rem',
@@ -62,12 +95,7 @@ const styles = {
     alignItems: 'center',
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
   },
-  logo: {
-    fontSize: '1.8rem',
-    fontWeight: 'bold',
-    color: '#E8763A',
-    margin: 0,
-  },
+  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#E8763A', margin: 0 },
   logoutBtn: {
     padding: '0.5rem 1rem',
     backgroundColor: 'transparent',
@@ -78,21 +106,24 @@ const styles = {
     cursor: 'pointer',
     fontSize: '0.9rem',
   },
-  content: {
-    maxWidth: '800px',
-    margin: '2rem auto',
-    padding: '0 1rem',
+  content: { maxWidth: '800px', margin: '2rem auto', padding: '0 1rem' },
+  welcome: { fontSize: '1.8rem', color: '#1C1C1E', margin: '0 0 0.25rem 0' },
+  email: { color: '#888', marginBottom: '2rem', fontSize: '0.95rem' },
+  infoCard: {
+    backgroundColor: '#fff',
+    borderRadius: '16px',
+    padding: '1.5rem',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    marginBottom: '1.5rem',
   },
-  welcome: {
-    fontSize: '1.8rem',
-    color: '#1C1C1E',
-    margin: '0 0 0.25rem 0',
+  infoFila: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '0.75rem 0',
+    borderBottom: '1px solid #f0f0f0',
   },
-  email: {
-    color: '#888',
-    marginBottom: '2rem',
-    fontSize: '0.95rem',
-  },
+  infoLabel: { color: '#888', fontSize: '0.95rem' },
+  infoValor: { color: '#1C1C1E', fontWeight: '600', fontSize: '0.95rem' },
   emptyCard: {
     backgroundColor: '#fff',
     borderRadius: '16px',
@@ -101,13 +132,6 @@ const styles = {
     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
     border: '2px dashed #E8E0D8',
   },
-  emptyText: {
-    color: '#555',
-    fontSize: '1rem',
-    marginBottom: '0.5rem',
-  },
-  emptySubtext: {
-    color: '#bbb',
-    fontSize: '0.9rem',
-  },
+  emptyText: { color: '#555', fontSize: '1rem', marginBottom: '0.5rem' },
+  emptySubtext: { color: '#bbb', fontSize: '0.9rem' },
 }
