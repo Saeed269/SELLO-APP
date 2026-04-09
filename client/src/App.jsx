@@ -3,6 +3,9 @@ import Login from './pages/negocio/Login'
 import Register from './pages/negocio/Register'
 import Dashboard from './pages/negocio/Dashboard'
 import Onboarding from './pages/negocio/onboarding/Onboarding'
+import RegistroCliente from './pages/cliente/RegistroCliente'
+import LoginCliente from './pages/cliente/LoginCliente'
+import Tarjeta from './pages/cliente/Tarjeta'
 
 function App() {
   return (
@@ -13,6 +16,9 @@ function App() {
         <Route path="/negocio/register" element={<Register />} />
         <Route path="/negocio/dashboard" element={<Dashboard />} />
         <Route path="/negocio/onboarding" element={<Onboarding />} />
+        <Route path="/cliente/registro" element={<RegistroCliente />} />
+        <Route path="/cliente/login" element={<LoginCliente />} />
+        <Route path="/cliente/tarjeta" element={<Tarjeta />} />
       </Routes>
     </BrowserRouter>
   )
