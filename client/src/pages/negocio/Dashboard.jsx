@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
+import { QRCodeSVG } from 'qrcode.react'
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -44,6 +45,8 @@ export default function Dashboard() {
     </div>
   )
 
+  const qrUrl = `${window.location.origin}/cliente/registro?negocio=${negocio?.id}`
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -57,28 +60,45 @@ export default function Dashboard() {
         <h2 style={styles.welcome}>Bienvenido, {negocio?.nombre} 👋</h2>
         <p style={styles.email}>{user?.email}</p>
 
-        <div style={styles.infoCard}>
-          <div style={styles.infoFila}>
-            <span style={styles.infoLabel}>Tipo de negocio</span>
-            <span style={styles.infoValor}>{negocio?.tipo}</span>
+        <div style={styles.grid}>
+          {/* Info del negocio */}
+          <div style={styles.infoCard}>
+            <h3 style={styles.cardTitle}>Tu tarjeta</h3>
+            <div style={styles.infoFila}>
+              <span style={styles.infoLabel}>Tipo</span>
+              <span style={styles.infoValor}>{negocio?.tipo}</span>
+            </div>
+            <div style={styles.infoFila}>
+              <span style={styles.infoLabel}>Sellos para premio</span>
+              <span style={styles.infoValor}>{negocio?.num_sellos}</span>
+            </div>
+            <div style={styles.infoFila}>
+              <span style={styles.infoLabel}>Premio</span>
+              <span style={styles.infoValor}>{negocio?.premio}</span>
+            </div>
+            <div style={styles.infoFila}>
+              <span style={styles.infoLabel}>Caducidad</span>
+              <span style={styles.infoValor}>{negocio?.caducidad_meses} meses</span>
+            </div>
           </div>
-          <div style={styles.infoFila}>
-            <span style={styles.infoLabel}>Sellos para el premio</span>
-            <span style={styles.infoValor}>{negocio?.num_sellos}</span>
-          </div>
-          <div style={styles.infoFila}>
-            <span style={styles.infoLabel}>Premio</span>
-            <span style={styles.infoValor}>{negocio?.premio}</span>
-          </div>
-          <div style={styles.infoFila}>
-            <span style={styles.infoLabel}>Caducidad</span>
-            <span style={styles.infoValor}>{negocio?.caducidad_meses} meses</span>
-          </div>
-        </div>
 
-        <div style={styles.emptyCard}>
-          <p style={styles.emptyText}>Tu QR del negocio aparecerá aquí próximamente.</p>
-          <p style={styles.emptySubtext}>Semana 2 →</p>
+          {/* QR del negocio */}
+          <div style={styles.qrCard}>
+            <h3 style={styles.cardTitle}>Tu QR</h3>
+            <p style={styles.qrSubtitle}>
+              Muestra este QR a tus clientes para que se registren
+            </p>
+            <div style={styles.qrWrapper}>
+              <QRCodeSVG
+                value={qrUrl}
+                size={180}
+                fgColor="#1C1C1E"
+                bgColor="#FFFFFF"
+                level="M"
+              />
+            </div>
+            <p style={styles.qrUrl}>{qrUrl}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -106,15 +126,35 @@ const styles = {
     cursor: 'pointer',
     fontSize: '0.9rem',
   },
-  content: { maxWidth: '800px', margin: '2rem auto', padding: '0 1rem' },
+  content: { maxWidth: '900px', margin: '2rem auto', padding: '0 1rem' },
   welcome: { fontSize: '1.8rem', color: '#1C1C1E', margin: '0 0 0.25rem 0' },
   email: { color: '#888', marginBottom: '2rem', fontSize: '0.95rem' },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '1.5rem',
+  },
   infoCard: {
     backgroundColor: '#fff',
     borderRadius: '16px',
     padding: '1.5rem',
     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-    marginBottom: '1.5rem',
+  },
+  qrCard: {
+    backgroundColor: '#fff',
+    borderRadius: '16px',
+    padding: '1.5rem',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  cardTitle: {
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    color: '#1C1C1E',
+    marginBottom: '1rem',
+    marginTop: 0,
   },
   infoFila: {
     display: 'flex',
@@ -124,14 +164,25 @@ const styles = {
   },
   infoLabel: { color: '#888', fontSize: '0.95rem' },
   infoValor: { color: '#1C1C1E', fontWeight: '600', fontSize: '0.95rem' },
-  emptyCard: {
-    backgroundColor: '#fff',
-    borderRadius: '16px',
-    padding: '3rem',
+  qrSubtitle: {
+    color: '#888',
+    fontSize: '0.85rem',
     textAlign: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-    border: '2px dashed #E8E0D8',
+    marginBottom: '1.5rem',
+    marginTop: 0,
   },
-  emptyText: { color: '#555', fontSize: '1rem', marginBottom: '0.5rem' },
-  emptySubtext: { color: '#bbb', fontSize: '0.9rem' },
+  qrWrapper: {
+    padding: '1rem',
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    border: '2px solid #f0f0f0',
+    marginBottom: '1rem',
+  },
+  qrUrl: {
+    fontSize: '0.7rem',
+    color: '#bbb',
+    textAlign: 'center',
+    wordBreak: 'break-all',
+    margin: 0,
+  },
 }
