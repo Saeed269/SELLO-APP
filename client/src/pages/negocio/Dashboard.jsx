@@ -61,7 +61,6 @@ export default function Dashboard() {
         <p style={styles.email}>{user?.email}</p>
 
         <div style={styles.grid}>
-          {/* Info del negocio */}
           <div style={styles.infoCard}>
             <h3 style={styles.cardTitle}>Tu tarjeta</h3>
             <div style={styles.infoFila}>
@@ -82,7 +81,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* QR del negocio */}
           <div style={styles.qrCard}>
             <h3 style={styles.cardTitle}>Tu QR</h3>
             <p style={styles.qrSubtitle}>
@@ -100,6 +98,13 @@ export default function Dashboard() {
             <p style={styles.qrUrl}>{qrUrl}</p>
           </div>
         </div>
+
+        <button
+          onClick={() => navigate('/negocio/escanear')}
+          style={styles.scanBtn}
+        >
+          📷 Escanear QR de cliente
+        </button>
       </div>
     </div>
   )
@@ -184,5 +189,17 @@ const styles = {
     textAlign: 'center',
     wordBreak: 'break-all',
     margin: 0,
+  },
+  scanBtn: {
+    padding: '1rem',
+    backgroundColor: '#E8763A',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '12px',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    width: '100%',
+    marginTop: '1.5rem',
   },
 }
