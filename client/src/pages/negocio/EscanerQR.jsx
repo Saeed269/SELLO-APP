@@ -30,7 +30,6 @@ export default function EscanerQR() {
   }, [navigate])
 
   const procesarQR = useCallback(async (url) => {
-    console.log('URL escaneada:', url)
     setLoading(true)
     setError('')
 
@@ -70,7 +69,7 @@ export default function EscanerQR() {
     }
   }, [negocio])
 
-  const iniciarEscaner = () => {
+  const iniciarEscaner = useCallback(() => {
     setError('')
     setResultado(null)
     setEscaneando(true)
@@ -93,7 +92,14 @@ export default function EscanerQR() {
         setEscaneando(false)
       })
     }, 100)
-  }
+  }, [procesarQR])
+
+  // Iniciar escáner automáticamente cuando el negocio esté cargado
+  useEffect(() => {
+    if (negocio) {
+      iniciarEscaner()
+    }
+  }, [negocio, iniciarEscaner])
 
   const detenerEscaner = async () => {
     if (scannerRef.current) {
@@ -133,14 +139,6 @@ export default function EscanerQR() {
       </div>
 
       <div style={styles.content}>
-        <h2 style={styles.titulo}>Añadir sello</h2>
-        <p style={styles.subtitulo}>Escanea el QR personal del cliente</p>
-
-        {!escaneando && !resultado && (
-          <button onClick={iniciarEscaner} style={styles.scanBtn}>
-            📷 Escanear QR del cliente
-          </button>
-        )}
 
         {escaneando && (
           <div style={styles.scannerContainer}>
@@ -151,12 +149,16 @@ export default function EscanerQR() {
           </div>
         )}
 
-        {loading && <p style={styles.loading}>Procesando...</p>}
+        {!escaneando && !resultado && !error && (
+          <p style={styles.cargando}>Iniciando cámara...</p>
+        )}
+
+        {loading && <p style={styles.loadingText}>Procesando...</p>}
 
         {error && (
           <div style={styles.errorCard}>
             <p style={styles.errorText}>{error}</p>
-            <button onClick={() => { setError(''); setResultado(null) }} style={styles.retryBtn}>
+            <button onClick={() => { setError(''); iniciarEscaner() }} style={styles.retryBtn}>
               Intentar de nuevo
             </button>
           </div>
@@ -208,7 +210,7 @@ export default function EscanerQR() {
             )}
 
             <button
-              onClick={() => { setResultado(null); setError('') }}
+              onClick={() => { setResultado(null); setError(''); iniciarEscaner() }}
               style={styles.nuevoBtn}
             >
               Escanear otro cliente
@@ -249,19 +251,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
   },
-  titulo: { fontSize: '1.5rem', color: '#1C1C1E', margin: '0 0 0.5rem 0' },
-  subtitulo: { color: '#888', marginBottom: '2rem', fontSize: '0.95rem' },
-  scanBtn: {
-    padding: '1rem 2rem',
-    backgroundColor: '#E8763A',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
-    fontSize: '1.1rem',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    width: '100%',
-  },
+  cargando: { color: '#888', fontSize: '1rem' },
   scannerContainer: {
     width: '100%',
     display: 'flex',
@@ -279,7 +269,7 @@ const styles = {
     fontWeight: 'bold',
     cursor: 'pointer',
   },
-  loading: { color: '#888', fontSize: '1rem' },
+  loadingText: { color: '#888', fontSize: '1rem' },
   errorCard: {
     backgroundColor: '#fff',
     borderRadius: '16px',
