@@ -91,14 +91,15 @@ export default function EscanerQR() {
         setError('No se puede acceder a la cámara')
         setEscaneando(false)
       })
-    }, 100)
+    }, 300)
   }, [procesarQR])
 
-  // Iniciar escáner automáticamente cuando el negocio esté cargado
   useEffect(() => {
-    if (negocio) {
+    if (!negocio) return
+    const timer = setTimeout(() => {
       iniciarEscaner()
-    }
+    }, 200)
+    return () => clearTimeout(timer)
   }, [negocio, iniciarEscaner])
 
   const detenerEscaner = async () => {
@@ -139,7 +140,6 @@ export default function EscanerQR() {
       </div>
 
       <div style={styles.content}>
-
         {escaneando && (
           <div style={styles.scannerContainer}>
             <div id="reader" style={{ width: '100%' }} />
@@ -158,7 +158,10 @@ export default function EscanerQR() {
         {error && (
           <div style={styles.errorCard}>
             <p style={styles.errorText}>{error}</p>
-            <button onClick={() => { setError(''); iniciarEscaner() }} style={styles.retryBtn}>
+            <button
+              onClick={() => { setError(''); iniciarEscaner() }}
+              style={styles.retryBtn}
+            >
               Intentar de nuevo
             </button>
           </div>
@@ -194,9 +197,7 @@ export default function EscanerQR() {
 
             {resultado.sellos_actuales >= negocio?.num_sellos ? (
               <div style={styles.premioAlert}>
-                <p style={styles.premioTexto}>
-                  🏆 ¡Este cliente ha ganado el premio!
-                </p>
+                <p style={styles.premioTexto}>🏆 ¡Este cliente ha ganado el premio!</p>
                 <p style={styles.premioSubtexto}>{negocio?.premio}</p>
               </div>
             ) : (
