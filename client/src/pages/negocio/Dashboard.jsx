@@ -136,9 +136,9 @@ const styles = {
   email: { color: '#888', marginBottom: '2rem', fontSize: '0.95rem' },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     gap: '1.5rem',
-  },
+},
   infoCard: {
     backgroundColor: '#fff',
     borderRadius: '16px',
