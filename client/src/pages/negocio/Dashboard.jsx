@@ -77,13 +77,15 @@ export default function Dashboard() {
         <div style={{ ...styles.grid, gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '0.75rem' : '1.5rem' }}>
           {/* Info del negocio */}
           <div style={{ ...styles.infoCard, padding: isMobile ? '0.85rem' : '1.5rem' }}>
-            <h3 style={{ ...styles.cardTitle, fontSize: isMobile ? '0.85rem' : '1rem' }}>
-              Tu tarjeta {isMobile && `— ${negocio?.nombre}`}
+            <h3 style={{ ...styles.cardTitle, fontSize: isMobile ? '0.95rem' : '1rem' }}>
+              {isMobile ? negocio?.nombre : 'Tu tarjeta'}
             </h3>
-            <div style={styles.infoFila}>
-              <span style={styles.infoLabel}>Tipo</span>
-              <span style={styles.infoValor}>{negocio?.tipo}</span>
-            </div>
+            {!isMobile && (
+              <div style={styles.infoFila}>
+                <span style={styles.infoLabel}>Tipo</span>
+                <span style={styles.infoValor}>{negocio?.tipo}</span>
+              </div>
+            )}
             <div style={styles.infoFila}>
               <span style={styles.infoLabel}>Sellos para premio</span>
               <span style={styles.infoValor}>{negocio?.num_sellos}</span>
@@ -100,10 +102,7 @@ export default function Dashboard() {
 
           {/* QR del negocio */}
           <div style={{ ...styles.qrCard, padding: isMobile ? '0.85rem' : '1.5rem' }}>
-            <h3 style={{ ...styles.cardTitle, fontSize: isMobile ? '0.85rem' : '1rem' }}>Tu QR</h3>
-            <p style={styles.qrSubtitle}>
-              {isMobile ? 'Muéstralo a tus clientes' : 'Muestra este QR a tus clientes para que se registren'}
-            </p>
+            <h3 style={{ ...styles.cardTitle, fontSize: isMobile ? '0.95rem' : '1rem' }}>QR</h3>
             <div style={styles.qrWrapper}>
               <QRCodeSVG
                 value={qrUrl}
@@ -189,13 +188,6 @@ const styles = {
   },
   infoLabel: { color: '#888', fontSize: '0.85rem' },
   infoValor: { color: '#1C1C1E', fontWeight: '600', fontSize: '0.85rem', textAlign: 'right', maxWidth: '55%' },
-  qrSubtitle: {
-    color: '#888',
-    fontSize: '0.8rem',
-    textAlign: 'center',
-    marginBottom: '1rem',
-    marginTop: 0,
-  },
   qrWrapper: {
     padding: '0.75rem',
     backgroundColor: '#fff',
