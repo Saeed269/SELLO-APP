@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
+import NavNegocio from '../../components/NavNegocio'
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -59,6 +60,7 @@ export default function Dashboard() {
       <div style={styles.header}>
         <h1 style={styles.logo}>SELLO</h1>
         <div style={styles.headerRight}>
+          {!isMobile && <NavNegocio />}
           {!isMobile && <span style={styles.email}>{user?.email}</span>}
           <button onClick={handleLogout} style={styles.logoutBtn}>
             {isMobile ? 'Salir' : 'Cerrar sesión'}
@@ -66,7 +68,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ ...styles.content, padding: isMobile ? '0 0.75rem' : '0 1rem', margin: isMobile ? '0.75rem auto' : '2rem auto' }}>
+      {isMobile && <NavNegocio />}
+
+      <div style={{
+        ...styles.content,
+        padding: isMobile ? '0 0.75rem' : '0 1rem',
+        margin: isMobile ? '0.75rem auto' : '2rem auto',
+        paddingBottom: isMobile ? '5rem' : '1rem',
+      }}>
         {!isMobile && (
           <>
             <h2 style={styles.welcome}>Bienvenido, {negocio?.nombre} 👋</h2>
@@ -74,8 +83,11 @@ export default function Dashboard() {
           </>
         )}
 
-        <div style={{ ...styles.grid, gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '0.75rem' : '1.5rem' }}>
-          {/* Info del negocio */}
+        <div style={{
+          ...styles.grid,
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+          gap: isMobile ? '0.75rem' : '1.5rem',
+        }}>
           <div style={{ ...styles.infoCard, padding: isMobile ? '0.85rem' : '1.5rem' }}>
             <h3 style={{ ...styles.cardTitle, fontSize: isMobile ? '0.95rem' : '1rem' }}>
               {isMobile ? negocio?.nombre : 'Tu tarjeta'}
@@ -100,7 +112,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* QR del negocio */}
           <div style={{ ...styles.qrCard, padding: isMobile ? '0.85rem' : '1.5rem' }}>
             <h3 style={{ ...styles.cardTitle, fontSize: isMobile ? '0.95rem' : '1rem' }}>QR</h3>
             <div style={styles.qrWrapper}>
@@ -116,12 +127,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <button
-          onClick={() => navigate('/negocio/escanear')}
-          style={styles.scanBtn}
-        >
-          📷 Escanear QR de cliente
-        </button>
+        {!isMobile && (
+          <button
+            onClick={() => navigate('/negocio/escanear')}
+            style={styles.scanBtn}
+          >
+            📷 Escanear QR de cliente
+          </button>
+        )}
       </div>
     </div>
   )
