@@ -4,6 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import NavNegocio from '../../components/NavNegocio'
 
+const TIPOS_EMOJI = {
+  'Cafetería': '☕', 'Restaurante': '🍽️', 'Pizzería': '🍕', 'Kebab': '🌯',
+  'Peluquería / Barbería': '✂️', 'Gimnasio': '💪', 'Centro de Yoga': '🧘',
+  'Entrenador Personal': '🏋️', 'Salón de Manicura': '💅', 'Centro de Masaje': '💆',
+}
+
 export default function Dashboard() {
   const [user, setUser] = useState(null)
   const [negocio, setNegocio] = useState(null)
@@ -22,22 +28,15 @@ export default function Dashboard() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { navigate('/negocio/login'); return }
       setUser(user)
-
-      const { data } = await supabase
-        .from('negocios')
-        .select('*')
-        .eq('user_id', user.id)
-        .single()
-
-      if (!data) { navigate('/negocio/onboarding') }
-      else { setNegocio(data) }
+      const { data } = await supabase.from('negocios').select('*').eq('user_id', user.id).single()
+      if (!data) { navigate('/negocio/onboarding') } else { setNegocio(data) }
       setLoading(false)
     }
     init()
   }, [navigate])
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
       <p style={{ color: '#888' }}>Cargando...</p>
     </div>
   )
@@ -53,50 +52,51 @@ export default function Dashboard() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '5rem 1.25rem 2rem' : '2rem',
+        padding: isMobile ? '4.5rem 1rem 1rem' : '2rem',
         backgroundColor: '#f5f5f5',
+        minHeight: '100dvh',
+        boxSizing: 'border-box',
       }}>
-
-        {/* Tarjeta */}
         <div style={{
           ...styles.tarjeta,
           maxWidth: isMobile ? '100%' : '460px',
-          padding: isMobile ? '2.5rem 1.75rem' : '3rem 2.5rem',
+          padding: isMobile ? '1.25rem 1.25rem 1rem' : '3rem 2.5rem',
+          gap: isMobile ? '0.75rem' : '1rem',
         }}>
 
-          {/* Blobs decorativos */}
-          <div style={{ ...styles.blob, width: 180, height: 180, top: -40, right: -40, opacity: 0.18 }} />
-          <div style={{ ...styles.blob, width: 120, height: 120, top: 60, left: -30, opacity: 0.12 }} />
-          <div style={{ ...styles.blob, width: 80, height: 80, bottom: 80, right: 20, opacity: 0.10, background: '#FFD700' }} />
+          <div style={styles.blob1} />
+          <div style={styles.blob2} />
+          <div style={styles.blob3} />
 
-          {/* Nombre */}
-          <h1 style={styles.nombre}>{negocio?.nombre}</h1>
+          <h1 style={{
+            ...styles.nombre,
+            fontSize: isMobile ? '1.5rem' : '2rem',
+          }}>{negocio?.nombre}</h1>
 
-          {/* Tipo */}
           <p style={styles.tipo}>{negocio?.tipo?.toUpperCase()}</p>
 
-          {/* QR */}
-          <div style={styles.qrWrap}>
+          <div style={{
+            ...styles.qrWrap,
+            padding: isMobile ? '10px' : '16px',
+          }}>
             <QRCodeSVG
               value={qrUrl}
-              size={isMobile ? 180 : 220}
+              size={isMobile ? 140 : 220}
               fgColor="#1C1C1E"
               bgColor="#FFFFFF"
               level="M"
             />
           </div>
 
-          {/* Hint */}
-          <p style={styles.hint}>
-            Los clientes escanean este QR{'\n'}para registrarse y acumular sellos
+          <p style={{ ...styles.hint, fontSize: isMobile ? '0.72rem' : '0.78rem' }}>
+            Los clientes escanean este QR para registrarse
           </p>
 
-          {/* Botón escanear */}
           <button
             onClick={() => navigate('/negocio/escanear')}
-            style={styles.btnEscanear}
+            style={{ ...styles.btnEscanear, padding: isMobile ? '0.75rem' : '0.9rem' }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
               <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
               <line x1="7" y1="12" x2="17" y2="12"/>
@@ -111,11 +111,7 @@ export default function Dashboard() {
 }
 
 const styles = {
-  root: {
-    display: 'flex',
-    minHeight: '100vh',
-    backgroundColor: '#f5f5f5',
-  },
+  root: { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
   tarjeta: {
     position: 'relative',
     overflow: 'hidden',
@@ -125,74 +121,45 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '1rem',
     boxShadow: '0 24px 64px rgba(192,58,6,0.35)',
   },
-  blob: {
-    position: 'absolute',
-    borderRadius: '50%',
-    background: '#fff',
-    filter: 'blur(2px)',
-    pointerEvents: 'none',
-  },
+  blob1: { position: 'absolute', width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', top: -40, right: -40, pointerEvents: 'none' },
+  blob2: { position: 'absolute', width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: 60, left: -30, pointerEvents: 'none' },
+  blob3: { position: 'absolute', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,215,0,0.10)', bottom: 80, right: 20, pointerEvents: 'none' },
   nombre: {
-    position: 'relative',
+    position: 'relative', zIndex: 1,
     margin: 0,
-    fontSize: '2rem',
-    fontWeight: '700',
-    fontStyle: 'italic',
-    color: '#fff',
-    textAlign: 'center',
+    fontWeight: '700', fontStyle: 'italic',
+    color: '#fff', textAlign: 'center',
     textShadow: '0 2px 8px rgba(0,0,0,0.15)',
     fontFamily: 'Georgia, serif',
-    zIndex: 1,
   },
   tipo: {
-    position: 'relative',
-    margin: 0,
-    fontSize: '0.7rem',
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.75)',
-    letterSpacing: '0.18em',
-    textAlign: 'center',
-    zIndex: 1,
+    position: 'relative', zIndex: 1,
+    margin: 0, fontSize: '0.7rem', fontWeight: '600',
+    color: 'rgba(255,255,255,0.75)', letterSpacing: '0.18em', textAlign: 'center',
   },
   qrWrap: {
-    position: 'relative',
-    zIndex: 1,
-    backgroundColor: '#fff',
-    borderRadius: '18px',
-    padding: '16px',
+    position: 'relative', zIndex: 1,
+    backgroundColor: '#fff', borderRadius: '18px',
     boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-    marginTop: '0.5rem',
   },
   hint: {
-    position: 'relative',
-    zIndex: 1,
-    margin: 0,
-    fontSize: '0.78rem',
-    color: 'rgba(255,255,255,0.8)',
-    textAlign: 'center',
-    lineHeight: 1.6,
-    whiteSpace: 'pre-line',
+    position: 'relative', zIndex: 1,
+    margin: 0, color: 'rgba(255,255,255,0.8)',
+    textAlign: 'center', lineHeight: 1.5,
   },
   btnEscanear: {
-    position: 'relative',
-    zIndex: 1,
+    position: 'relative', zIndex: 1,
     width: '100%',
-    padding: '0.9rem',
     background: 'rgba(255,255,255,0.15)',
     color: '#fff',
     border: '1.5px solid rgba(255,255,255,0.5)',
     borderRadius: '14px',
-    fontSize: '0.95rem',
-    fontWeight: '600',
+    fontSize: '0.95rem', fontWeight: '600',
     cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
     gap: '10px',
     backdropFilter: 'blur(8px)',
-    marginTop: '0.25rem',
   },
 }

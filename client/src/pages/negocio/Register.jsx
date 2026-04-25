@@ -3,26 +3,10 @@ import { supabase } from '../../supabase'
 import { useNavigate, Link } from 'react-router-dom'
 
 const pasos = [
-  {
-    icono: '✍️',
-    titulo: 'Crea tu cuenta',
-    desc: 'Regístrate gratis en segundos con tu email',
-  },
-  {
-    icono: '🎨',
-    titulo: 'Diseña tu tarjeta',
-    desc: 'Elige el diseño y personaliza los colores de tu tarjeta',
-  },
-  {
-    icono: '📲',
-    titulo: 'Comparte el QR',
-    desc: 'Tus clientes se registran escaneándolo, sin descargar nada',
-  },
-  {
-    icono: '🏆',
-    titulo: 'Fideliza',
-    desc: 'Añade sellos en cada visita y premia a tus mejores clientes',
-  },
+  { num: '1', titulo: 'El negocio se registra', desc: 'Crea tu cuenta gratis y configura tu tarjeta de fidelización' },
+  { num: '2', titulo: 'El cliente escanea el QR', desc: 'El cliente escanea el QR de tu negocio desde su móvil' },
+  { num: '3', titulo: 'Se genera la tarjeta', desc: 'El cliente recibe su tarjeta digital guardada en el móvil' },
+  { num: '4', titulo: 'Sellos hasta el premio', desc: 'Añades sellos en cada visita hasta completar la tarjeta' },
 ]
 
 export default function Register() {
@@ -38,41 +22,21 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
-
-    if (password !== confirm) {
-      setError('Las contraseñas no coinciden')
-      return
-    }
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
-      return
-    }
+    if (password !== confirm) { setError('Las contraseñas no coinciden'); return }
+    if (password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return }
 
     setLoading(true)
     const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
-
-    if (signUpError) {
-      setError('Error al registrarse: ' + signUpError.message)
-      setLoading(false)
-      return
-    }
-
+    if (signUpError) { setError('Error al registrarse: ' + signUpError.message); setLoading(false); return }
     if (data?.user) {
-      await supabase.from('negocios').insert({
-        user_id: data.user.id,
-        email,
-        nombre: nombreNegocio,
-      })
+      await supabase.from('negocios').insert({ user_id: data.user.id, email, nombre: nombreNegocio })
     }
-
     navigate('/negocio/onboarding')
     setLoading(false)
   }
 
   return (
     <div style={styles.root}>
-
-      {/* Panel izquierdo */}
       {!isMobile && (
         <div style={styles.left}>
           <div style={styles.blob1} />
@@ -83,9 +47,7 @@ export default function Register() {
             <div style={styles.pasosList}>
               {pasos.map((p, i) => (
                 <div key={i} style={styles.paso}>
-                  <div style={styles.pasoNumWrap}>
-                    <span style={{ fontSize: '1.1rem' }}>{p.icono}</span>
-                  </div>
+                  <div style={styles.pasoNum}>{p.num}</div>
                   <div>
                     <p style={styles.pasoTitulo}>{p.titulo}</p>
                     <p style={styles.pasoDesc}>{p.desc}</p>
@@ -97,10 +59,8 @@ export default function Register() {
         </div>
       )}
 
-      {/* Panel derecho */}
       <div style={styles.right}>
         <div style={styles.formWrap}>
-
           {isMobile && (
             <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
               <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#E8763A', margin: 0, letterSpacing: '0.1em' }}>SELLO</h1>
@@ -108,44 +68,13 @@ export default function Register() {
           )}
 
           <h2 style={styles.titulo}>Crear cuenta</h2>
-          <p style={styles.subtitulo}>Configura tu negocio en menos de 5 minutos</p>
 
           <form onSubmit={handleRegister} style={styles.form}>
-            <input
-              type="text"
-              placeholder="Nombre de tu negocio"
-              value={nombreNegocio}
-              onChange={e => setNombreNegocio(e.target.value)}
-              style={styles.input}
-              required
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              style={styles.input}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Contraseña (mínimo 6 caracteres)"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              style={styles.input}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Confirmar contraseña"
-              value={confirm}
-              onChange={e => setConfirm(e.target.value)}
-              style={styles.input}
-              required
-            />
-
+            <input type="text" placeholder="Nombre de tu negocio" value={nombreNegocio} onChange={e => setNombreNegocio(e.target.value)} style={styles.input} required />
+            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={styles.input} required />
+            <input type="password" placeholder="Contraseña (mínimo 6 caracteres)" value={password} onChange={e => setPassword(e.target.value)} style={styles.input} required />
+            <input type="password" placeholder="Confirmar contraseña" value={confirm} onChange={e => setConfirm(e.target.value)} style={styles.input} required />
             {error && <p style={styles.error}>{error}</p>}
-
             <button type="submit" style={styles.button} disabled={loading}>
               {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
             </button>
@@ -157,7 +86,6 @@ export default function Register() {
           </p>
         </div>
       </div>
-
     </div>
   )
 }
@@ -170,29 +98,21 @@ const styles = {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     position: 'relative', overflow: 'hidden', padding: '3rem 2.5rem',
   },
-  blob1: {
-    position: 'absolute', width: 300, height: 300, borderRadius: '50%',
-    background: 'rgba(255,255,255,0.1)', top: -80, right: -80,
-  },
-  blob2: {
-    position: 'absolute', width: 200, height: 200, borderRadius: '50%',
-    background: 'rgba(255,255,255,0.07)', bottom: -50, left: -50,
-  },
-  logoText: {
-    margin: '0 0 0.5rem', fontSize: '2.5rem', fontWeight: 'bold',
-    color: '#fff', letterSpacing: '0.12em',
-  },
-  tagline: { margin: '0 0 1.75rem', color: 'rgba(255,255,255,0.85)', fontSize: '0.95rem' },
+  blob1: { position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', top: -80, right: -80 },
+  blob2: { position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', bottom: -50, left: -50 },
+  logoText: { margin: '0 0 0.5rem', fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' },
+  tagline: { margin: '0 0 1.5rem', color: 'rgba(255,255,255,0.85)', fontSize: '0.95rem' },
   pasosList: {
-    display: 'flex', flexDirection: 'column', gap: '14px',
+    display: 'flex', flexDirection: 'column', gap: '12px',
     background: 'rgba(255,255,255,0.12)', borderRadius: '16px',
     padding: '1.25rem', border: '1px solid rgba(255,255,255,0.2)',
   },
   paso: { display: 'flex', alignItems: 'flex-start', gap: '12px' },
-  pasoNumWrap: {
-    width: 36, height: 36, borderRadius: '10px', flexShrink: 0,
-    background: 'rgba(255,255,255,0.2)', display: 'flex',
+  pasoNum: {
+    width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+    background: 'rgba(255,255,255,0.3)', display: 'flex',
     alignItems: 'center', justifyContent: 'center',
+    fontSize: '0.8rem', fontWeight: '700', color: '#fff',
   },
   pasoTitulo: { margin: '0 0 2px', fontSize: '0.85rem', fontWeight: '600', color: '#fff' },
   pasoDesc: { margin: 0, fontSize: '0.78rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 },
@@ -205,19 +125,18 @@ const styles = {
     borderRadius: '20px', padding: '2rem 1.75rem',
     boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
   },
-  titulo: { margin: '0 0 0.25rem', fontSize: '1.4rem', fontWeight: '700', color: '#1C1C1E' },
-  subtitulo: { margin: '0 0 1.25rem', fontSize: '0.85rem', color: '#888' },
-  form: { display: 'flex', flexDirection: 'column', gap: '0.75rem' },
+  titulo: { margin: '0 0 1.25rem', fontSize: '1.4rem', fontWeight: '700', color: '#1C1C1E' },
+  form: { display: 'flex', flexDirection: 'column', gap: '0.7rem' },
   input: {
-    padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8',
+    padding: '0.78rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8',
     fontSize: '0.9rem', outline: 'none', backgroundColor: '#fafafa',
     color: '#1C1C1E', width: '100%', boxSizing: 'border-box',
   },
   error: { color: '#dc2626', fontSize: '0.82rem', margin: 0 },
   button: {
-    padding: '0.82rem', backgroundColor: '#E8763A', color: '#fff', border: 'none',
+    padding: '0.85rem', backgroundColor: '#E8763A', color: '#fff', border: 'none',
     borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer',
-    marginTop: '0.1rem', width: '100%',
+    width: '100%',
   },
   linkText: { textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#888' },
   link: { color: '#E8763A', fontWeight: '600', textDecoration: 'none' },
