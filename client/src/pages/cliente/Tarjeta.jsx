@@ -74,7 +74,7 @@ export default function Tarjeta() {
 
       <button onClick={handleLogout} style={styles.salirBtn}>Salir</button>
 
-      <div style={styles.tarjeta}>
+      <div style={{ ...styles.tarjeta, marginTop: '3.5rem' }}>
         {/* Blobs */}
         <div style={{ ...styles.blob, width: 220, height: 220, top: -70, right: -70 }} />
         <div style={{ ...styles.blob, width: 140, height: 140, bottom: -50, left: -50, opacity: 0.08 }} />
@@ -82,9 +82,7 @@ export default function Tarjeta() {
 
         {/* Header — negocio + cliente */}
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <p style={styles.tipoNegocio}>{negocio?.tipo?.toUpperCase()}</p>
           <h2 style={styles.nombreNegocio}>{negocio?.nombre}</h2>
-          <p style={styles.nombreCliente}>{cliente?.nombre}</p>
         </div>
 
         {/* Sellos */}
@@ -127,11 +125,10 @@ export default function Tarjeta() {
           })}
         </div>
 
-        {/* Contador + premio */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={styles.contador}>{sellosActuales} / {totalSellos} sellos</p>
+        {/* Premio */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center' }}>
           <div style={styles.premioBadge}>
-            <p style={styles.premioText}>🎁 {negocio?.premio}</p>
+            <p style={styles.premioText}>🎁 Premio: {negocio?.premio}</p>
           </div>
         </div>
 
