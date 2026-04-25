@@ -90,18 +90,16 @@ export default function NavNegocio({ negocio, user }) {
 
   const sidebarContent = (
     <div style={styles.sidebar}>
-      {/* Logo */}
       <div style={styles.logoArea}>
         <span style={styles.logoText}>SELLO</span>
       </div>
 
-      {/* Navegación principal */}
       <nav style={styles.nav}>
         {items.map(item => {
           const active = isActive(item.path)
           return (
             <button
-              key={item.path}
+              key={item.label}
               onClick={() => handleNav(item.path)}
               style={{
                 ...styles.navItem,
@@ -118,11 +116,9 @@ export default function NavNegocio({ negocio, user }) {
         })}
       </nav>
 
-      {/* Sección extra */}
       <div style={styles.extra}>
         <div style={styles.separador} />
 
-        {/* Cambiar idioma */}
         <div style={{ position: 'relative' }}>
           <button onClick={() => setShowIdioma(!showIdioma)} style={styles.extraBtn}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -164,7 +160,6 @@ export default function NavNegocio({ negocio, user }) {
 
         <div style={styles.separador} />
 
-        {/* Cerrar sesión */}
         <button onClick={handleLogout} style={styles.logoutBtn}>
           {icons.logout()}
           <span style={{ color: '#9CA3AF', fontSize: '0.85rem' }}>Cerrar sesión</span>
@@ -217,28 +212,15 @@ const styles = {
   logoArea: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
     padding: '1.5rem 1.25rem 1.25rem',
     borderBottom: '1px solid rgba(255,255,255,0.06)',
     flexShrink: 0,
   },
-  logoIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    backgroundColor: NARANJA,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: '1.1rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   logoText: {
-    color: '#fff',
+    color: NARANJA,
     fontWeight: 'bold',
-    fontSize: '1.1rem',
-    letterSpacing: '0.08em',
+    fontSize: '1.3rem',
+    letterSpacing: '0.12em',
   },
   nav: {
     flex: 1,
