@@ -52,7 +52,7 @@ export default function EscanerQR() {
 
       setResultado(tarjeta)
       setLoading(false)
-    } catch (_e) {
+    } catch (_) {
       setError('QR no válido')
       setLoading(false)
     }
@@ -91,7 +91,7 @@ export default function EscanerQR() {
 
   const detenerEscaner = async () => {
     if (scannerRef.current) {
-      try { await scannerRef.current.stop() } catch (_) {}
+      await scannerRef.current.stop().catch(() => {})
     }
     setEscaneando(false)
   }
