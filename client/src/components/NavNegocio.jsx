@@ -56,11 +56,15 @@ const items = [
   { label: 'Ajustes',     icon: 'ajustes',    path: '/negocio/ajustes' },
 ]
 
+const idiomas = ['Español', 'Català', 'English']
+
 export default function NavNegocio({ negocio, user }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const [open, setOpen] = useState(false)
+  const [idioma, setIdioma] = useState('Español')
+  const [showIdioma, setShowIdioma] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -91,7 +95,7 @@ export default function NavNegocio({ negocio, user }) {
         <span style={styles.logoText}>SELLO</span>
       </div>
 
-      {/* Navegación */}
+      {/* Navegación principal */}
       <nav style={styles.nav}>
         {items.map(item => {
           const active = isActive(item.path)
@@ -114,8 +118,53 @@ export default function NavNegocio({ negocio, user }) {
         })}
       </nav>
 
-      {/* Solo cerrar sesión abajo */}
-      <div style={styles.bottom}>
+      {/* Sección extra */}
+      <div style={styles.extra}>
+        <div style={styles.separador} />
+
+        {/* Cambiar idioma */}
+        <div style={{ position: 'relative' }}>
+          <button onClick={() => setShowIdioma(!showIdioma)} style={styles.extraBtn}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <span style={styles.extraLabel}>{idioma}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto' }}>
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+          {showIdioma && (
+            <div style={styles.dropdown}>
+              {idiomas.map(i => (
+                <button key={i} onClick={() => { setIdioma(i); setShowIdioma(false) }} style={{
+                  ...styles.dropdownItem,
+                  color: i === idioma ? NARANJA : '#9CA3AF',
+                }}>
+                  {i}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button onClick={() => handleNav('/negocio/terminos')} style={styles.extraBtn}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span style={styles.extraLabel}>Términos de uso</span>
+        </button>
+
+        <button onClick={() => handleNav('/negocio/privacidad')} style={styles.extraBtn}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span style={styles.extraLabel}>Política de privacidad</span>
+        </button>
+
+        <div style={styles.separador} />
+
+        {/* Cerrar sesión */}
         <button onClick={handleLogout} style={styles.logoutBtn}>
           {icons.logout()}
           <span style={{ color: '#9CA3AF', fontSize: '0.85rem' }}>Cerrar sesión</span>
@@ -127,7 +176,6 @@ export default function NavNegocio({ negocio, user }) {
   if (isMobile) {
     return (
       <>
-        {/* Hamburger — solo visible cuando sidebar cerrado */}
         <button onClick={() => setOpen(true)} style={{ ...styles.hamburger, display: open ? 'none' : 'flex' }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2" strokeLinecap="round">
             <line x1="3" y1="6" x2="21" y2="6"/>
@@ -136,12 +184,10 @@ export default function NavNegocio({ negocio, user }) {
           </svg>
         </button>
 
-        {/* Overlay */}
         {open && (
           <div onClick={() => setOpen(false)} style={styles.overlay} />
         )}
 
-        {/* Sidebar deslizante */}
         <div style={{
           ...styles.mobileSidebar,
           transform: open ? 'translateX(0)' : `translateX(-${SIDEBAR_WIDTH}px)`,
@@ -166,6 +212,7 @@ const styles = {
     position: 'sticky',
     top: 0,
     flexShrink: 0,
+    overflowY: 'auto',
   },
   logoArea: {
     display: 'flex',
@@ -173,6 +220,7 @@ const styles = {
     gap: '10px',
     padding: '1.5rem 1.25rem 1.25rem',
     borderBottom: '1px solid rgba(255,255,255,0.06)',
+    flexShrink: 0,
   },
   logoIcon: {
     width: 34,
@@ -196,9 +244,8 @@ const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    padding: '1rem 0.75rem',
+    padding: '1rem 0.75rem 0',
     gap: '2px',
-    overflowY: 'auto',
   },
   navItem: {
     display: 'flex',
@@ -216,9 +263,48 @@ const styles = {
     fontSize: '0.875rem',
     fontWeight: '500',
   },
-  bottom: {
-    borderTop: '1px solid rgba(255,255,255,0.06)',
-    padding: '0.75rem',
+  extra: {
+    padding: '0 0.75rem 1rem',
+    flexShrink: 0,
+  },
+  separador: {
+    height: '1px',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    margin: '0.75rem 0',
+  },
+  extraBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '0.5rem 0.85rem',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    borderRadius: '8px',
+    width: '100%',
+    textAlign: 'left',
+  },
+  extraLabel: {
+    fontSize: '0.78rem',
+    color: '#6B7280',
+  },
+  dropdown: {
+    backgroundColor: '#2A2A2C',
+    borderRadius: '8px',
+    padding: '4px',
+    marginTop: '2px',
+    marginLeft: '0.85rem',
+  },
+  dropdownItem: {
+    display: 'block',
+    width: '100%',
+    padding: '6px 10px',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    borderRadius: '6px',
+    fontSize: '0.78rem',
+    textAlign: 'left',
   },
   logoutBtn: {
     display: 'flex',
