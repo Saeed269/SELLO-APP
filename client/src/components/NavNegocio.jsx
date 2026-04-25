@@ -92,7 +92,6 @@ export default function NavNegocio({ negocio, user }) {
     <div style={styles.sidebar}>
       {/* Logo */}
       <div style={styles.logoArea}>
-        <div style={styles.logoIcon}>S</div>
         <span style={styles.logoText}>SELLO</span>
       </div>
 

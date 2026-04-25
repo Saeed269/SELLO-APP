@@ -63,7 +63,7 @@ export default function Login() {
             </div>
           )}
 
-          <h2 style={styles.titulo}>Bienvenido a Sello</h2>
+          <h2 style={styles.titulo}>Bienvenido</h2>
 
           <form onSubmit={handleLogin} style={styles.form}>
             <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={styles.input} required />
