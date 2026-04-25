@@ -4,7 +4,7 @@ import { supabase } from '../supabase'
 
 const NARANJA = '#E8763A'
 const SIDEBAR_BG = '#1C1C1E'
-const SIDEBAR_WIDTH = 240
+const SIDEBAR_WIDTH = 280
 
 const icons = {
   inicio: (active) => (
@@ -138,8 +138,8 @@ export default function NavNegocio({ negocio, user }) {
   if (isMobile) {
     return (
       <>
-        {/* Botón hamburger */}
-        <button onClick={() => setOpen(true)} style={styles.hamburger}>
+        {/* Botón hamburger — solo visible cuando sidebar cerrado */}
+        <button onClick={() => setOpen(true)} style={{ ...styles.hamburger, display: open ? 'none' : 'flex' }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2" strokeLinecap="round">
             <line x1="3" y1="6" x2="21" y2="6"/>
             <line x1="3" y1="12" x2="21" y2="12"/>
