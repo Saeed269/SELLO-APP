@@ -37,7 +37,7 @@ export default function Dashboard() {
   }, [navigate])
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1a1a1a' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
       <p style={{ color: '#888' }}>Cargando...</p>
     </div>
   )
@@ -54,7 +54,7 @@ export default function Dashboard() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: isMobile ? '5rem 1.25rem 2rem' : '2rem',
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#f5f5f5',
       }}>
 
         {/* Tarjeta */}
@@ -114,7 +114,7 @@ const styles = {
   root: {
     display: 'flex',
     minHeight: '100vh',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#f5f5f5',
   },
   tarjeta: {
     position: 'relative',
