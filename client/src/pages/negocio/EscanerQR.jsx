@@ -91,7 +91,7 @@ export default function EscanerQR() {
 
   const detenerEscaner = async () => {
     if (scannerRef.current) {
-      try { await scannerRef.current.stop() } catch (_e) {}
+      try { await scannerRef.current.stop() } catch (_) {}
     }
     setEscaneando(false)
   }
