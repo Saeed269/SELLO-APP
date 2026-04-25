@@ -49,11 +49,11 @@ const icons = {
 
 const items = [
   { label: 'Inicio',      icon: 'inicio',     path: '/negocio/dashboard' },
-  { label: 'Mi Tarjeta',  icon: 'tarjeta',    path: '/negocio/mi-tarjeta' },
-  { label: 'Clientes',    icon: 'clientes',   path: '/negocio/clientes' },
-  { label: 'Analíticas',  icon: 'analiticas', path: '/negocio/analiticas' },
-  { label: 'Ayuda',       icon: 'ayuda',      path: '/negocio/ayuda' },
-  { label: 'Ajustes',     icon: 'ajustes',    path: '/negocio/ajustes' },
+  { label: 'Mi Tarjeta',  icon: 'tarjeta',    path: null },
+  { label: 'Clientes',    icon: 'clientes',   path: null },
+  { label: 'Analíticas',  icon: 'analiticas', path: null },
+  { label: 'Ayuda',       icon: 'ayuda',      path: null },
+  { label: 'Ajustes',     icon: 'ajustes',    path: null },
 ]
 
 const idiomas = ['Español', 'Català', 'English']
@@ -76,6 +76,7 @@ export default function NavNegocio({ negocio, user }) {
   }, [])
 
   const handleNav = (path) => {
+    if (!path) return
     navigate(path)
     setOpen(false)
   }

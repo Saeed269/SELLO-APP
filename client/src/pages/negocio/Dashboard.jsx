@@ -52,7 +52,7 @@ export default function Dashboard() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '4.5rem 1rem 1rem' : '2rem',
+        padding: isMobile ? '3.5rem 1rem 1rem' : '2rem',
         backgroundColor: '#f5f5f5',
         minHeight: '100dvh',
         boxSizing: 'border-box',
