@@ -3,7 +3,7 @@ import { supabase } from '../../supabase'
 import { useNavigate, Link } from 'react-router-dom'
 
 const pasos = [
-  { num: '1', titulo: 'El negocio se registra', desc: 'Crea tu cuenta gratis y configura tu tarjeta de fidelización' },
+  { num: '1', titulo: 'El negocio se registra', desc: 'Crea tu cuenta y configura tu tarjeta de fidelización' },
   { num: '2', titulo: 'El cliente escanea el QR', desc: 'El cliente escanea el QR de tu negocio desde su móvil' },
   { num: '3', titulo: 'Se genera la tarjeta', desc: 'El cliente recibe su tarjeta digital guardada en el móvil' },
   { num: '4', titulo: 'Sellos hasta el premio', desc: 'Añades sellos en cada visita hasta completar la tarjeta' },
@@ -22,26 +22,26 @@ export default function Login() {
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError('Email o contraseña incorrectos')
-    } else {
-      navigate('/negocio/dashboard')
-    }
+    if (error) { setError('Email o contraseña incorrectos') }
+    else { navigate('/negocio/dashboard') }
     setLoading(false)
   }
 
   return (
     <div style={styles.root}>
+
+      {/* Panel izquierdo */}
       {!isMobile && (
         <div style={styles.left}>
           <div style={styles.blob1} />
           <div style={styles.blob2} />
-          <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 380 }}>
+          <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 400 }}>
             <h1 style={styles.logoText}>SELLO</h1>
             <p style={styles.tagline}>Fidelización digital para tu negocio</p>
+            <p style={styles.comoFunciona}>¿Cómo funciona?</p>
             <div style={styles.pasosList}>
               {pasos.map((p, i) => (
-                <div key={i} style={styles.paso}>
+                <div key={i} style={styles.pasoCard}>
                   <div style={styles.pasoNum}>{p.num}</div>
                   <div>
                     <p style={styles.pasoTitulo}>{p.titulo}</p>
@@ -54,6 +54,7 @@ export default function Login() {
         </div>
       )}
 
+      {/* Panel derecho */}
       <div style={styles.right}>
         <div style={styles.formWrap}>
           {isMobile && (
@@ -65,22 +66,8 @@ export default function Login() {
           <h2 style={styles.titulo}>Bienvenido a Sello</h2>
 
           <form onSubmit={handleLogin} style={styles.form}>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              style={styles.input}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              style={styles.input}
-              required
-            />
+            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={styles.input} required />
+            <input type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} style={styles.input} required />
             {error && <p style={styles.error}>{error}</p>}
             <button type="submit" style={styles.button} disabled={loading}>
               {loading ? 'Entrando...' : 'Entrar'}
@@ -93,6 +80,7 @@ export default function Login() {
           </p>
         </div>
       </div>
+
     </div>
   )
 }
@@ -107,14 +95,15 @@ const styles = {
   },
   blob1: { position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', top: -80, right: -80 },
   blob2: { position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', bottom: -50, left: -50 },
-  logoText: { margin: '0 0 0.5rem', fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' },
-  tagline: { margin: '0 0 1.5rem', color: 'rgba(255,255,255,0.85)', fontSize: '0.95rem' },
-  pasosList: {
-    display: 'flex', flexDirection: 'column', gap: '12px',
-    background: 'rgba(255,255,255,0.12)', borderRadius: '16px',
-    padding: '1.25rem', border: '1px solid rgba(255,255,255,0.2)',
+  logoText: { margin: '0 0 0.25rem', fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' },
+  tagline: { margin: '0 0 1.75rem', color: 'rgba(255,255,255,0.85)', fontSize: '0.95rem' },
+  comoFunciona: { margin: '0 0 0.75rem', color: '#fff', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em' },
+  pasosList: { display: 'flex', flexDirection: 'column', gap: '10px' },
+  pasoCard: {
+    display: 'flex', alignItems: 'flex-start', gap: '12px',
+    background: 'rgba(255,255,255,0.12)', borderRadius: '12px',
+    padding: '0.85rem 1rem', border: '1px solid rgba(255,255,255,0.18)',
   },
-  paso: { display: 'flex', alignItems: 'flex-start', gap: '12px' },
   pasoNum: {
     width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
     background: 'rgba(255,255,255,0.3)', display: 'flex',
@@ -122,7 +111,7 @@ const styles = {
     fontSize: '0.8rem', fontWeight: '700', color: '#fff',
   },
   pasoTitulo: { margin: '0 0 2px', fontSize: '0.85rem', fontWeight: '600', color: '#fff' },
-  pasoDesc: { margin: 0, fontSize: '0.78rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 },
+  pasoDesc: { margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 },
   right: {
     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
     padding: '2rem 1.5rem', backgroundColor: '#f9f9f9',
@@ -142,8 +131,7 @@ const styles = {
   error: { color: '#dc2626', fontSize: '0.85rem', margin: 0 },
   button: {
     padding: '0.9rem', backgroundColor: '#E8763A', color: '#fff', border: 'none',
-    borderRadius: '10px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer',
-    width: '100%',
+    borderRadius: '10px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', width: '100%',
   },
   linkText: { textAlign: 'center', marginTop: '1.25rem', fontSize: '0.88rem', color: '#888' },
   link: { color: '#E8763A', fontWeight: '600', textDecoration: 'none' },
