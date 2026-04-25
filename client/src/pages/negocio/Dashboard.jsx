@@ -74,8 +74,6 @@ export default function Dashboard() {
             fontSize: isMobile ? '1.5rem' : '2rem',
           }}>{negocio?.nombre}</h1>
 
-          <p style={styles.tipo}>{negocio?.tipo?.toUpperCase()}</p>
-
           <div style={{
             ...styles.qrWrap,
             padding: isMobile ? '14px' : '16px',
