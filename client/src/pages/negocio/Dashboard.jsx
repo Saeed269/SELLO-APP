@@ -4,19 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import NavNegocio from '../../components/NavNegocio'
 
-const TIPOS_EMOJI = {
-  'Cafetería': '☕',
-  'Restaurante': '🍽️',
-  'Pizzería': '🍕',
-  'Kebab': '🌯',
-  'Peluquería / Barbería': '✂️',
-  'Gimnasio': '💪',
-  'Centro de Yoga': '🧘',
-  'Entrenador Personal': '🏋️',
-  'Salón de Manicura': '💅',
-  'Centro de Masaje': '💆',
-}
-
 export default function Dashboard() {
   const [user, setUser] = useState(null)
   const [negocio, setNegocio] = useState(null)
@@ -50,13 +37,12 @@ export default function Dashboard() {
   }, [navigate])
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1a1a1a' }}>
       <p style={{ color: '#888' }}>Cargando...</p>
     </div>
   )
 
   const qrUrl = `${window.location.origin}/cliente/registro?negocio=${negocio?.id}`
-  const emoji = TIPOS_EMOJI[negocio?.tipo] || '🏪'
 
   return (
     <div style={styles.root}>
@@ -67,55 +53,56 @@ export default function Dashboard() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '5rem 1rem 2rem' : '2rem',
+        padding: isMobile ? '5rem 1.25rem 2rem' : '2rem',
+        backgroundColor: '#1a1a1a',
       }}>
-        <div style={styles.tarjeta}>
 
-          {/* Emoji negocio */}
-          <div style={styles.emojiWrap}>
-            <span style={styles.emoji}>{emoji}</span>
-          </div>
+        {/* Tarjeta */}
+        <div style={{
+          ...styles.tarjeta,
+          maxWidth: isMobile ? '100%' : '380px',
+          padding: isMobile ? '2rem 1.5rem' : '2.5rem 2rem',
+        }}>
 
-          {/* Nombre y tipo */}
+          {/* Blobs decorativos */}
+          <div style={{ ...styles.blob, width: 180, height: 180, top: -40, right: -40, opacity: 0.18 }} />
+          <div style={{ ...styles.blob, width: 120, height: 120, top: 60, left: -30, opacity: 0.12 }} />
+          <div style={{ ...styles.blob, width: 80, height: 80, bottom: 80, right: 20, opacity: 0.10, background: '#FFD700' }} />
+
+          {/* Nombre */}
           <h1 style={styles.nombre}>{negocio?.nombre}</h1>
-          <p style={styles.tipo}>{negocio?.tipo}</p>
 
-          {/* Separador */}
-          <div style={styles.separador} />
+          {/* Tipo */}
+          <p style={styles.tipo}>{negocio?.tipo?.toUpperCase()}</p>
 
           {/* QR */}
           <div style={styles.qrWrap}>
             <QRCodeSVG
               value={qrUrl}
-              size={180}
+              size={isMobile ? 160 : 180}
               fgColor="#1C1C1E"
               bgColor="#FFFFFF"
               level="M"
             />
           </div>
 
-          <p style={styles.qrHint}>Los clientes escanean este QR para registrarse</p>
-
-          {/* Separador */}
-          <div style={styles.separador} />
+          {/* Hint */}
+          <p style={styles.hint}>
+            Los clientes escanean este QR{'\n'}para registrarse y acumular sellos
+          </p>
 
           {/* Botón escanear */}
           <button
             onClick={() => navigate('/negocio/escanear')}
             style={styles.btnEscanear}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
               <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
               <line x1="7" y1="12" x2="17" y2="12"/>
             </svg>
             Escanear QR del Cliente
           </button>
-
-          {/* Premio y sellos al pie */}
-          <p style={styles.pie}>
-            🏆 Premio: {negocio?.premio} · {negocio?.num_sellos} sellos
-          </p>
 
         </div>
       </main>
@@ -127,84 +114,85 @@ const styles = {
   root: {
     display: 'flex',
     minHeight: '100vh',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1a1a1a',
   },
   tarjeta: {
-    backgroundColor: '#fff',
-    borderRadius: '24px',
-    border: '2.5px solid #E8763A',
-    padding: '2rem 2rem 1.5rem',
+    position: 'relative',
+    overflow: 'hidden',
+    background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)',
+    borderRadius: '28px',
     width: '100%',
-    maxWidth: '360px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    boxShadow: '0 8px 32px rgba(232,118,58,0.12)',
+    gap: '1rem',
+    boxShadow: '0 24px 64px rgba(192,58,6,0.35)',
   },
-  emojiWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: '18px',
-    backgroundColor: '#FFF4EE',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '1rem',
-  },
-  emoji: {
-    fontSize: '2rem',
+  blob: {
+    position: 'absolute',
+    borderRadius: '50%',
+    background: '#fff',
+    filter: 'blur(2px)',
+    pointerEvents: 'none',
   },
   nombre: {
-    margin: '0 0 4px',
-    fontSize: '1.4rem',
+    position: 'relative',
+    margin: 0,
+    fontSize: '2rem',
     fontWeight: '700',
-    color: '#1C1C1E',
+    fontStyle: 'italic',
+    color: '#fff',
     textAlign: 'center',
+    textShadow: '0 2px 8px rgba(0,0,0,0.15)',
+    fontFamily: 'Georgia, serif',
+    zIndex: 1,
   },
   tipo: {
+    position: 'relative',
     margin: 0,
-    fontSize: '0.85rem',
-    color: '#888',
+    fontSize: '0.7rem',
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.75)',
+    letterSpacing: '0.18em',
     textAlign: 'center',
-  },
-  separador: {
-    width: '100%',
-    height: 0,
-    borderTop: '1.5px dashed #e0e0e0',
-    margin: '1.25rem 0',
+    zIndex: 1,
   },
   qrWrap: {
-    padding: '14px',
-    border: '2px solid #E8763A',
-    borderRadius: '16px',
+    position: 'relative',
+    zIndex: 1,
     backgroundColor: '#fff',
-    marginBottom: '0.75rem',
+    borderRadius: '18px',
+    padding: '16px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+    marginTop: '0.5rem',
   },
-  qrHint: {
+  hint: {
+    position: 'relative',
+    zIndex: 1,
     margin: 0,
-    fontSize: '0.75rem',
-    color: '#aaa',
+    fontSize: '0.78rem',
+    color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
+    lineHeight: 1.6,
+    whiteSpace: 'pre-line',
   },
   btnEscanear: {
+    position: 'relative',
+    zIndex: 1,
     width: '100%',
     padding: '0.9rem',
-    backgroundColor: '#E8763A',
+    background: 'rgba(255,255,255,0.15)',
     color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
+    border: '1.5px solid rgba(255,255,255,0.5)',
+    borderRadius: '14px',
     fontSize: '0.95rem',
-    fontWeight: '700',
+    fontWeight: '600',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '10px',
-  },
-  pie: {
-    margin: '1rem 0 0',
-    fontSize: '0.75rem',
-    color: '#aaa',
-    textAlign: 'center',
+    backdropFilter: 'blur(8px)',
+    marginTop: '0.25rem',
   },
 }
