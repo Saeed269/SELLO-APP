@@ -36,8 +36,9 @@ export default function Dashboard() {
   }, [navigate])
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
-      <p style={{ color: '#888' }}>Cargando...</p>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
+      <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
+      <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Fidelización digital para tu negocio</p>
     </div>
   )
 
@@ -52,7 +53,7 @@ export default function Dashboard() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '3.5rem 1rem 1rem' : '2rem',
+        padding: isMobile ? '2rem 1rem 1rem' : '2rem',
         backgroundColor: '#f5f5f5',
         minHeight: '100dvh',
         boxSizing: 'border-box',
