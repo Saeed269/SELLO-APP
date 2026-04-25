@@ -32,9 +32,6 @@ export default function Login() {
           <div style={styles.leftBlob1} />
           <div style={styles.leftBlob2} />
           <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <div style={styles.logoWrap}>
-              <span style={styles.logoLetter}>S</span>
-            </div>
             <h1 style={styles.logoText}>SELLO</h1>
             <p style={styles.tagline}>Fidelización digital para tu negocio</p>
             <div style={styles.features}>
@@ -53,40 +50,31 @@ export default function Login() {
           {/* Logo mobile */}
           {isMobile && (
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <div style={{ ...styles.logoWrap, margin: '0 auto 0.75rem', background: '#E8763A' }}>
-                <span style={styles.logoLetter}>S</span>
-              </div>
-              <h1 style={{ ...styles.logoText, color: '#E8763A', fontSize: '1.8rem' }}>SELLO</h1>
-              <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>Panel del negocio</p>
+              <h1 style={{ ...styles.logoText, color: '#E8763A', fontSize: '2rem', margin: '0 0 0.5rem' }}>SELLO</h1>
+              <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>Tu app de fidelización</p>
             </div>
           )}
 
-          <h2 style={styles.titulo}>Bienvenido de nuevo</h2>
-          <p style={styles.subtitulo}>Inicia sesión en tu panel de negocio</p>
+          <h2 style={styles.titulo}>Bienvenido a Sello</h2>
+          <p style={styles.subtitulo}>Tu app de fidelización digital</p>
 
           <form onSubmit={handleLogin} style={styles.form}>
-            <div style={styles.campo}>
-              <label style={styles.label}>Email</label>
-              <input
-                type="email"
-                placeholder="tu@negocio.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                style={styles.input}
-                required
-              />
-            </div>
-            <div style={styles.campo}>
-              <label style={styles.label}>Contraseña</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                style={styles.input}
-                required
-              />
-            </div>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              style={styles.input}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              style={styles.input}
+              required
+            />
 
             {error && <p style={styles.error}>{error}</p>}
 
@@ -110,7 +98,6 @@ const styles = {
   root: {
     display: 'flex',
     minHeight: '100vh',
-    backgroundColor: '#f5f5f5',
   },
   left: {
     flex: 1,
@@ -140,28 +127,12 @@ const styles = {
     bottom: -50,
     left: -50,
   },
-  logoWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: 18,
-    background: 'rgba(255,255,255,0.2)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 1rem',
-    border: '2px solid rgba(255,255,255,0.3)',
-  },
-  logoLetter: {
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    color: '#fff',
-  },
   logoText: {
-    margin: '0 0 0.5rem',
-    fontSize: '2.2rem',
+    margin: '0 0 0.75rem',
+    fontSize: '2.8rem',
     fontWeight: 'bold',
     color: '#fff',
-    letterSpacing: '0.1em',
+    letterSpacing: '0.12em',
   },
   tagline: {
     margin: '0 0 2rem',
@@ -188,46 +159,42 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '2rem 1.5rem',
-    backgroundColor: '#fff',
+    backgroundColor: '#f9f9f9',
   },
   formWrap: {
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '360px',
+    backgroundColor: '#fff',
+    borderRadius: '20px',
+    padding: '2.5rem 2rem',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
   },
   titulo: {
     margin: '0 0 0.35rem',
-    fontSize: '1.6rem',
+    fontSize: '1.5rem',
     fontWeight: '700',
     color: '#1C1C1E',
   },
   subtitulo: {
-    margin: '0 0 2rem',
-    fontSize: '0.9rem',
+    margin: '0 0 1.75rem',
+    fontSize: '0.88rem',
     color: '#888',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1.1rem',
-  },
-  campo: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-  },
-  label: {
-    fontSize: '0.85rem',
-    fontWeight: '500',
-    color: '#444',
+    gap: '0.9rem',
   },
   input: {
     padding: '0.85rem 1rem',
     borderRadius: '10px',
-    border: '1.5px solid #e0e0e0',
+    border: '1.5px solid #e8e8e8',
     fontSize: '0.95rem',
     outline: 'none',
     backgroundColor: '#fafafa',
     color: '#1C1C1E',
+    width: '100%',
+    boxSizing: 'border-box',
   },
   error: {
     color: '#dc2626',
@@ -240,16 +207,16 @@ const styles = {
     color: '#fff',
     border: 'none',
     borderRadius: '10px',
-    fontSize: '1rem',
+    fontSize: '0.95rem',
     fontWeight: '700',
     cursor: 'pointer',
-    marginTop: '0.5rem',
-    letterSpacing: '0.02em',
+    marginTop: '0.25rem',
+    width: '100%',
   },
   linkText: {
     textAlign: 'center',
-    marginTop: '1.5rem',
-    fontSize: '0.9rem',
+    marginTop: '1.25rem',
+    fontSize: '0.88rem',
     color: '#888',
   },
   link: {
