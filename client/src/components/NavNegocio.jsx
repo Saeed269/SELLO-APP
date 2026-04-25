@@ -205,7 +205,7 @@ const styles = {
   sidebar: {
     width: SIDEBAR_WIDTH,
     minWidth: SIDEBAR_WIDTH,
-    height: '100vh',
+    height: '100dvh',
     backgroundColor: SIDEBAR_BG,
     display: 'flex',
     flexDirection: 'column',
@@ -343,7 +343,7 @@ const styles = {
     position: 'fixed',
     top: 0,
     left: 0,
-    height: '100vh',
+    height: '100dvh',
     width: SIDEBAR_WIDTH,
     zIndex: 160,
     transition: 'transform 0.25s ease',
