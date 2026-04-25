@@ -71,7 +71,6 @@ export default function NavNegocio({ negocio, user }) {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Cierra el sidebar al navegar en móvil
   const handleNav = (path) => {
     navigate(path)
     setOpen(false)
@@ -115,30 +114,20 @@ export default function NavNegocio({ negocio, user }) {
         })}
       </nav>
 
-      {/* Perfil + logout abajo */}
+      {/* Solo cerrar sesión abajo */}
       <div style={styles.bottom}>
-        <div style={styles.perfil}>
-          <div style={styles.perfilAvatar}>
-            {(negocio?.nombre || user?.email || 'N')[0].toUpperCase()}
-          </div>
-          <div style={styles.perfilInfo}>
-            <p style={styles.perfilNombre}>{negocio?.nombre || 'Mi Negocio'}</p>
-            <p style={styles.perfilEmail}>{user?.email || ''}</p>
-          </div>
-        </div>
         <button onClick={handleLogout} style={styles.logoutBtn}>
           {icons.logout()}
-          <span style={{ color: '#9CA3AF', fontSize: '0.8rem' }}>Cerrar sesión</span>
+          <span style={{ color: '#9CA3AF', fontSize: '0.85rem' }}>Cerrar sesión</span>
         </button>
       </div>
     </div>
   )
 
-  // MÓVIL: hamburger + overlay + sidebar deslizante
   if (isMobile) {
     return (
       <>
-        {/* Botón hamburger — solo visible cuando sidebar cerrado */}
+        {/* Hamburger — solo visible cuando sidebar cerrado */}
         <button onClick={() => setOpen(true)} style={{ ...styles.hamburger, display: open ? 'none' : 'flex' }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2" strokeLinecap="round">
             <line x1="3" y1="6" x2="21" y2="6"/>
@@ -147,7 +136,7 @@ export default function NavNegocio({ negocio, user }) {
           </svg>
         </button>
 
-        {/* Overlay oscuro */}
+        {/* Overlay */}
         {open && (
           <div onClick={() => setOpen(false)} style={styles.overlay} />
         )}
@@ -163,7 +152,6 @@ export default function NavNegocio({ negocio, user }) {
     )
   }
 
-  // DESKTOP: sidebar fijo
   return sidebarContent
 }
 
@@ -231,58 +219,16 @@ const styles = {
   bottom: {
     borderTop: '1px solid rgba(255,255,255,0.06)',
     padding: '0.75rem',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  perfil: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '0.5rem 0.5rem',
-  },
-  perfilAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: '50%',
-    backgroundColor: NARANJA,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: '0.95rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  perfilInfo: {
-    overflow: 'hidden',
-  },
-  perfilNombre: {
-    margin: 0,
-    fontSize: '0.8rem',
-    fontWeight: '600',
-    color: '#fff',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-  perfilEmail: {
-    margin: 0,
-    fontSize: '0.7rem',
-    color: '#6B7280',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
   },
   logoutBtn: {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
-    padding: '0.5rem 0.75rem',
+    padding: '0.65rem 0.85rem',
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    borderRadius: '8px',
+    borderRadius: '10px',
     width: '100%',
   },
   hamburger: {
