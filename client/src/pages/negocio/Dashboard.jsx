@@ -60,7 +60,7 @@ export default function Dashboard() {
         <div style={{
           ...styles.tarjeta,
           maxWidth: isMobile ? '100%' : '460px',
-          padding: isMobile ? '1.75rem 1.5rem 1.5rem' : '3rem 2.5rem',
+          padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
           gap: isMobile ? '1rem' : '1rem',
         }}>
 
@@ -81,7 +81,7 @@ export default function Dashboard() {
           }}>
             <QRCodeSVG
               value={qrUrl}
-              size={isMobile ? 180 : 220}
+              size={isMobile ? 200 : 220}
               fgColor="#1C1C1E"
               bgColor="#FFFFFF"
               level="M"
