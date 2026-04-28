@@ -40,7 +40,7 @@ export default function Onboarding() {
   const navigate = useNavigate()
 
   const permitesBonos = TIPOS_CON_BONOS.includes(tipo)
-  const totalPasos = permitesBonos ? 4 : 3
+  const totalPasos = 3
 
   const handleGuardar = async () => {
     setError('')
@@ -72,25 +72,19 @@ export default function Onboarding() {
     if (paso === 1) {
       if (!tipo) { setError('Selecciona el tipo de negocio'); return }
       setError('')
-      // Si no permite bonos, saltar paso 2
-      if (!permitesBonos) {
-        setTipoTarjeta('sellos')
-        setPaso(3)
-      } else {
-        setPaso(2)
-      }
+      setPaso(2)
     } else if (paso === 2) {
       setError('')
       setPaso(3)
     } else if (paso === 3) {
       if (!premio) { setError('Define el premio para tu cliente'); return }
       setError('')
-      setPaso(4)
+      handleGuardar()
     }
   }
 
   const irAtras = () => {
-    if (paso === 3 && !permitesBonos) {
+    if (paso === 2 && !permitesBonos) {
       setPaso(1)
     } else {
       setPaso(paso - 1)
@@ -130,7 +124,7 @@ export default function Onboarding() {
           <div style={styles.seccion}>
             <h2 style={styles.h2}>¿Qué tipo de negocio tienes?</h2>
             {CATEGORIAS.map(cat => (
-              <div key={cat.nombre} style={{ marginBottom: '1rem' }}>
+              <div key={cat.nombre} style={{ marginBottom: '0.5rem' }}>
                 <p style={styles.catLabel}>{cat.nombre}</p>
                 <div style={styles.tiposGrid}>
                   {cat.tipos.map(t => (
@@ -156,7 +150,7 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Paso 2 — Tipo de tarjeta (solo si permite bonos) */}
+        {/* Paso 2 — Tipo de tarjeta */}
         {paso === 2 && permitesBonos && (
           <div style={styles.seccion}>
             <h2 style={styles.h2}>¿Qué tipo de tarjeta quieres?</h2>
@@ -192,8 +186,8 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Paso 3 — Configurar tarjeta */}
-        {paso === 3 && (
+        {/* Paso 2/3 — Configurar tarjeta */}
+        {((paso === 2 && !permitesBonos) || paso === 3) && (
           <div style={styles.seccion}>
             <h2 style={styles.h2}>
               {tipoTarjeta === 'bonos' ? 'Configura tu bono' : 'Configura tu tarjeta'}
@@ -246,8 +240,8 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Paso 4 — Resumen */}
-        {paso === 4 && (
+        {/* Resumen — eliminado, guardado directo */}
+        {false && (
           <div style={styles.seccion}>
             <h2 style={styles.h2}>Todo listo 🎉</h2>
             <p style={{ fontSize: '0.88rem', color: '#888', margin: '0 0 1.25rem' }}>Revisa los datos antes de crear tu tarjeta</p>
@@ -285,11 +279,12 @@ export default function Onboarding() {
 const styles = {
   root: {
     minHeight: '100dvh', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', padding: '1.5rem', backgroundColor: '#f9f9f9',
+    justifyContent: 'center', padding: '1rem', backgroundColor: '#f9f9f9',
+    overflowY: 'auto',
   },
   formWrap: {
     width: '100%', maxWidth: '480px', backgroundColor: '#fff',
-    borderRadius: '20px', padding: '2rem 1.75rem',
+    borderRadius: '20px', padding: '1.25rem 1.5rem',
     boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
   },
   logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#E8763A', margin: 0, letterSpacing: '0.1em' },
@@ -299,10 +294,10 @@ const styles = {
   pasoTexto: { fontSize: '0.78rem', color: '#bbb', margin: '0 0 1.25rem', textAlign: 'right' },
   seccion: { display: 'flex', flexDirection: 'column' },
   h2: { fontSize: '1.1rem', fontWeight: '700', color: '#1C1C1E', margin: '0 0 1rem' },
-  catLabel: { fontSize: '0.75rem', fontWeight: '600', color: '#E8763A', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' },
-  tiposGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' },
+  catLabel: { fontSize: '0.75rem', fontWeight: '600', color: '#E8763A', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' },
+  tiposGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' },
   tipoBtn: {
-    padding: '0.65rem 0.5rem', borderRadius: '10px',
+    padding: '0.5rem 0.4rem', borderRadius: '10px',
     fontSize: '0.82rem', cursor: 'pointer', textAlign: 'center',
     transition: 'all 0.15s', lineHeight: 1.3,
   },
