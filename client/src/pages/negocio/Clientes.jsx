@@ -145,7 +145,7 @@ export default function Clientes() {
                       </div>
 
                       {/* Sellos */}
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ textAlign: 'right', flexShrink: 0, marginRight: '0.5rem' }}>
                         <p style={{ margin: '0 0 1px', fontSize: '0.68rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sellos</p>
                         <p style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: premioGanado ? '#F59E0B' : '#1C1C1E', lineHeight: 1 }}>
                           {sellos}<span style={{ fontSize: '0.75rem', color: '#9CA3AF', fontWeight: '400' }}>/{maxSellos}</span>
