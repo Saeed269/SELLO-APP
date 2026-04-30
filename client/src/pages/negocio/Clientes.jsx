@@ -138,50 +138,46 @@ export default function Clientes() {
                 return (
                   <div key={tarjeta.id} style={s.card}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                      {/* Fila 1 — Avatar + info */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                    <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #E8763A, #c03a06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.3rem', fontWeight: '700', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {/* Avatar */}
+                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #E8763A, #c03a06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.1rem', fontWeight: '700', flexShrink: 0 }}>
                       {inicial}
                     </div>
-                    <div style={{ minWidth: 0 }}>
-                      <h3 style={{ margin: '0 0 2px', fontSize: '1.05rem', fontWeight: '700', color: '#1C1C1E' }}>{tarjeta.clientes?.nombre || 'Sin nombre'}</h3>
-                      <p style={{ margin: '0 0 2px', fontSize: '0.82rem', color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tarjeta.clientes?.email}</p>
-                      <span style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>Desde {formatFecha(tarjeta.created_at)}</span>
-                    </div>
-                  </div>
 
-                  {/* Fila 2 — Sellos + botones */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                    {/* Tarjeta sellos */}
-                    <div style={{ flex: 1, minWidth: '140px', background: premioGanado ? 'linear-gradient(135deg, #FEF3C7, #FDE68A)' : 'linear-gradient(135deg, #FFF4EE, #FFE8D6)', borderRadius: '12px', padding: '0.85rem 1rem', border: `1.5px solid ${premioGanado ? '#F59E0B' : NARANJA}44` }}>
-                      <p style={{ margin: '0 0 2px', fontSize: '0.72rem', fontWeight: '600', color: premioGanado ? '#92400e' : NARANJA }}>
-                        {premioGanado ? '🏆 Premio listo' : 'Tarjeta de Sellos'}
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tarjeta.clientes?.nombre || 'Sin nombre'}</p>
+                      <p style={{ margin: 0, fontSize: '0.78rem', color: '#6B7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tarjeta.clientes?.email}</p>
+                      <p style={{ margin: 0, fontSize: '0.7rem', color: '#9CA3AF' }}>Desde {formatFecha(tarjeta.created_at)}</p>
+                    </div>
+
+                    {/* Sellos en texto */}
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <p style={{ margin: '0 0 2px', fontSize: '0.7rem', fontWeight: '600', color: premioGanado ? '#92400e' : '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        {premioGanado ? '🏆 Premio' : 'Sellos'}
                       </p>
-                      <p style={{ margin: '0 0 6px', fontSize: '1.75rem', fontWeight: '700', color: '#1C1C1E', lineHeight: 1 }}>
-                        {sellos} <span style={{ fontSize: '1rem', color: '#9CA3AF', fontWeight: '400' }}>/ {maxSellos}</span>
+                      <p style={{ margin: '0 0 4px', fontSize: '1.2rem', fontWeight: '700', color: premioGanado ? '#F59E0B' : '#1C1C1E', lineHeight: 1 }}>
+                        {sellos}<span style={{ fontSize: '0.78rem', color: '#9CA3AF', fontWeight: '400' }}>/{maxSellos}</span>
                       </p>
-                      <div style={{ height: '5px', backgroundColor: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${progreso}%`, backgroundColor: premioGanado ? '#F59E0B' : NARANJA, borderRadius: '3px', transition: 'width 0.3s' }} />
+                      <div style={{ width: '80px', height: '4px', backgroundColor: '#E5E7EB', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${progreso}%`, backgroundColor: premioGanado ? '#F59E0B' : NARANJA, borderRadius: '2px' }} />
                       </div>
                     </div>
 
                     {/* Botones */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
                       <button
                         onClick={() => handleAñadirSello(tarjeta)}
                         disabled={premioGanado}
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0.65rem 1.25rem', backgroundColor: premioGanado ? '#E5E7EB' : NARANJA, color: premioGanado ? '#9CA3AF' : '#fff', border: 'none', borderRadius: '10px', fontSize: '0.88rem', fontWeight: '700', cursor: premioGanado ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+                        style={{ padding: '0.4rem 0.85rem', backgroundColor: premioGanado ? '#E5E7EB' : NARANJA, color: premioGanado ? '#9CA3AF' : '#fff', border: 'none', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: premioGanado ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
                       >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Añadir Sello
+                        + Añadir Sello
                       </button>
                       <button onClick={() => { setModalMensaje(tarjeta); setMensaje('') }} style={s.btnMensaje}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                         </svg>
-                        Enviar Mensaje
+                        Mensaje
                       </button>
                     </div>
                   </div>
@@ -240,10 +236,10 @@ const s = {
   empty: { backgroundColor: '#fff', borderRadius: '16px', padding: '4rem 2rem', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
   card: { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #F3F4F6' },
   btnMensaje: {
-    display: 'flex', alignItems: 'center', gap: '6px',
-    padding: '0.65rem 1.25rem', backgroundColor: '#F3F4F6',
-    color: '#374151', border: 'none', borderRadius: '10px',
-    fontSize: '0.88rem', fontWeight: '500', cursor: 'pointer', whiteSpace: 'nowrap',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+    padding: '0.4rem 0.85rem', backgroundColor: '#F3F4F6',
+    color: '#374151', border: 'none', borderRadius: '8px',
+    fontSize: '0.78rem', fontWeight: '500', cursor: 'pointer', whiteSpace: 'nowrap',
   },
   overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
   modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' },
