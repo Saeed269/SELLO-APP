@@ -255,6 +255,9 @@ function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, pre
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.1rem' }}>{nombre}</h3>
           <GridSellos numSellos={numSellos} premios={premios} selloIcon={selloIcon} premioIcon={premioIcon} cuadrado />
+          <div style={{ marginTop: '8px' }}>
+            <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.8)', fontWeight: '500' }}>🎁 Premio: {premios[premios.length - 1]?.texto || '...'}</p>
+          </div>
         </div>
       </div>
 
