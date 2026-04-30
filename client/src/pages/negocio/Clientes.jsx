@@ -21,7 +21,7 @@ export default function Clientes() {
     const cargarClientes = async (negocioId) => {
       const { data } = await supabase
         .from('tarjetas')
-        .select('*, clientes(nombre, email)')
+        .select('*, clientes!tarjetas_cliente_id_fkey(nombre, email)')
         .eq('negocio_id', negocioId)
         .order('updated_at', { ascending: false })
       setClientes(data || [])
