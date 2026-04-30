@@ -14,14 +14,7 @@ export default function Clientes() {
   const [modalMensaje, setModalMensaje] = useState(null)
   const [mensaje, setMensaje] = useState('')
   const [enviando, setEnviando] = useState(false)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 640)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
 
   useEffect(() => {
     const init = async () => {
@@ -49,7 +42,6 @@ export default function Clientes() {
 
       const clientesMap = {}
       clientesData?.forEach(c => { clientesMap[c.id] = c })
-
       setClientes(tarjetasData.map(t => ({ ...t, clientes: clientesMap[t.cliente_id] || null })))
       setLoading(false)
     }
@@ -105,6 +97,7 @@ export default function Clientes() {
             <p style={s.subtitulo}>Gestiona tus clientes y añade sellos manualmente</p>
           </div>
 
+          {/* Buscador */}
           <div style={s.searchWrap}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -116,8 +109,8 @@ export default function Clientes() {
               onChange={e => setBusqueda(e.target.value)}
               style={s.searchInput}
             />
-            <span style={{ fontSize: '0.78rem', color: '#888', whiteSpace: 'nowrap' }}>{clientesFiltrados.length} clientes</span>
           </div>
+          <p style={{ fontSize: '0.82rem', color: '#888', margin: '0 0 1rem' }}>{clientesFiltrados.length} clientes encontrados</p>
 
           {clientesFiltrados.length === 0 ? (
             <div style={s.empty}>
@@ -126,7 +119,7 @@ export default function Clientes() {
               </p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {clientesFiltrados.map(tarjeta => {
                 const progreso = Math.min((tarjeta.sellos_actuales / negocio.num_sellos) * 100, 100)
                 const premioGanado = tarjeta.sellos_actuales >= negocio.num_sellos
@@ -134,51 +127,70 @@ export default function Clientes() {
 
                 return (
                   <div key={tarjeta.id} style={s.card}>
-                    {/* Fila principal */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-                      <div style={{ ...s.avatar, backgroundColor: premioGanado ? '#FFD700' : NARANJA, flexShrink: 0 }}>
-                        <span style={{ color: premioGanado ? '#1C1C1E' : '#fff', fontWeight: '700', fontSize: '1.1rem' }}>{inicial}</span>
-                      </div>
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' }}>
-                          {tarjeta.clientes?.nombre || 'Sin nombre'}
-                          {premioGanado && <span style={{ marginLeft: '8px', fontSize: '0.72rem', fontWeight: '600', color: '#92400e', backgroundColor: '#FEF3C7', borderRadius: '20px', padding: '2px 8px' }}>🏆 Premio</span>}
-                        </p>
-                        <p style={{ margin: '2px 0', fontSize: '0.78rem', color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tarjeta.clientes?.email}</p>
-                        <p style={{ margin: 0, fontSize: '0.72rem', color: '#bbb' }}>Desde {formatFecha(tarjeta.created_at)}</p>
+
+                    {/* Avatar */}
+                    <div style={{ ...s.avatar, flexShrink: 0 }}>
+                      <span style={{ color: '#fff', fontWeight: '700', fontSize: '1.1rem' }}>{inicial}</span>
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ margin: '0 0 2px', fontSize: '1rem', fontWeight: '700', color: '#1C1C1E' }}>
+                        {tarjeta.clientes?.nombre || 'Sin nombre'}
+                      </p>
+                      <p style={{ margin: '0 0 2px', fontSize: '0.82rem', color: '#666' }}>{tarjeta.clientes?.email}</p>
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#999' }}>Desde {formatFecha(tarjeta.created_at)}</span>
                       </div>
                     </div>
 
-                    {/* Sellos + acciones */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0, flexWrap: isMobile ? 'wrap' : 'nowrap', width: isMobile ? '100%' : 'auto', marginTop: isMobile ? '0.75rem' : 0 }}>
-                      {/* Contador */}
-                      <div style={{ minWidth: 130 }}>
-                        <p style={{ margin: '0 0 2px', fontSize: '0.72rem', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sellos</p>
-                        <p style={{ margin: '0 0 5px', fontSize: '1.3rem', fontWeight: '700', color: '#1C1C1E', lineHeight: 1 }}>
-                          {tarjeta.sellos_actuales} <span style={{ fontSize: '0.85rem', color: '#bbb', fontWeight: '400' }}>/ {negocio.num_sellos}</span>
-                        </p>
-                        <div style={{ height: '5px', backgroundColor: '#f0f0f0', borderRadius: '3px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', borderRadius: '3px', width: `${progreso}%`, backgroundColor: premioGanado ? '#FFD700' : NARANJA, transition: 'width 0.3s' }} />
-                        </div>
-                      </div>
-
-                      {/* Botones */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <button
-                          onClick={() => handleAñadirSello(tarjeta)}
-                          disabled={premioGanado}
-                          style={{ ...s.btnAñadir, opacity: premioGanado ? 0.4 : 1, cursor: premioGanado ? 'not-allowed' : 'pointer' }}
-                        >
-                          + Añadir Sello
-                        </button>
-                        <button onClick={() => { setModalMensaje(tarjeta); setMensaje('') }} style={s.btnMensaje}>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                          </svg>
-                          Enviar Mensaje
-                        </button>
+                    {/* Contador sellos */}
+                    <div style={{
+                      backgroundColor: premioGanado ? '#FEF3C7' : '#F3F4F6',
+                      borderRadius: '12px',
+                      padding: '0.75rem 1.25rem',
+                      minWidth: '140px',
+                      flexShrink: 0,
+                    }}>
+                      <p style={{ margin: '0 0 2px', fontSize: '0.72rem', fontWeight: '600', color: premioGanado ? '#92400e' : NARANJA }}>
+                        {premioGanado ? '🏆 Premio listo' : 'Tarjeta de Sellos'}
+                      </p>
+                      <p style={{ margin: '0 0 6px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', lineHeight: 1 }}>
+                        {tarjeta.sellos_actuales} <span style={{ fontSize: '1rem', color: '#999', fontWeight: '400' }}>/ {negocio.num_sellos}</span>
+                      </p>
+                      <div style={{ height: '4px', backgroundColor: '#E5E7EB', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${progreso}%`, backgroundColor: premioGanado ? '#F59E0B' : NARANJA, borderRadius: '2px', transition: 'width 0.3s' }} />
                       </div>
                     </div>
+
+                    {/* Acciones */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
+                      <button
+                        onClick={() => handleAñadirSello(tarjeta)}
+                        disabled={premioGanado}
+                        style={{
+                          padding: '0.6rem 1.25rem',
+                          backgroundColor: premioGanado ? '#E5E7EB' : NARANJA,
+                          color: premioGanado ? '#999' : '#fff',
+                          border: 'none', borderRadius: '10px',
+                          fontSize: '0.85rem', fontWeight: '700',
+                          cursor: premioGanado ? 'not-allowed' : 'pointer',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        + Añadir Sello
+                      </button>
+                      <button
+                        onClick={() => { setModalMensaje(tarjeta); setMensaje('') }}
+                        style={s.btnMensaje}
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Enviar Mensaje
+                      </button>
+                    </div>
+
                   </div>
                 )
               })}
@@ -206,7 +218,11 @@ export default function Clientes() {
             />
             <div style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
               <button onClick={() => setModalMensaje(null)} style={s.btnCancelar}>Cancelar</button>
-              <button onClick={handleEnviarMensaje} disabled={!mensaje.trim() || enviando} style={{ ...s.btnEnviar, opacity: !mensaje.trim() ? 0.5 : 1 }}>
+              <button
+                onClick={handleEnviarMensaje}
+                disabled={!mensaje.trim() || enviando}
+                style={{ ...s.btnEnviar, opacity: !mensaje.trim() ? 0.5 : 1 }}
+              >
                 {enviando ? 'Enviando...' : 'Enviar Mensaje'}
               </button>
             </div>
@@ -220,16 +236,32 @@ export default function Clientes() {
 const s = {
   root: { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
   main: { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
-  inner: { maxWidth: 900, margin: '0 auto' },
+  inner: { maxWidth: 960, margin: '0 auto' },
   titulo: { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
   subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888' },
-  searchWrap: { display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#fff', borderRadius: '12px', padding: '0.75rem 1rem', border: '1.5px solid #e8e8e8', marginBottom: '1rem' },
+  searchWrap: {
+    display: 'flex', alignItems: 'center', gap: '10px',
+    backgroundColor: '#fff', borderRadius: '12px', padding: '0.85rem 1rem',
+    border: '1.5px solid #e8e8e8', marginBottom: '0.5rem',
+  },
   searchInput: { flex: 1, border: 'none', outline: 'none', fontSize: '0.9rem', color: '#1C1C1E', backgroundColor: 'transparent' },
   empty: { backgroundColor: '#fff', borderRadius: '16px', padding: '3rem', textAlign: 'center', border: '1.5px solid #e8e8e8' },
-  card: { backgroundColor: '#fff', borderRadius: '16px', padding: '1.25rem', border: '1.5px solid #e8e8e8', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' },
-  avatar: { width: 48, height: 48, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  btnAñadir: { padding: '0.55rem 1rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' },
-  btnMensaje: { padding: '0.55rem 1rem', backgroundColor: 'transparent', color: '#555', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '0.82rem', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' },
+  card: {
+    display: 'flex', alignItems: 'center', gap: '1rem',
+    backgroundColor: '#fff', borderRadius: '16px', padding: '1.25rem 1.5rem',
+    border: '1px solid #E5E7EB', flexWrap: 'wrap',
+  },
+  avatar: {
+    width: 50, height: 50, borderRadius: '50%',
+    backgroundColor: NARANJA,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  },
+  btnMensaje: {
+    padding: '0.6rem 1.25rem', backgroundColor: '#fff', color: '#555',
+    border: '1.5px solid #E5E7EB', borderRadius: '10px', fontSize: '0.85rem',
+    fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center',
+    gap: '6px', whiteSpace: 'nowrap',
+  },
   overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
   modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '480px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' },
   textarea: { width: '100%', padding: '0.85rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit', color: '#1C1C1E', boxSizing: 'border-box' },
