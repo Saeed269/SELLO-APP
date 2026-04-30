@@ -145,7 +145,7 @@ export default function Clientes() {
                     </div>
 
                     {/* Info */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
                       <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tarjeta.clientes?.nombre || 'Sin nombre'}</p>
                       <p style={{ margin: 0, fontSize: '0.78rem', color: '#6B7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tarjeta.clientes?.email}</p>
                       <p style={{ margin: 0, fontSize: '0.7rem', color: '#9CA3AF' }}>Desde {formatFecha(tarjeta.created_at)}</p>
@@ -234,7 +234,7 @@ const s = {
   searchWrap: { display: 'flex', alignItems: 'center', gap: '10px', border: '2px solid #E5E7EB', borderRadius: '10px', padding: '0.75rem 1rem' },
   searchInput: { flex: 1, border: 'none', outline: 'none', fontSize: '1rem', color: '#1C1C1E', backgroundColor: 'transparent' },
   empty: { backgroundColor: '#fff', borderRadius: '16px', padding: '4rem 2rem', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  card: { backgroundColor: '#fff', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #F3F4F6' },
+  card: { backgroundColor: '#fff', borderRadius: '16px', padding: '1.25rem 1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #F3F4F6', textAlign: 'left' },
   btnMensaje: {
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
     padding: '0.4rem 0.85rem', backgroundColor: '#F3F4F6',
