@@ -20,8 +20,8 @@ const EFECTOS = [
 ]
 
 const COLORES = [
-  '#5C4033', '#B71C1C', '#1565C0', '#2D6A4F', '#6B2D6B',
-  '#C2185B', '#3D2314', '#5C4033', '#5C6BC0', '#00838F',
+  '#E8763A', '#B71C1C', '#1565C0', '#2D6A4F', '#6B2D6B',
+  '#C2185B', '#c03a06', '#E8763A', '#5C6BC0', '#00838F',
   '#558B2F', '#E65100', '#4527A0', '#880E4F', '#37474F',
 ]
 
@@ -203,7 +203,7 @@ function GridSellos({ numSellos, premios, selloIcon, premioIcon, cuadrado }) {
 // ─── Estilo Blob (el que ya tenemos) ──────────────────────────
 
 function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
-  const col = color || '#5C4033'
+  const col = color || '#E8763A'
   const colDark = darkenColor(col)
   const cols = numSellos <= 8 ? 4 : 5
   const marcados = 3
@@ -255,7 +255,7 @@ function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, pre
 // ─── Estilo Dark ──────────────────────────────────────────────
 
 function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
-  const col = color || '#5C4033'
+  const col = color || '#E8763A'
   return (
     <div style={{ borderRadius: '28px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.25)' }}>
       {/* Zona superior — color con nombre y sellos */}
@@ -301,7 +301,7 @@ export default function MiTarjeta() {
   const [isMobile, setIsMobile]         = useState(window.innerWidth < 768)
   const [estilo, setEstilo]             = useState('blob')
   const [efecto, setEfecto]             = useState('blobs')
-  const [color, setColor]               = useState('#5C4033')
+  const [color, setColor]               = useState('#E8763A')
   const [selloIconId, setSelloIconId]   = useState('check')
   const [premioIconId, setPremioIconId] = useState('gift')
   const [numSellos, setNumSellos]       = useState(10)
@@ -338,7 +338,7 @@ export default function MiTarjeta() {
       if (data.diseno && Object.keys(data.diseno).length > 0) {
         setEstilo(data.diseno.estilo || 'blob')
         setEfecto(data.diseno.efecto || 'bubbles')
-        setColor(data.diseno.color || '#5C4033')
+        setColor(data.diseno.color || '#E8763A')
         setSelloIconId(data.diseno.selloIcon || 'check')
         setPremioIconId(data.diseno.premioIcon || 'gift')
       }
@@ -380,7 +380,7 @@ export default function MiTarjeta() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
     </div>
   )
@@ -394,7 +394,7 @@ export default function MiTarjeta() {
   const renderTabs = () => (
     <div style={s.tabs}>
       {[['diseno', 'Diseño'], ['config', 'Configuración']].map(([id, label]) => (
-        <button key={id} onClick={() => setTab(id)} style={{ ...s.tab, borderBottom: tab === id ? '2px solid #5C4033' : '2px solid transparent', color: tab === id ? '#5C4033' : '#888' }}>
+        <button key={id} onClick={() => setTab(id)} style={{ ...s.tab, borderBottom: tab === id ? '2px solid #E8763A' : '2px solid transparent', color: tab === id ? '#E8763A' : '#888' }}>
           {label}
         </button>
       ))}
@@ -406,7 +406,7 @@ export default function MiTarjeta() {
       <p style={s.secLabel}>Estilo de tarjeta</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '8px', marginBottom: '1.25rem' }}>
         {ESTILOS.map(e => (
-          <button key={e.id} onClick={() => setEstilo(e.id)} style={{ padding: '0.75rem', borderRadius: '10px', cursor: 'pointer', textAlign: 'center', border: estilo === e.id ? '2px solid #5C4033' : '1.5px solid #e8e8e8', backgroundColor: estilo === e.id ? '#FFF4EE' : '#fafafa' }}>
+          <button key={e.id} onClick={() => setEstilo(e.id)} style={{ padding: '0.75rem', borderRadius: '10px', cursor: 'pointer', textAlign: 'center', border: estilo === e.id ? '2px solid #E8763A' : '1.5px solid #e8e8e8', backgroundColor: estilo === e.id ? '#FFF4EE' : '#fafafa' }}>
             <p style={{ margin: '0 0 2px', fontSize: '0.88rem', fontWeight: '600', color: '#1C1C1E' }}>{e.nombre}</p>
             <p style={{ margin: 0, fontSize: '0.75rem', color: '#888' }}>{e.desc}</p>
           </button>
@@ -416,7 +416,7 @@ export default function MiTarjeta() {
       <p style={s.secLabel}>Efecto decorativo</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '6px', marginBottom: '1.25rem' }}>
         {EFECTOS.map(e => (
-          <button key={e.id} onClick={() => setEfecto(e.id)} style={{ padding: '0.45rem 0.2rem', borderRadius: '8px', cursor: 'pointer', textAlign: 'center', fontSize: '0.73rem', border: efecto === e.id ? '2px solid #5C4033' : '1.5px solid #e8e8e8', backgroundColor: efecto === e.id ? '#FFF4EE' : '#fafafa', color: efecto === e.id ? '#5C4033' : '#555', fontWeight: efecto === e.id ? '600' : '400' }}>
+          <button key={e.id} onClick={() => setEfecto(e.id)} style={{ padding: '0.45rem 0.2rem', borderRadius: '8px', cursor: 'pointer', textAlign: 'center', fontSize: '0.73rem', border: efecto === e.id ? '2px solid #E8763A' : '1.5px solid #e8e8e8', backgroundColor: efecto === e.id ? '#FFF4EE' : '#fafafa', color: efecto === e.id ? '#E8763A' : '#555', fontWeight: efecto === e.id ? '600' : '400' }}>
             {e.nombre}
           </button>
         ))}
@@ -425,15 +425,15 @@ export default function MiTarjeta() {
       <p style={s.secLabel}>Color</p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1.25rem' }}>
         {COLORES.map(c => (
-          <button key={c} onClick={() => setColor(c)} style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: c, cursor: 'pointer', border: color === c ? '3px solid #5C4033' : '2px solid transparent', outline: color === c ? '2px solid #e8e8e8' : 'none' }} />
+          <button key={c} onClick={() => setColor(c)} style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: c, cursor: 'pointer', border: color === c ? '3px solid #E8763A' : '2px solid transparent', outline: color === c ? '2px solid #e8e8e8' : 'none' }} />
         ))}
       </div>
 
       <p style={s.secLabel}>Icono de sello</p>
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
         {iconosSello.map(ico => (
-          <button key={ico.id} onClick={() => setSelloIconId(ico.id)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', border: selloIconId === ico.id ? '2px solid #5C4033' : '1.5px solid #e8e8e8', backgroundColor: selloIconId === ico.id ? '#FFF4EE' : '#fafafa' }}>
-            <IconSVG path={ico.path} circle={ico.circle} size={16} color={selloIconId === ico.id ? '#5C4033' : '#555'} />
+          <button key={ico.id} onClick={() => setSelloIconId(ico.id)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', border: selloIconId === ico.id ? '2px solid #E8763A' : '1.5px solid #e8e8e8', backgroundColor: selloIconId === ico.id ? '#FFF4EE' : '#fafafa' }}>
+            <IconSVG path={ico.path} circle={ico.circle} size={16} color={selloIconId === ico.id ? '#E8763A' : '#555'} />
             <span style={{ fontSize: '0.58rem', color: '#888' }}>{ico.label}</span>
           </button>
         ))}
@@ -442,8 +442,8 @@ export default function MiTarjeta() {
       <p style={s.secLabel}>Icono de premio</p>
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {ICONOS_PREMIO.map(ico => (
-          <button key={ico.id} onClick={() => setPremioIconId(ico.id)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', border: premioIconId === ico.id ? '2px solid #5C4033' : '1.5px solid #e8e8e8', backgroundColor: premioIconId === ico.id ? '#FFF4EE' : '#fafafa' }}>
-            <IconSVG path={ico.path} size={16} color={premioIconId === ico.id ? '#5C4033' : '#555'} />
+          <button key={ico.id} onClick={() => setPremioIconId(ico.id)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', border: premioIconId === ico.id ? '2px solid #E8763A' : '1.5px solid #e8e8e8', backgroundColor: premioIconId === ico.id ? '#FFF4EE' : '#fafafa' }}>
+            <IconSVG path={ico.path} size={16} color={premioIconId === ico.id ? '#E8763A' : '#555'} />
           </button>
         ))}
       </div>
@@ -456,7 +456,7 @@ export default function MiTarjeta() {
       <div style={{ marginBottom: '1.25rem' }}>
         <input type="range" min="5" max="20" value={numSellos} onChange={e => handleNumSellosChange(Number(e.target.value))} style={{ width: '100%' }} />
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '4px' }}>
-          <span style={{ fontSize: '1.4rem', fontWeight: '700', color: '#5C4033' }}>{numSellos}</span>
+          <span style={{ fontSize: '1.4rem', fontWeight: '700', color: '#E8763A' }}>{numSellos}</span>
           <span style={{ fontSize: '0.8rem', color: '#888' }}>sellos</span>
         </div>
       </div>
@@ -464,7 +464,7 @@ export default function MiTarjeta() {
       <p style={s.secLabel}>Número de premios</p>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '1.25rem' }}>
         {[1, 2].map(n => (
-          <button key={n} onClick={() => handleNumPremiosChange(n)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', fontSize: '1rem', fontWeight: '600', border: numPremios === n ? '2px solid #5C4033' : '1.5px solid #e8e8e8', backgroundColor: numPremios === n ? '#FFF4EE' : '#fafafa', color: numPremios === n ? '#5C4033' : '#555' }}>
+          <button key={n} onClick={() => handleNumPremiosChange(n)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', fontSize: '1rem', fontWeight: '600', border: numPremios === n ? '2px solid #E8763A' : '1.5px solid #e8e8e8', backgroundColor: numPremios === n ? '#FFF4EE' : '#fafafa', color: numPremios === n ? '#E8763A' : '#555' }}>
             {n}
           </button>
         ))}
@@ -473,7 +473,7 @@ export default function MiTarjeta() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.25rem' }}>
         {premios.map((p, i) => (
           <div key={i} style={{ background: '#fafafa', border: '1.5px solid #e8e8e8', borderRadius: '12px', padding: '0.75rem' }}>
-            <p style={{ margin: '0 0 8px', fontSize: '0.78rem', fontWeight: '600', color: '#5C4033' }}>
+            <p style={{ margin: '0 0 8px', fontSize: '0.78rem', fontWeight: '600', color: '#E8763A' }}>
               {i === premios.length - 1 ? `Premio final — ${p.sellos} sellos` : `Premio intermedio — ${p.sellos} sellos`}
             </p>
             <input type="text" placeholder={i === 0 && premios.length > 1 ? 'Ej: Café pequeño gratis' : 'Ej: Menú completo gratis'} value={p.texto} onChange={e => updatePremioTexto(i, e.target.value)} style={s.input} />
@@ -485,7 +485,7 @@ export default function MiTarjeta() {
       <div style={{ marginBottom: '1.5rem' }}>
         <input type="range" min="6" max="24" value={caducidad} onChange={e => setCaducidad(Number(e.target.value))} style={{ width: '100%' }} />
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '4px' }}>
-          <span style={{ fontSize: '1.4rem', fontWeight: '700', color: '#5C4033' }}>{caducidad}</span>
+          <span style={{ fontSize: '1.4rem', fontWeight: '700', color: '#E8763A' }}>{caducidad}</span>
           <span style={{ fontSize: '0.8rem', color: '#888' }}>meses</span>
         </div>
       </div>
@@ -495,7 +495,7 @@ export default function MiTarjeta() {
   )
 
   const btnGuardar = (
-    <button onClick={handleGuardar} disabled={saving} style={{ padding: '0.9rem', width: '100%', backgroundColor: guardado ? '#2D6A4F' : '#5C4033', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', marginTop: '1.5rem' }}>
+    <button onClick={handleGuardar} disabled={saving} style={{ padding: '0.9rem', width: '100%', backgroundColor: guardado ? '#2D6A4F' : '#E8763A', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', marginTop: '1.5rem' }}>
       {saving ? 'Guardando...' : guardado ? '✓ Guardado' : 'Guardar cambios'}
     </button>
   )

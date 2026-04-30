@@ -30,7 +30,7 @@ export default function Dashboard() {
   }, [navigate])
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Fidelización digital para tu negocio</p>
     </div>
@@ -95,7 +95,7 @@ const s = {
   tarjeta: {
     position: 'relative',
     overflow: 'hidden',
-    background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)',
+    background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)',
     borderRadius: '28px',
     width: '100%',
     display: 'flex',

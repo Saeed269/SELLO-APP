@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../supabase'
 
-const NARANJA = '#5C4033'
+const NARANJA = '#E8763A'
 const SIDEBAR_BG = '#1C1C1E'
 const SIDEBAR_WIDTH = 360
 

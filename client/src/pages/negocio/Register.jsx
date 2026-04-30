@@ -1,148 +1,307 @@
 import { useState } from 'react'
-import { supabase } from '../../supabase'
-import { useNavigate, Link } from 'react-router-dom'
+import { supabase } from '../../../supabase'
+import { useNavigate } from 'react-router-dom'
 
-const pasos = [
-  { num: '1', titulo: 'Crea tu cuenta', desc: 'Regístrate gratis con tu email en segundos' },
-  { num: '2', titulo: 'Diseña tu tarjeta', desc: 'Elige un diseño y personaliza los colores' },
-  { num: '3', titulo: 'Comparte el QR', desc: 'Tus clientes se registran escaneándolo, sin descargar nada' },
-  { num: '4', titulo: 'Fideliza y premia', desc: 'Añade sellos en cada visita y premia a tus mejores clientes' },
+const CATEGORIAS = [
+  {
+    nombre: 'Hostelería',
+    tipos: ['Cafetería', 'Restaurante', 'Panadería & Pastelería'],
+    bonos: false,
+  },
+  {
+    nombre: 'Belleza & Bienestar',
+    tipos: ['Peluquería & Barbería', 'Manicura & Estética', 'Masajes & Spa'],
+    bonos: false,
+  },
+  {
+    nombre: 'Deporte & Salud',
+    tipos: ['Yoga & Pilates', 'Entrenador Personal'],
+    bonos: true,
+  },
+  {
+    nombre: 'Servicios',
+    tipos: ['Lavandería', 'Lavado de Coches', 'Comercio', 'Otro'],
+    bonos: true,
+  },
 ]
 
-export default function Register() {
-  const [nombreNegocio, setNombreNegocio] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [error, setError] = useState('')
+const TIPOS_CON_BONOS = ['Yoga & Pilates', 'Entrenador Personal', 'Lavandería', 'Lavado de Coches', 'Comercio', 'Otro']
+
+export default function Onboarding() {
+  const [paso, setPaso] = useState(1)
+  const [tipo, setTipo] = useState('')
+  const [tipoTarjeta, setTipoTarjeta] = useState('sellos')
+  const [numSellos, setNumSellos] = useState(10)
+  const [premio, setPremio] = useState('')
+  const [caducidad, setCaducidad] = useState(12)
   const [loading, setLoading] = useState(false)
-  const [isMobile] = useState(window.innerWidth < 768)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleRegister = async (e) => {
-    e.preventDefault()
-    setError('')
-    if (password !== confirm) { setError('Las contraseñas no coinciden'); return }
-    if (password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return }
+  const permitesBonos = TIPOS_CON_BONOS.includes(tipo)
+  const totalPasos = permitesBonos ? 3 : 2
 
+  const handleGuardar = async () => {
+    setError('')
+    if (!premio.trim()) { setError('Define el premio para tu cliente'); return }
     setLoading(true)
-    const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
-    if (signUpError) { setError('Error al registrarse: ' + signUpError.message); setLoading(false); return }
-    if (data?.user) {
-      await supabase.from('negocios').insert({ user_id: data.user.id, email, nombre: nombreNegocio })
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const { error: updateError } = await supabase
+      .from('negocios')
+      .update({
+        tipo,
+        tipo_tarjeta: tipoTarjeta,
+        num_sellos: numSellos,
+        premio,
+        caducidad_meses: caducidad,
+      })
+      .eq('user_id', user.id)
+
+    if (updateError) {
+      setError('Error al guardar: ' + updateError.message)
+      setLoading(false)
+    } else {
+      navigate('/negocio/dashboard')
     }
-    navigate('/negocio/onboarding')
-    setLoading(false)
   }
+
+  const siguiente = () => {
+    setError('')
+    if (paso === 1) {
+      if (!tipo) { setError('Selecciona el tipo de negocio'); return }
+      setPaso(2)
+    } else if (paso === 2) {
+      if (permitesBonos) {
+        // paso 2 = elegir tipo tarjeta → ir a paso 3 (configurar)
+        setPaso(3)
+      } else {
+        // paso 2 = configurar → guardar
+        handleGuardar()
+      }
+    } else if (paso === 3) {
+      // paso 3 = configurar (cuando hay bonos) → guardar
+      handleGuardar()
+    }
+  }
+
+  const atras = () => {
+    setError('')
+    setPaso(paso - 1)
+  }
+
+  // Determinar qué muestra cada paso
+  const mostrarTipoTarjeta = paso === 2 && permitesBonos
+  const mostrarConfigurar = (paso === 2 && !permitesBonos) || (paso === 3 && permitesBonos)
 
   return (
     <div style={styles.root}>
 
-      {/* Panel izquierdo */}
-      {!isMobile && (
-        <div style={styles.left}>
-          <div style={styles.blob1} />
-          <div style={styles.blob2} />
-          <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 400 }}>
-            <h1 style={styles.logoText}>SELLO</h1>
-            <p style={styles.tagline}>Empieza gratis en menos de 5 minutos</p>
-            <p style={styles.comoEmpezar}>Cómo empezar</p>
-            <div style={styles.pasosList}>
-              {pasos.map((p, i) => (
-                <div key={i} style={styles.pasoCard}>
-                  <div style={styles.pasoNum}>{p.num}</div>
-                  <div>
-                    <p style={styles.pasoTitulo}>{p.titulo}</p>
-                    <p style={styles.pasoDesc}>{p.desc}</p>
+      {loading && (
+        <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)', zIndex: 999 }}>
+          <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
+          <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Creando tu tarjeta...</p>
+        </div>
+      )}
+
+      <div style={styles.formWrap}>
+
+        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <h1 style={styles.logo}>SELLO</h1>
+          <p style={styles.subtitulo}>Configura tu tarjeta de fidelización</p>
+        </div>
+
+        {/* Barra de progreso */}
+        <div style={styles.progreso}>
+          {Array.from({ length: totalPasos }).map((_, i) => (
+            <div key={i} style={{
+              ...styles.barraSegmento,
+              backgroundColor: paso > i ? '#E8763A' : '#e8e8e8',
+            }} />
+          ))}
+        </div>
+        <p style={styles.pasoTexto}>Paso {paso} de {totalPasos}</p>
+
+        {/* PASO 1 — Tipo de negocio */}
+        {paso === 1 && (
+          <div style={styles.seccion}>
+            <h2 style={styles.h2}>¿Qué tipo de negocio tienes?</h2>
+            <div style={{ overflowY: 'auto', maxHeight: '55vh', paddingRight: '4px' }}>
+              {CATEGORIAS.map(cat => (
+                <div key={cat.nombre} style={{ marginBottom: '0.75rem' }}>
+                  <p style={styles.catLabel}>{cat.nombre}</p>
+                  <div style={styles.tiposGrid}>
+                    {cat.tipos.map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setTipo(t)}
+                        style={{
+                          ...styles.tipoBtn,
+                          backgroundColor: tipo === t ? '#E8763A' : '#fafafa',
+                          color: tipo === t ? '#fff' : '#1C1C1E',
+                          border: tipo === t ? '2px solid #E8763A' : '1.5px solid #e8e8e8',
+                          fontWeight: tipo === t ? '600' : '400',
+                        }}
+                      >
+                        {t}
+                      </button>
+                    ))}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Panel derecho */}
-      <div style={styles.right}>
-        <div style={styles.formWrap}>
-          {isMobile && (
-            <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-              <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#5C4033', margin: 0, letterSpacing: '0.1em' }}>SELLO</h1>
-            </div>
-          )}
-
-          <h2 style={styles.titulo}>Crear cuenta</h2>
-
-          <form onSubmit={handleRegister} style={styles.form}>
-            <input type="text" placeholder="Nombre de tu negocio" value={nombreNegocio} onChange={e => setNombreNegocio(e.target.value)} style={styles.input} required />
-            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={styles.input} required />
-            <input type="password" placeholder="Contraseña (mínimo 6 caracteres)" value={password} onChange={e => setPassword(e.target.value)} style={styles.input} required />
-            <input type="password" placeholder="Confirmar contraseña" value={confirm} onChange={e => setConfirm(e.target.value)} style={styles.input} required />
             {error && <p style={styles.error}>{error}</p>}
-            <button type="submit" style={styles.button} disabled={loading}>
-              {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
+            <button style={{ ...styles.btnPrimario, marginTop: '0.75rem' }} onClick={siguiente}>
+              Siguiente →
             </button>
-          </form>
+          </div>
+        )}
 
-          <p style={styles.linkText}>
-            ¿Ya tienes cuenta?{' '}
-            <Link to="/negocio/login" style={styles.link}>Inicia sesión</Link>
-          </p>
-        </div>
+        {/* PASO 2 (con bonos) — Tipo de tarjeta */}
+        {mostrarTipoTarjeta && (
+          <div style={styles.seccion}>
+            <h2 style={styles.h2}>¿Qué tipo de tarjeta quieres?</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.25rem' }}>
+              <button
+                onClick={() => setTipoTarjeta('sellos')}
+                style={{
+                  ...styles.tarjetaOpcion,
+                  border: tipoTarjeta === 'sellos' ? '2px solid #E8763A' : '1.5px solid #e8e8e8',
+                  backgroundColor: tipoTarjeta === 'sellos' ? '#FFF4EE' : '#fafafa',
+                }}
+              >
+                <p style={{ margin: '0 0 3px', fontWeight: '600', color: '#1C1C1E', fontSize: '0.9rem' }}>⭐ Tarjeta de Sellos</p>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#888' }}>El cliente acumula sellos hasta conseguir un premio</p>
+              </button>
+              <button
+                onClick={() => setTipoTarjeta('bonos')}
+                style={{
+                  ...styles.tarjetaOpcion,
+                  border: tipoTarjeta === 'bonos' ? '2px solid #E8763A' : '1.5px solid #e8e8e8',
+                  backgroundColor: tipoTarjeta === 'bonos' ? '#FFF4EE' : '#fafafa',
+                }}
+              >
+                <p style={{ margin: '0 0 3px', fontWeight: '600', color: '#1C1C1E', fontSize: '0.9rem' }}>🎫 Tarjeta de Bonos/Sesiones</p>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#888' }}>El cliente compra un bono de X sesiones que se van descontando</p>
+              </button>
+            </div>
+            {error && <p style={styles.error}>{error}</p>}
+            <div style={styles.botones}>
+              <button style={styles.btnSecundario} onClick={atras}>← Atrás</button>
+              <button style={styles.btnPrimario} onClick={siguiente}>Siguiente →</button>
+            </div>
+          </div>
+        )}
+
+        {/* PASO 2 (sin bonos) o PASO 3 (con bonos) — Configurar tarjeta */}
+        {mostrarConfigurar && (
+          <div style={styles.seccion}>
+            <h2 style={styles.h2}>
+              {tipoTarjeta === 'bonos' ? 'Configura tu bono' : 'Configura tu tarjeta'}
+            </h2>
+
+            <p style={styles.fieldLabel}>
+              {tipoTarjeta === 'bonos' ? 'Número de sesiones del bono' : 'Sellos para conseguir el premio'}
+            </p>
+            <div style={styles.rangeWrap}>
+              <input
+                type="range" min="5" max="20" value={numSellos}
+                onChange={e => setNumSellos(Number(e.target.value))}
+                style={{ width: '100%' }}
+              />
+              <div style={styles.rangeValor}>
+                <span style={styles.rangeNum}>{numSellos}</span>
+                <span style={styles.rangeSub}>{tipoTarjeta === 'bonos' ? 'sesiones' : 'sellos'}</span>
+              </div>
+            </div>
+
+            <p style={styles.fieldLabel}>
+              {tipoTarjeta === 'bonos' ? '¿Qué incluye el bono?' : '¿Qué gana el cliente?'}
+            </p>
+            <input
+              type="text"
+              placeholder={tipoTarjeta === 'bonos' ? 'Ej: 10 clases de yoga' : 'Ej: 1 corte de pelo gratis'}
+              value={premio}
+              onChange={e => setPremio(e.target.value)}
+              style={styles.input}
+            />
+
+            <p style={styles.fieldLabel}>Caducidad</p>
+            <div style={styles.rangeWrap}>
+              <input
+                type="range" min="6" max="24" value={caducidad}
+                onChange={e => setCaducidad(Number(e.target.value))}
+                style={{ width: '100%' }}
+              />
+              <div style={styles.rangeValor}>
+                <span style={styles.rangeNum}>{caducidad}</span>
+                <span style={styles.rangeSub}>meses</span>
+              </div>
+            </div>
+
+            {error && <p style={styles.error}>{error}</p>}
+            <div style={styles.botones}>
+              <button style={styles.btnSecundario} onClick={atras}>← Atrás</button>
+              <button style={styles.btnPrimario} onClick={siguiente} disabled={loading}>
+                Crear mi tarjeta ✓
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
-
     </div>
   )
 }
 
 const styles = {
-  root: { display: 'flex', minHeight: '100dvh' },
-  left: {
-    flex: 1,
-    background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    position: 'relative', overflow: 'hidden', padding: '3rem 2.5rem',
-  },
-  blob1: { position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', top: -80, right: -80 },
-  blob2: { position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', bottom: -50, left: -50 },
-  logoText: { margin: '0 0 0.25rem', fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' },
-  tagline: { margin: '0 0 1.75rem', color: 'rgba(255,255,255,0.85)', fontSize: '0.95rem' },
-  comoEmpezar: { margin: '0 0 0.75rem', color: '#fff', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em' },
-  pasosList: { display: 'flex', flexDirection: 'column', gap: '10px' },
-  pasoCard: {
-    display: 'flex', alignItems: 'flex-start', gap: '12px',
-    background: 'rgba(255,255,255,0.12)', borderRadius: '12px',
-    padding: '0.85rem 1rem', border: '1px solid rgba(255,255,255,0.18)',
-  },
-  pasoNum: {
-    width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-    background: 'rgba(255,255,255,0.3)', display: 'flex',
-    alignItems: 'center', justifyContent: 'center',
-    fontSize: '0.8rem', fontWeight: '700', color: '#fff',
-  },
-  pasoTitulo: { margin: '0 0 2px', fontSize: '0.85rem', fontWeight: '600', color: '#fff' },
-  pasoDesc: { margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 },
-  right: {
-    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    padding: '1.5rem', backgroundColor: '#f9f9f9',
+  root: {
+    minHeight: '100dvh', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', padding: '1rem', backgroundColor: '#f9f9f9',
+    boxSizing: 'border-box',
   },
   formWrap: {
-    width: '100%', maxWidth: '360px', backgroundColor: '#fff',
-    borderRadius: '20px', padding: '2rem 1.75rem',
+    width: '100%', maxWidth: '480px', backgroundColor: '#fff',
+    borderRadius: '20px', padding: '1.5rem',
     boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
+    boxSizing: 'border-box',
   },
-  titulo: { margin: '0 0 1.25rem', fontSize: '1.4rem', fontWeight: '700', color: '#1C1C1E' },
-  form: { display: 'flex', flexDirection: 'column', gap: '0.7rem' },
+  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#E8763A', margin: 0, letterSpacing: '0.1em' },
+  subtitulo: { margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#888' },
+  progreso: { display: 'flex', gap: '6px', margin: '1rem 0 0.3rem' },
+  barraSegmento: { flex: 1, height: '4px', borderRadius: '2px', transition: 'background-color 0.3s' },
+  pasoTexto: { fontSize: '0.78rem', color: '#bbb', margin: '0 0 1rem', textAlign: 'right' },
+  seccion: { display: 'flex', flexDirection: 'column' },
+  h2: { fontSize: '1.1rem', fontWeight: '700', color: '#1C1C1E', margin: '0 0 0.75rem' },
+  catLabel: { fontSize: '0.72rem', fontWeight: '600', color: '#E8763A', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 5px' },
+  tiposGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' },
+  tipoBtn: {
+    padding: '0.55rem 0.4rem', borderRadius: '10px',
+    fontSize: '0.8rem', cursor: 'pointer', textAlign: 'center', lineHeight: 1.3,
+  },
+  tarjetaOpcion: {
+    padding: '0.85rem', borderRadius: '12px', cursor: 'pointer',
+    textAlign: 'left', width: '100%', boxSizing: 'border-box',
+  },
+  fieldLabel: { fontSize: '0.85rem', color: '#555', fontWeight: '500', margin: '0 0 0.4rem' },
+  rangeWrap: { marginBottom: '1rem' },
+  rangeValor: { display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '4px' },
+  rangeNum: { fontSize: '1.4rem', fontWeight: '700', color: '#E8763A' },
+  rangeSub: { fontSize: '0.8rem', color: '#888' },
   input: {
-    padding: '0.78rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8',
+    padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8',
     fontSize: '0.9rem', outline: 'none', backgroundColor: '#fafafa',
-    color: '#1C1C1E', width: '100%', boxSizing: 'border-box',
+    color: '#1C1C1E', width: '100%', boxSizing: 'border-box', marginBottom: '1rem',
   },
-  error: { color: '#dc2626', fontSize: '0.82rem', margin: 0 },
-  button: {
-    padding: '0.85rem', backgroundColor: '#5C4033', color: '#fff', border: 'none',
-    borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer', width: '100%',
+  botones: { display: 'flex', gap: '10px', marginTop: '0.25rem' },
+  btnPrimario: {
+    flex: 1, padding: '0.85rem', backgroundColor: '#E8763A', color: '#fff',
+    border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer',
   },
-  linkText: { textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#888' },
-  link: { color: '#5C4033', fontWeight: '600', textDecoration: 'none' },
+  btnSecundario: {
+    flex: 1, padding: '0.85rem', backgroundColor: 'transparent', color: '#E8763A',
+    border: '1.5px solid #E8763A', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer',
+  },
+  error: { color: '#dc2626', fontSize: '0.82rem', margin: '0 0 0.5rem' },
 }

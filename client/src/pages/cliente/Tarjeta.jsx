@@ -64,7 +64,7 @@ function IconSVG({ path, size = 14, color = 'currentColor' }) {
 // ─── Tarjeta Moderno ──────────────────────────────────────────
 
 function TarjetaModerno({ diseno, nombre, totalSellos, sellosActuales, premios, qrCliente, premioGanado }) {
-  const col = diseno?.color || '#5C4033'
+  const col = diseno?.color || '#E8763A'
   const colDark = darkenColor(col)
   const cols = totalSellos <= 8 ? 4 : 5
   const selloPath = diseno?.selloPath || 'M20 6L9 17l-5-5'
@@ -119,7 +119,7 @@ function TarjetaModerno({ diseno, nombre, totalSellos, sellosActuales, premios, 
 // ─── Tarjeta Clásico ──────────────────────────────────────────
 
 function TarjetaClasico({ diseno, nombre, totalSellos, sellosActuales, premios, qrCliente, premioGanado }) {
-  const col = diseno?.color || '#5C4033'
+  const col = diseno?.color || '#E8763A'
   const cols = totalSellos <= 8 ? 4 : 5
   const selloPath = diseno?.selloPath || 'M20 6L9 17l-5-5'
   const premioPremioPath = diseno?.premioPath || 'M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z'
@@ -239,7 +239,7 @@ export default function Tarjeta() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Cargando tu tarjeta...</p>
     </div>

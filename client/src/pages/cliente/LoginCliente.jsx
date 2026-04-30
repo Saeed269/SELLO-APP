@@ -23,7 +23,7 @@ export default function LoginCliente() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Cargando tu tarjeta...</p>
     </div>
@@ -79,7 +79,7 @@ const styles = {
   logo: {
     fontSize: '1.8rem',
     fontWeight: 'bold',
-    color: '#5C4033',
+    color: '#E8763A',
     margin: 0,
     letterSpacing: '0.1em',
   },
@@ -93,10 +93,10 @@ const styles = {
   },
   error: { color: '#dc2626', fontSize: '0.82rem', margin: 0 },
   button: {
-    padding: '0.85rem', backgroundColor: '#5C4033', color: '#fff', border: 'none',
+    padding: '0.85rem', backgroundColor: '#E8763A', color: '#fff', border: 'none',
     borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer',
     width: '100%', marginTop: '0.1rem',
   },
   linkText: { textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#888' },
-  link: { color: '#5C4033', fontWeight: '600', cursor: 'pointer' },
+  link: { color: '#E8763A', fontWeight: '600', cursor: 'pointer' },
 }
