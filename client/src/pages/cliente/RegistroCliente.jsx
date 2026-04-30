@@ -131,7 +131,7 @@ const styles = {
     logo: {
         fontSize: '2.5rem',
         fontWeight: 'bold',
-        color: '#E8763A',
+        color: '#C67C3E',
         textAlign: 'center',
         margin: '0 0 0.25rem 0',
     },
@@ -161,7 +161,7 @@ const styles = {
     },
     button: {
         padding: '0.85rem',
-        backgroundColor: '#E8763A',
+        backgroundColor: '#C67C3E',
         color: '#fff',
         border: 'none',
         borderRadius: '8px',
@@ -177,7 +177,7 @@ const styles = {
         color: '#555',
     },
     loginLink: {
-        color: '#E8763A',
+        color: '#C67C3E',
         fontWeight: 'bold',
         cursor: 'pointer',
     },
