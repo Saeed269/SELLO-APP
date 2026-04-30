@@ -224,43 +224,23 @@ function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, pre
 function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
   const col = color || '#E8763A'
   return (
-    <div style={{ borderRadius: '20px', overflow: 'hidden', background: '#fff', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', border: '1px solid #f0f0f0' }}>
-      {/* Zona superior color */}
-      <div style={{ background: col, padding: '1rem', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+      {/* Zona superior — color con nombre y sellos */}
+      <div style={{ background: col, padding: '1.25rem', position: 'relative', overflow: 'hidden' }}>
         <Efecto tipo={efecto} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <h3 style={{ margin: 0, color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.1rem' }}>{nombre}</h3>
+          <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.1rem' }}>{nombre}</h3>
+          <GridSellos numSellos={numSellos} premios={premios} selloIcon={selloIcon} premioIcon={premioIcon} cuadrado />
         </div>
       </div>
 
-      <div style={{ padding: '0.85rem' }}>
-        {/* Cajitas de premio */}
-        {premios.length > 0 && (
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '0.75rem' }}>
-            {premios.map((p, i) => (
-              <div key={i} style={{ flex: 1, background: '#fafafa', border: `1.5px solid ${col}33`, borderRadius: '10px', padding: '0.6rem', textAlign: 'center' }}>
-                <div style={{ marginBottom: '4px' }}>
-                  <IconSVG path={premioIcon.path} size={18} color={col} />
-                </div>
-                <p style={{ margin: 0, fontSize: '10px', color: '#1C1C1E', fontWeight: '500', lineHeight: 1.3 }}>{p.texto || '...'}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Sellos cuadrados */}
-        <div style={{ background: '#f9f9f9', borderRadius: '10px', padding: '0.75rem', marginBottom: '0.75rem' }}>
-          <GridSellos numSellos={numSellos} premios={premios} selloIcon={selloIcon} premioIcon={premioIcon} cuadrado />
-        </div>
-
-        {/* QR */}
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ margin: '0 0 6px', fontSize: '9px', color: '#bbb', letterSpacing: '0.08em' }}>TU CÓDIGO PERSONAL</p>
-          {qrUrl
-            ? <QRCodeSVG value={qrUrl} size={120} fgColor={col} bgColor="#fff" level="M" />
-            : <div style={{ width: 120, height: 120, background: '#f0f0f0', borderRadius: '8px', margin: '0 auto' }} />
-          }
-        </div>
+      {/* Zona inferior — gris oscuro con QR */}
+      <div style={{ background: '#2a2a2a', padding: '1rem', textAlign: 'center' }}>
+        <p style={{ margin: '0 0 8px', fontSize: '9px', color: '#888', letterSpacing: '0.08em' }}>TU CÓDIGO PERSONAL</p>
+        {qrUrl
+          ? <QRCodeSVG value={qrUrl} size={120} fgColor={col} bgColor="#2a2a2a" level="M" />
+          : <div style={{ width: 120, height: 120, background: '#333', borderRadius: '8px', margin: '0 auto' }} />
+        }
       </div>
     </div>
   )
