@@ -7,8 +7,8 @@ import NavNegocio from '../../components/NavNegocio'
 // ─── Datos estáticos ──────────────────────────────────────────
 
 const ESTILOS = [
-  { id: 'blob', nombre: 'Blob', desc: 'Gradiente con burbujas' },
-  { id: 'dark', nombre: 'Dark', desc: 'Blanco con zona color' },
+  { id: 'blob', nombre: 'Moderno', desc: 'Gradiente con burbujas' },
+  { id: 'dark', nombre: 'Clásico', desc: 'Color arriba, gris abajo' },
 ]
 
 const EFECTOS = [
@@ -248,9 +248,9 @@ function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, pre
 function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
   const col = color || '#E8763A'
   return (
-    <div style={{ borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+    <div style={{ borderRadius: '28px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.25)' }}>
       {/* Zona superior — color con nombre y sellos */}
-      <div style={{ background: col, padding: '1.25rem', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: col, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden' }}>
         <Efecto tipo={efecto} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.1rem' }}>{nombre}</h3>
@@ -259,12 +259,14 @@ function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, pre
       </div>
 
       {/* Zona inferior — gris oscuro con QR */}
-      <div style={{ background: '#2a2a2a', padding: '1rem', textAlign: 'center' }}>
-        <p style={{ margin: '0 0 8px', fontSize: '9px', color: '#888', letterSpacing: '0.08em' }}>TU CÓDIGO PERSONAL</p>
-        {qrUrl
-          ? <QRCodeSVG value={qrUrl} size={120} fgColor={col} bgColor="#2a2a2a" level="M" />
-          : <div style={{ width: 120, height: 120, background: '#333', borderRadius: '8px', margin: '0 auto' }} />
-        }
+      <div style={{ background: '#2a2a2a', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
+        <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>Muestra este QR para recibir tu sello</p>
+        <div style={{ background: '#fff', borderRadius: '16px', padding: '14px', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}>
+          {qrUrl
+            ? <QRCodeSVG value={qrUrl} size={140} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
+            : <div style={{ width: 140, height: 140, background: '#f0f0f0', borderRadius: '8px' }} />
+          }
+        </div>
       </div>
     </div>
   )
