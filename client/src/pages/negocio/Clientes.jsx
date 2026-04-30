@@ -23,7 +23,7 @@ export default function Clientes() {
         .from('tarjetas')
         .select('*, clientes!tarjetas_cliente_id_fkey(nombre, email)')
         .eq('negocio_id', negocioId)
-        .order('updated_at', { ascending: false })
+        
       setClientes(data || [])
     }
 
@@ -42,7 +42,7 @@ export default function Clientes() {
         .from('tarjetas')
         .select('*')
         .eq('negocio_id', negocioData.id)
-        .order('updated_at', { ascending: false })
+        
 
       if (!tarjetasData || tarjetasData.length === 0) {
         setClientes([])
