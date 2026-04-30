@@ -146,14 +146,14 @@ export default function EscanerQR() {
           <div style={styles.resultCard}>
             <h3 style={styles.clienteNombre}>{resultado.clientes?.nombre || 'Cliente'}</h3>
             <p style={styles.sellosTexto}>
-              Sellos: <strong style={{ color: '#C67C3E' }}>{resultado.sellos_actuales} / {negocio?.num_sellos}</strong>
+              Sellos: <strong style={{ color: '#5C4033' }}>{resultado.sellos_actuales} / {negocio?.num_sellos}</strong>
             </p>
 
             <div style={styles.sellosGrid}>
               {Array.from({ length: negocio?.num_sellos || 10 }).map((_, i) => (
                 <div key={i} style={{
                   ...styles.sello,
-                  backgroundColor: i < resultado.sellos_actuales ? '#C67C3E' : '#f0f0f0',
+                  backgroundColor: i < resultado.sellos_actuales ? '#5C4033' : '#f0f0f0',
                 }}>
                   {i < resultado.sellos_actuales && (
                     <span style={{ color: '#fff', fontSize: '0.8rem' }}>✓</span>
@@ -183,11 +183,11 @@ const styles = {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
   },
-  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#C67C3E', margin: 0 },
+  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#5C4033', margin: 0 },
   backBtn: {
     padding: '0.5rem 1rem', backgroundColor: 'transparent',
-    border: '1.5px solid #C67C3E', borderRadius: '8px',
-    color: '#C67C3E', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem',
+    border: '1.5px solid #5C4033', borderRadius: '8px',
+    color: '#5C4033', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem',
   },
   content: {
     maxWidth: '500px', margin: '2rem auto', padding: '0 1rem',
@@ -211,7 +211,7 @@ const styles = {
   },
   errorText: { color: '#dc2626', marginBottom: '1rem' },
   retryBtn: {
-    padding: '0.7rem 1.5rem', backgroundColor: '#C67C3E', color: '#fff',
+    padding: '0.7rem 1.5rem', backgroundColor: '#5C4033', color: '#fff',
     border: 'none', borderRadius: '8px', fontSize: '0.95rem',
     fontWeight: 'bold', cursor: 'pointer',
   },
@@ -228,13 +228,13 @@ const styles = {
   },
   sello: { aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   addBtn: {
-    padding: '0.85rem', backgroundColor: '#C67C3E', color: '#fff',
+    padding: '0.85rem', backgroundColor: '#5C4033', color: '#fff',
     border: 'none', borderRadius: '8px', fontSize: '1rem',
     fontWeight: 'bold', cursor: 'pointer', width: '100%', marginBottom: '0.75rem',
   },
   nuevoBtn: {
-    padding: '0.7rem', backgroundColor: 'transparent', color: '#C67C3E',
-    border: '1.5px solid #C67C3E', borderRadius: '8px', fontSize: '0.95rem',
+    padding: '0.7rem', backgroundColor: 'transparent', color: '#5C4033',
+    border: '1.5px solid #5C4033', borderRadius: '8px', fontSize: '0.95rem',
     fontWeight: 'bold', cursor: 'pointer', width: '100%',
   },
 }

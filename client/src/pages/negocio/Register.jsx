@@ -67,7 +67,7 @@ export default function Register() {
         <div style={styles.formWrap}>
           {isMobile && (
             <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-              <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#C67C3E', margin: 0, letterSpacing: '0.1em' }}>SELLO</h1>
+              <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#5C4033', margin: 0, letterSpacing: '0.1em' }}>SELLO</h1>
             </div>
           )}
 
@@ -99,7 +99,7 @@ const styles = {
   root: { display: 'flex', minHeight: '100dvh' },
   left: {
     flex: 1,
-    background: 'linear-gradient(145deg, #c03a06 0%, #C67C3E 60%, #d4520f 100%)',
+    background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     position: 'relative', overflow: 'hidden', padding: '3rem 2.5rem',
   },
@@ -140,9 +140,9 @@ const styles = {
   },
   error: { color: '#dc2626', fontSize: '0.82rem', margin: 0 },
   button: {
-    padding: '0.85rem', backgroundColor: '#C67C3E', color: '#fff', border: 'none',
+    padding: '0.85rem', backgroundColor: '#5C4033', color: '#fff', border: 'none',
     borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer', width: '100%',
   },
   linkText: { textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#888' },
-  link: { color: '#C67C3E', fontWeight: '600', textDecoration: 'none' },
+  link: { color: '#5C4033', fontWeight: '600', textDecoration: 'none' },
 }

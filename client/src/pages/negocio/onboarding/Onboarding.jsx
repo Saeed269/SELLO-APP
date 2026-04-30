@@ -99,7 +99,7 @@ export default function Onboarding() {
     <div style={styles.root}>
 
       {loading && (
-        <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #C67C3E 60%, #d4520f 100%)', zIndex: 999 }}>
+        <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)', zIndex: 999 }}>
           <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
           <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Creando tu tarjeta...</p>
         </div>
@@ -117,7 +117,7 @@ export default function Onboarding() {
           {Array.from({ length: totalPasos }).map((_, i) => (
             <div key={i} style={{
               ...styles.barraSegmento,
-              backgroundColor: paso > i ? '#C67C3E' : '#e8e8e8',
+              backgroundColor: paso > i ? '#5C4033' : '#e8e8e8',
             }} />
           ))}
         </div>
@@ -138,9 +138,9 @@ export default function Onboarding() {
                         onClick={() => setTipo(t)}
                         style={{
                           ...styles.tipoBtn,
-                          backgroundColor: tipo === t ? '#C67C3E' : '#fafafa',
+                          backgroundColor: tipo === t ? '#5C4033' : '#fafafa',
                           color: tipo === t ? '#fff' : '#1C1C1E',
-                          border: tipo === t ? '2px solid #C67C3E' : '1.5px solid #e8e8e8',
+                          border: tipo === t ? '2px solid #5C4033' : '1.5px solid #e8e8e8',
                           fontWeight: tipo === t ? '600' : '400',
                         }}
                       >
@@ -167,7 +167,7 @@ export default function Onboarding() {
                 onClick={() => setTipoTarjeta('sellos')}
                 style={{
                   ...styles.tarjetaOpcion,
-                  border: tipoTarjeta === 'sellos' ? '2px solid #C67C3E' : '1.5px solid #e8e8e8',
+                  border: tipoTarjeta === 'sellos' ? '2px solid #5C4033' : '1.5px solid #e8e8e8',
                   backgroundColor: tipoTarjeta === 'sellos' ? '#FFF4EE' : '#fafafa',
                 }}
               >
@@ -178,7 +178,7 @@ export default function Onboarding() {
                 onClick={() => setTipoTarjeta('bonos')}
                 style={{
                   ...styles.tarjetaOpcion,
-                  border: tipoTarjeta === 'bonos' ? '2px solid #C67C3E' : '1.5px solid #e8e8e8',
+                  border: tipoTarjeta === 'bonos' ? '2px solid #5C4033' : '1.5px solid #e8e8e8',
                   backgroundColor: tipoTarjeta === 'bonos' ? '#FFF4EE' : '#fafafa',
                 }}
               >
@@ -267,14 +267,14 @@ const styles = {
     boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
     boxSizing: 'border-box',
   },
-  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#C67C3E', margin: 0, letterSpacing: '0.1em' },
+  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#5C4033', margin: 0, letterSpacing: '0.1em' },
   subtitulo: { margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#888' },
   progreso: { display: 'flex', gap: '6px', margin: '1rem 0 0.3rem' },
   barraSegmento: { flex: 1, height: '4px', borderRadius: '2px', transition: 'background-color 0.3s' },
   pasoTexto: { fontSize: '0.78rem', color: '#bbb', margin: '0 0 1rem', textAlign: 'right' },
   seccion: { display: 'flex', flexDirection: 'column' },
   h2: { fontSize: '1.1rem', fontWeight: '700', color: '#1C1C1E', margin: '0 0 0.75rem' },
-  catLabel: { fontSize: '0.72rem', fontWeight: '600', color: '#C67C3E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 5px' },
+  catLabel: { fontSize: '0.72rem', fontWeight: '600', color: '#5C4033', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 5px' },
   tiposGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' },
   tipoBtn: {
     padding: '0.55rem 0.4rem', borderRadius: '10px',
@@ -287,7 +287,7 @@ const styles = {
   fieldLabel: { fontSize: '0.85rem', color: '#555', fontWeight: '500', margin: '0 0 0.4rem' },
   rangeWrap: { marginBottom: '1rem' },
   rangeValor: { display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '4px' },
-  rangeNum: { fontSize: '1.4rem', fontWeight: '700', color: '#C67C3E' },
+  rangeNum: { fontSize: '1.4rem', fontWeight: '700', color: '#5C4033' },
   rangeSub: { fontSize: '0.8rem', color: '#888' },
   input: {
     padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8',
@@ -296,12 +296,12 @@ const styles = {
   },
   botones: { display: 'flex', gap: '10px', marginTop: '0.25rem' },
   btnPrimario: {
-    flex: 1, padding: '0.85rem', backgroundColor: '#C67C3E', color: '#fff',
+    flex: 1, padding: '0.85rem', backgroundColor: '#5C4033', color: '#fff',
     border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer',
   },
   btnSecundario: {
-    flex: 1, padding: '0.85rem', backgroundColor: 'transparent', color: '#C67C3E',
-    border: '1.5px solid #C67C3E', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer',
+    flex: 1, padding: '0.85rem', backgroundColor: 'transparent', color: '#5C4033',
+    border: '1.5px solid #5C4033', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer',
   },
   error: { color: '#dc2626', fontSize: '0.82rem', margin: '0 0 0.5rem' },
 }

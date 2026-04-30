@@ -17,51 +17,40 @@ export default function LoginCliente() {
     setLoading(true)
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (error) {
-      setError('Email o contraseña incorrectos')
-      setLoading(false)
-      return
-    }
+    if (error) { setError('Email o contraseña incorrectos'); setLoading(false); return }
 
     navigate(`/cliente/tarjeta?negocio=${negocioId}`)
   }
 
+  if (loading) return (
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)' }}>
+      <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
+      <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Cargando tu tarjeta...</p>
+    </div>
+  )
+
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.logo}>SELLO</h1>
-        <p style={styles.subtitle}>Inicia sesión para ver tus sellos</p>
+    <div style={styles.root}>
+      <div style={styles.formWrap}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          <h1 style={styles.logo}>SELLO</h1>
+        </div>
+
+        <h2 style={styles.titulo}>Ver mis sellos</h2>
+        <p style={styles.subtitulo}>Inicia sesión para acceder a tu tarjeta</p>
 
         <form onSubmit={handleLogin} style={styles.form}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            style={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
+          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={styles.input} required />
+          <input type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} style={styles.input} required />
           {error && <p style={styles.error}>{error}</p>}
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? 'Entrando...' : 'Ver mis sellos'}
+          <button type="submit" style={styles.button}>
+            Ver mis sellos
           </button>
         </form>
 
-        <p style={styles.register}>
+        <p style={styles.linkText}>
           ¿No tienes cuenta?{' '}
-          <span
-            style={styles.registerLink}
-            onClick={() => navigate(`/cliente/registro?negocio=${negocioId}`)}
-          >
+          <span onClick={() => navigate(`/cliente/registro?negocio=${negocioId}`)} style={styles.link}>
             Regístrate
           </span>
         </p>
@@ -71,72 +60,43 @@ export default function LoginCliente() {
 }
 
 const styles = {
-  container: {
-    minHeight: '100vh',
+  root: {
+    minHeight: '100dvh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: '1rem',
+    padding: '1.5rem',
+    backgroundColor: '#f9f9f9',
   },
-  card: {
-    backgroundColor: '#fff',
-    padding: '2.5rem',
-    borderRadius: '16px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+  formWrap: {
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '360px',
+    backgroundColor: '#fff',
+    borderRadius: '20px',
+    padding: '2rem 1.75rem',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
   },
   logo: {
-    fontSize: '2.5rem',
+    fontSize: '1.8rem',
     fontWeight: 'bold',
-    color: '#C67C3E',
-    textAlign: 'center',
-    margin: '0 0 0.25rem 0',
-  },
-  subtitle: {
-    textAlign: 'center',
-    color: '#888',
-    marginBottom: '2rem',
-    fontSize: '0.9rem',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-  },
-  input: {
-    padding: '0.85rem 1rem',
-    borderRadius: '8px',
-    border: '1.5px solid #e0e0e0',
-    fontSize: '1rem',
-    outline: 'none',
-  },
-  error: {
-    color: '#dc2626',
-    fontSize: '0.9rem',
+    color: '#5C4033',
     margin: 0,
+    letterSpacing: '0.1em',
   },
+  titulo: { margin: '0 0 0.25rem', fontSize: '1.4rem', fontWeight: '700', color: '#1C1C1E' },
+  subtitulo: { margin: '0 0 1.25rem', fontSize: '0.85rem', color: '#888' },
+  form: { display: 'flex', flexDirection: 'column', gap: '0.75rem' },
+  input: {
+    padding: '0.78rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8',
+    fontSize: '0.9rem', outline: 'none', backgroundColor: '#fafafa',
+    color: '#1C1C1E', width: '100%', boxSizing: 'border-box',
+  },
+  error: { color: '#dc2626', fontSize: '0.82rem', margin: 0 },
   button: {
-    padding: '0.85rem',
-    backgroundColor: '#C67C3E',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    marginTop: '0.5rem',
+    padding: '0.85rem', backgroundColor: '#5C4033', color: '#fff', border: 'none',
+    borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer',
+    width: '100%', marginTop: '0.1rem',
   },
-  register: {
-    textAlign: 'center',
-    marginTop: '1.5rem',
-    fontSize: '0.9rem',
-    color: '#555',
-  },
-  registerLink: {
-    color: '#C67C3E',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  },
+  linkText: { textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#888' },
+  link: { color: '#5C4033', fontWeight: '600', cursor: 'pointer' },
 }

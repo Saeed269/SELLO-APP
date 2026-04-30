@@ -3,7 +3,7 @@ import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
 import NavNegocio from '../../components/NavNegocio'
 
-const NARANJA = '#C67C3E'
+const NARANJA = '#5C4033'
 
 export default function Clientes() {
   const [user, setUser] = useState(null)
@@ -80,7 +80,7 @@ export default function Clientes() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #C67C3E 60%, #d4520f 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #3D2314 0%, #5C4033 60%, #4A2E1A 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
     </div>
   )
