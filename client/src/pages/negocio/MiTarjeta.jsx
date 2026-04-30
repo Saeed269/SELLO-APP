@@ -13,6 +13,7 @@ const ESTILOS = [
 
 const EFECTOS = [
   { id: 'none',    nombre: 'Ninguno' },
+  { id: 'blobs',   nombre: 'Blobs' },
   { id: 'bubbles', nombre: 'Burbujas' },
   { id: 'lines',   nombre: 'Líneas' },
   { id: 'waves',   nombre: 'Ondas' },
@@ -113,6 +114,13 @@ function IconSVG({ path, circle, size = 14, color = 'currentColor' }) {
 
 function Efecto({ tipo }) {
   const svgStyle = { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }
+  if (tipo === 'blobs') return (
+    <>
+      <div style={{ position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -70, right: -70, pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', bottom: -50, left: -50, pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,215,0,0.12)', top: '40%', right: 10, pointerEvents: 'none', zIndex: 0 }} />
+    </>
+  )
   if (tipo === 'bubbles') return (
     <>
       <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -50, right: -50, pointerEvents: 'none', zIndex: 0 }} />
@@ -175,8 +183,8 @@ function GridSellos({ numSellos, premios, selloIcon, premioIcon, cuadrado }) {
           }}>
             {marcado && (
               esPremio
-                ? <IconSVG path={premioIcon.path} size={11} color="#555" />
-                : <IconSVG path={selloIcon.path} circle={selloIcon.circle} size={11} color="#555" />
+                ? <IconSVG path={premioIcon.path} size={11} color="#1C1C1E" />
+                : <IconSVG path={selloIcon.path} circle={selloIcon.circle} size={11} color="#1C1C1E" />
             )}
           </div>
         )
@@ -208,8 +216,8 @@ function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, pre
           return (
             <div key={i} style={{ aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: marcado ? (esUltimo ? '#FFD700' : '#fff') : 'rgba(255,255,255,0.2)', border: marcado ? 'none' : '1.5px solid rgba(255,255,255,0.35)' }}>
               {marcado && (esUltimo
-                ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                ? <IconSVG path={premioIcon.path} size={14} color={col} />
+                : <IconSVG path={selloIcon.path} circle={selloIcon.circle} size={14} color={col} />
               )}
             </div>
           )
@@ -285,7 +293,7 @@ export default function MiTarjeta() {
   const [mobileView, setMobileView]     = useState('editar')
   const [isMobile, setIsMobile]         = useState(window.innerWidth < 768)
   const [estilo, setEstilo]             = useState('blob')
-  const [efecto, setEfecto]             = useState('bubbles')
+  const [efecto, setEfecto]             = useState('blobs')
   const [color, setColor]               = useState('#E8763A')
   const [selloIconId, setSelloIconId]   = useState('check')
   const [premioIconId, setPremioIconId] = useState('gift')
