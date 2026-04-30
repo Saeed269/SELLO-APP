@@ -11,22 +11,12 @@ export default function Clientes() {
   const [clientes, setClientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(null)
-  const [confirmando, setConfirmando] = useState(false)
-  const [añadiendo, setAñadiendo] = useState(false)
-  const [exito, setExito] = useState(false)
+  const [modalMensaje, setModalMensaje] = useState(null)
+  const [mensaje, setMensaje] = useState('')
+  const [enviando, setEnviando] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const cargarClientes = async (negocioId) => {
-      const { data } = await supabase
-        .from('tarjetas')
-        .select('*, clientes!tarjetas_cliente_id_fkey(nombre, email)')
-        .eq('negocio_id', negocioId)
-        
-      setClientes(data || [])
-    }
-
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { navigate('/negocio/login'); return }
@@ -37,12 +27,10 @@ export default function Clientes() {
       if (!negocioData) { navigate('/negocio/onboarding'); return }
       setNegocio(negocioData)
 
-      // 1. Obtener tarjetas
       const { data: tarjetasData } = await supabase
         .from('tarjetas')
         .select('*')
         .eq('negocio_id', negocioData.id)
-        
 
       if (!tarjetasData || tarjetasData.length === 0) {
         setClientes([])
@@ -50,16 +38,15 @@ export default function Clientes() {
         return
       }
 
-      // 2. Obtener clientes por sus IDs
       const clienteIds = tarjetasData.map(t => t.cliente_id)
       const { data: clientesData } = await supabase
         .from('clientes')
         .select('id, nombre, email')
         .in('id', clienteIds)
 
-      // 3. Combinar
       const clientesMap = {}
       clientesData?.forEach(c => { clientesMap[c.id] = c })
+
       const combined = tarjetasData.map(t => ({
         ...t,
         clientes: clientesMap[t.cliente_id] || null,
@@ -71,33 +58,31 @@ export default function Clientes() {
     init()
   }, [navigate])
 
-  const handleAñadirSello = async () => {
-    if (!clienteSeleccionado) return
-    setAñadiendo(true)
-
-    const nuevosSellos = (clienteSeleccionado.sellos_actuales || 0) + 1
+  const handleAñadirSello = async (tarjeta) => {
+    if (tarjeta.sellos_actuales >= negocio.num_sellos) return
+    const nuevosSellos = (tarjeta.sellos_actuales || 0) + 1
     const { error } = await supabase
       .from('tarjetas')
       .update({ sellos_actuales: nuevosSellos })
-      .eq('id', clienteSeleccionado.id)
-
+      .eq('id', tarjeta.id)
     if (!error) {
-      setClienteSeleccionado(prev => ({ ...prev, sellos_actuales: nuevosSellos }))
       setClientes(prev => prev.map(c =>
-        c.id === clienteSeleccionado.id ? { ...c, sellos_actuales: nuevosSellos } : c
+        c.id === tarjeta.id ? { ...c, sellos_actuales: nuevosSellos } : c
       ))
-      setExito(true)
-      setTimeout(() => setExito(false), 2000)
     }
-
-    setConfirmando(false)
-    setAñadiendo(false)
   }
 
-  const cerrarModal = () => {
-    setClienteSeleccionado(null)
-    setConfirmando(false)
-    setExito(false)
+  const handleEnviarMensaje = async () => {
+    if (!mensaje.trim() || !modalMensaje) return
+    setEnviando(true)
+    // Guardar mensaje en tarjeta
+    await supabase
+      .from('tarjetas')
+      .update({ mensaje_negocio: mensaje.trim() })
+      .eq('id', modalMensaje.id)
+    setEnviando(false)
+    setModalMensaje(null)
+    setMensaje('')
   }
 
   const clientesFiltrados = clientes.filter(c =>
@@ -125,9 +110,10 @@ export default function Clientes() {
 
           <div style={{ marginBottom: '1.5rem' }}>
             <h1 style={s.titulo}>Clientes</h1>
-            <p style={s.subtitulo}>{clientes.length} clientes registrados</p>
+            <p style={s.subtitulo}>Gestiona tus clientes y añade sellos manualmente</p>
           </div>
 
+          {/* Buscador */}
           <div style={s.searchWrap}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -139,8 +125,10 @@ export default function Clientes() {
               onChange={e => setBusqueda(e.target.value)}
               style={s.searchInput}
             />
+            <span style={s.countBadge}>{clientesFiltrados.length} clientes</span>
           </div>
 
+          {/* Lista */}
           {clientesFiltrados.length === 0 ? (
             <div style={s.empty}>
               <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>
@@ -152,35 +140,59 @@ export default function Clientes() {
               {clientesFiltrados.map(tarjeta => {
                 const progreso = Math.min((tarjeta.sellos_actuales / negocio.num_sellos) * 100, 100)
                 const premioGanado = tarjeta.sellos_actuales >= negocio.num_sellos
+                const esBono = negocio.tipo_tarjeta === 'bonos'
+                const inicial = tarjeta.clientes?.nombre?.[0]?.toUpperCase() || '?'
+
                 return (
-                  <button key={tarjeta.id} onClick={() => setClienteSeleccionado(tarjeta)} style={s.clienteCard}>
-                    <div style={{ ...s.avatar, backgroundColor: premioGanado ? '#FFD700' : NARANJA }}>
-                      <span style={{ color: premioGanado ? '#1C1C1E' : '#fff', fontWeight: '700', fontSize: '1rem' }}>
-                        {tarjeta.clientes?.nombre?.[0]?.toUpperCase() || '?'}
-                      </span>
-                    </div>
-
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <div key={tarjeta.id} style={s.card}>
+                    {/* Info cliente */}
+                    <div style={s.cardLeft}>
+                      <div style={{ ...s.avatar, backgroundColor: premioGanado ? '#FFD700' : NARANJA }}>
+                        <span style={{ color: premioGanado ? '#1C1C1E' : '#fff', fontWeight: '700', fontSize: '1.1rem' }}>
+                          {inicial}
+                        </span>
+                      </div>
+                      <div style={{ minWidth: 0 }}>
                         <p style={s.clienteNombre}>{tarjeta.clientes?.nombre || 'Sin nombre'}</p>
-                        {premioGanado && <span style={s.premioBadge}>🏆 Premio listo</span>}
-                      </div>
-                      <p style={s.clienteEmail}>{tarjeta.clientes?.email}</p>
-                      <div style={{ marginTop: '8px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                          <span style={s.sellosLabel}>{tarjeta.sellos_actuales} / {negocio.num_sellos} sellos</span>
-                          <span style={s.fechaLabel}>{formatFecha(tarjeta.updated_at)}</span>
-                        </div>
-                        <div style={s.barraFondo}>
-                          <div style={{ ...s.barraProgreso, width: `${progreso}%`, backgroundColor: premioGanado ? '#FFD700' : NARANJA }} />
-                        </div>
+                        <p style={s.clienteEmail}>{tarjeta.clientes?.email}</p>
+                        <p style={s.clienteFecha}>Registrado: {formatFecha(tarjeta.created_at)}</p>
                       </div>
                     </div>
 
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                      <path d="M9 18l6-6-6-6"/>
-                    </svg>
-                  </button>
+                    {/* Progreso */}
+                    <div style={s.cardMid}>
+                      <p style={{ margin: '0 0 2px', fontSize: '0.75rem', fontWeight: '600', color: premioGanado ? '#92400e' : '#888' }}>
+                        {premioGanado ? '🏆 Premio listo' : esBono ? 'Sesiones' : 'Sellos'}
+                      </p>
+                      <p style={{ margin: '0 0 6px', fontSize: '1.4rem', fontWeight: '700', color: premioGanado ? '#E8763A' : '#1C1C1E' }}>
+                        {tarjeta.sellos_actuales} <span style={{ fontSize: '0.9rem', color: '#888', fontWeight: '400' }}>/ {negocio.num_sellos}</span>
+                      </p>
+                      <div style={s.barraFondo}>
+                        <div style={{ ...s.barraProgreso, width: `${progreso}%`, backgroundColor: premioGanado ? '#FFD700' : NARANJA }} />
+                      </div>
+                    </div>
+
+                    {/* Acciones */}
+                    <div style={s.cardRight}>
+                      <button
+                        onClick={() => handleAñadirSello(tarjeta)}
+                        disabled={premioGanado}
+                        style={{
+                          ...s.btnAñadir,
+                          opacity: premioGanado ? 0.4 : 1,
+                          cursor: premioGanado ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        + Añadir Sello
+                      </button>
+                      <button onClick={() => { setModalMensaje(tarjeta); setMensaje('') }} style={s.btnMensaje}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Enviar Mensaje
+                      </button>
+                    </div>
+                  </div>
                 )
               })}
             </div>
@@ -188,96 +200,33 @@ export default function Clientes() {
         </div>
       </main>
 
-      {/* Modal detalle cliente */}
-      {clienteSeleccionado && (
-        <div style={s.overlay} onClick={cerrarModal}>
+      {/* Modal enviar mensaje */}
+      {modalMensaje && (
+        <div style={s.overlay} onClick={() => setModalMensaje(null)}>
           <div style={s.modal} onClick={e => e.stopPropagation()}>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ ...s.avatar, backgroundColor: NARANJA }}>
-                  <span style={{ color: '#fff', fontWeight: '700', fontSize: '1rem' }}>
-                    {clienteSeleccionado.clientes?.nombre?.[0]?.toUpperCase() || '?'}
-                  </span>
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontWeight: '700', fontSize: '1.1rem', color: '#1C1C1E' }}>{clienteSeleccionado.clientes?.nombre}</p>
-                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#888' }}>{clienteSeleccionado.clientes?.email}</p>
-                </div>
-              </div>
-              <button onClick={cerrarModal} style={s.cerrarBtn}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            </div>
-
-            <div style={s.sellosWrap}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#888' }}>PROGRESO</span>
-                <span style={{ fontSize: '0.82rem', fontWeight: '600', color: NARANJA }}>
-                  {clienteSeleccionado.sellos_actuales} / {negocio.num_sellos}
-                </span>
-              </div>
-              <div style={s.barraFondo}>
-                <div style={{
-                  ...s.barraProgreso,
-                  width: `${Math.min((clienteSeleccionado.sellos_actuales / negocio.num_sellos) * 100, 100)}%`,
-                  backgroundColor: clienteSeleccionado.sellos_actuales >= negocio.num_sellos ? '#FFD700' : NARANJA,
-                  transition: 'width 0.3s ease',
-                }} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginTop: '1rem' }}>
-                {Array.from({ length: negocio.num_sellos }).map((_, i) => (
-                  <div key={i} style={{ aspectRatio: '1', borderRadius: '50%', backgroundColor: i < clienteSeleccionado.sellos_actuales ? NARANJA : '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {i < clienteSeleccionado.sellos_actuales && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 6L9 17l-5-5"/>
-                      </svg>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {negocio.premio && (
-              <div style={s.premioWrap}>
-                <p style={{ margin: 0, fontSize: '0.82rem', color: '#888' }}>Premio</p>
-                <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#1C1C1E' }}>{negocio.premio}</p>
-              </div>
-            )}
-
-            {exito && (
-              <div style={s.exitoMsg}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-                <span style={{ fontSize: '0.88rem', color: '#2D6A4F', fontWeight: '500' }}>Sello añadido correctamente</span>
-              </div>
-            )}
-
-            {!confirmando ? (
+            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.2rem', fontWeight: '700', color: '#1C1C1E' }}>
+              Enviar Mensaje a {modalMensaje.clientes?.nombre}
+            </h2>
+            <p style={{ margin: '0 0 1.25rem', fontSize: '0.85rem', color: '#888' }}>
+              Este mensaje aparecerá en la tarjeta digital del cliente cuando la abra.
+            </p>
+            <textarea
+              placeholder="Escribe tu mensaje u oferta especial..."
+              value={mensaje}
+              onChange={e => setMensaje(e.target.value)}
+              rows={5}
+              style={s.textarea}
+            />
+            <div style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
+              <button onClick={() => setModalMensaje(null)} style={s.btnCancelar}>Cancelar</button>
               <button
-                onClick={() => setConfirmando(true)}
-                disabled={clienteSeleccionado.sellos_actuales >= negocio.num_sellos}
-                style={{ ...s.btnAñadir, opacity: clienteSeleccionado.sellos_actuales >= negocio.num_sellos ? 0.5 : 1, cursor: clienteSeleccionado.sellos_actuales >= negocio.num_sellos ? 'not-allowed' : 'pointer' }}
+                onClick={handleEnviarMensaje}
+                disabled={!mensaje.trim() || enviando}
+                style={{ ...s.btnEnviar, opacity: !mensaje.trim() ? 0.5 : 1 }}
               >
-                + Añadir sello
+                {enviando ? 'Enviando...' : 'Enviar Mensaje'}
               </button>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <p style={{ margin: 0, fontSize: '0.88rem', color: '#555', textAlign: 'center' }}>
-                  ¿Confirmas añadir un sello a <strong>{clienteSeleccionado.clientes?.nombre}</strong>?
-                </p>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button onClick={() => setConfirmando(false)} style={s.btnCancelar}>Cancelar</button>
-                  <button onClick={handleAñadirSello} disabled={añadiendo} style={s.btnAñadir}>
-                    {añadiendo ? 'Añadiendo...' : '✓ Confirmar'}
-                  </button>
-                </div>
-              </div>
-            )}
-
+            </div>
           </div>
         </div>
       )}
@@ -288,28 +237,46 @@ export default function Clientes() {
 const s = {
   root: { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
   main: { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
-  inner: { maxWidth: 700, margin: '0 auto' },
+  inner: { maxWidth: 900, margin: '0 auto' },
   titulo: { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
   subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888' },
-  searchWrap: { display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#fff', borderRadius: '12px', padding: '0.75rem 1rem', border: '1.5px solid #e8e8e8', marginBottom: '1rem' },
+  searchWrap: {
+    display: 'flex', alignItems: 'center', gap: '10px',
+    backgroundColor: '#fff', borderRadius: '12px', padding: '0.75rem 1rem',
+    border: '1.5px solid #e8e8e8', marginBottom: '1rem',
+  },
   searchInput: { flex: 1, border: 'none', outline: 'none', fontSize: '0.9rem', color: '#1C1C1E', backgroundColor: 'transparent' },
+  countBadge: { fontSize: '0.78rem', color: '#888', whiteSpace: 'nowrap' },
   empty: { backgroundColor: '#fff', borderRadius: '16px', padding: '3rem', textAlign: 'center', border: '1.5px solid #e8e8e8' },
-  lista: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  clienteCard: { display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#fff', borderRadius: '16px', padding: '1rem', border: '1.5px solid #e8e8e8', cursor: 'pointer', textAlign: 'left', width: '100%' },
-  avatar: { width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  clienteNombre: { margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#1C1C1E' },
-  clienteEmail: { margin: 0, fontSize: '0.78rem', color: '#888' },
-  sellosLabel: { fontSize: '0.75rem', color: '#888' },
-  fechaLabel: { fontSize: '0.75rem', color: '#bbb' },
-  premioBadge: { fontSize: '0.72rem', fontWeight: '600', color: '#92400e', backgroundColor: '#FEF3C7', borderRadius: '20px', padding: '2px 8px' },
+  lista: { display: 'flex', flexDirection: 'column', gap: '10px' },
+  card: {
+    display: 'flex', alignItems: 'center', gap: '1rem',
+    backgroundColor: '#fff', borderRadius: '16px', padding: '1.25rem',
+    border: '1.5px solid #e8e8e8', flexWrap: 'wrap',
+  },
+  cardLeft: { display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 200px', minWidth: 0 },
+  cardMid: { flex: '0 0 160px' },
+  cardRight: { display: 'flex', flexDirection: 'column', gap: '8px', flex: '0 0 140px' },
+  avatar: { width: 48, height: 48, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  clienteNombre: { margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' },
+  clienteEmail: { margin: '2px 0', fontSize: '0.78rem', color: '#888' },
+  clienteFecha: { margin: 0, fontSize: '0.72rem', color: '#bbb' },
   barraFondo: { height: '6px', backgroundColor: '#f0f0f0', borderRadius: '3px', overflow: 'hidden' },
-  barraProgreso: { height: '100%', borderRadius: '3px' },
-  overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' },
-  modal: { backgroundColor: '#fff', borderRadius: '24px 24px 0 0', padding: '1.5rem', width: '100%', maxWidth: '480px', boxShadow: '0 -8px 32px rgba(0,0,0,0.15)', maxHeight: '90dvh', overflowY: 'auto' },
-  cerrarBtn: { background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '8px', display: 'flex', alignItems: 'center' },
-  sellosWrap: { backgroundColor: '#f9f9f9', borderRadius: '14px', padding: '1rem', marginBottom: '1rem' },
-  premioWrap: { backgroundColor: '#FFF4EE', borderRadius: '12px', padding: '0.75rem 1rem', marginBottom: '1rem', border: '1px solid #E8763A33' },
-  exitoMsg: { display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#ECFDF5', borderRadius: '10px', padding: '0.65rem 1rem', marginBottom: '0.75rem', border: '1px solid #6ee7b733' },
-  btnAñadir: { width: '100%', padding: '0.9rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '12px', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', flex: 1 },
-  btnCancelar: { flex: 1, padding: '0.9rem', backgroundColor: 'transparent', color: '#888', border: '1.5px solid #e8e8e8', borderRadius: '12px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer' },
+  barraProgreso: { height: '100%', borderRadius: '3px', transition: 'width 0.3s ease' },
+  btnAñadir: {
+    padding: '0.6rem 0.75rem', backgroundColor: NARANJA, color: '#fff',
+    border: 'none', borderRadius: '10px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer',
+    textAlign: 'center',
+  },
+  btnMensaje: {
+    padding: '0.6rem 0.75rem', backgroundColor: 'transparent', color: '#555',
+    border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '0.82rem',
+    fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', gap: '6px',
+  },
+  overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
+  modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '480px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' },
+  textarea: { width: '100%', padding: '0.85rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit', color: '#1C1C1E', boxSizing: 'border-box' },
+  btnCancelar: { flex: 1, padding: '0.85rem', backgroundColor: '#f5f5f5', color: '#888', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
+  btnEnviar: { flex: 1, padding: '0.85rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
 }
