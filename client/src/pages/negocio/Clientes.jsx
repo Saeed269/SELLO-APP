@@ -167,15 +167,15 @@ export default function Clientes() {
                       <button
                         onClick={() => handleAñadirSello(tarjeta)}
                         disabled={premioGanado}
-                        style={{ padding: '0.4rem 0.85rem', backgroundColor: premioGanado ? '#E5E7EB' : NARANJA, color: premioGanado ? '#9CA3AF' : '#fff', border: 'none', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: premioGanado ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+                        style={{ padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.85rem', backgroundColor: premioGanado ? '#E5E7EB' : NARANJA, color: premioGanado ? '#9CA3AF' : '#fff', border: 'none', borderRadius: '8px', fontSize: isMobile ? '0.72rem' : '0.78rem', fontWeight: '700', cursor: premioGanado ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
                       >
-                        + Añadir Sello
+                        + Sello
                       </button>
-                      <button onClick={() => { setModalMensaje(tarjeta); setMensaje('') }} style={s.btnMensaje}>
+                      <button onClick={() => { setModalMensaje(tarjeta); setMensaje('') }} style={{ ...s.btnMensaje, padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.85rem', fontSize: isMobile ? '0.72rem' : '0.78rem' }}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                         </svg>
-                        Mensaje
+                        {isMobile ? 'Msg' : 'Mensaje'}
                       </button>
                     </div>
                   </div>
