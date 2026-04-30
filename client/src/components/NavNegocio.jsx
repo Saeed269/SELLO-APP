@@ -50,7 +50,7 @@ const icons = {
 const items = [
   { label: 'Inicio',      icon: 'inicio',     path: '/negocio/dashboard' },
   { label: 'Mi Tarjeta',  icon: 'tarjeta',    path: '/negocio/mi-tarjeta' },
-  { label: 'Clientes',    icon: 'clientes',   path: null },
+  { label: 'Clientes',    icon: 'clientes',   path: '/negocio/clientes' },
   { label: 'Analíticas',  icon: 'analiticas', path: null },
   { label: 'Ayuda',       icon: 'ayuda',      path: null },
   { label: 'Ajustes',     icon: 'ajustes',    path: null },
