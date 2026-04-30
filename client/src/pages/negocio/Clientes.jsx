@@ -138,7 +138,7 @@ export default function Clientes() {
                 return (
                   <div key={tarjeta.id} style={s.card}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                     {/* Avatar */}
                     <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #E8763A, #c03a06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.1rem', fontWeight: '700', flexShrink: 0 }}>
                       {inicial}
@@ -159,9 +159,7 @@ export default function Clientes() {
                       <p style={{ margin: '0 0 4px', fontSize: '1.2rem', fontWeight: '700', color: premioGanado ? '#F59E0B' : '#1C1C1E', lineHeight: 1 }}>
                         {sellos}<span style={{ fontSize: '0.78rem', color: '#9CA3AF', fontWeight: '400' }}>/{maxSellos}</span>
                       </p>
-                      <div style={{ width: '80px', height: '4px', backgroundColor: '#E5E7EB', borderRadius: '2px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${progreso}%`, backgroundColor: premioGanado ? '#F59E0B' : NARANJA, borderRadius: '2px' }} />
-                      </div>
+
                     </div>
 
                     {/* Botones */}
