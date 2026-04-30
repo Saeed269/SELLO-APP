@@ -37,7 +37,35 @@ export default function Clientes() {
       if (!negocioData) { navigate('/negocio/onboarding'); return }
       setNegocio(negocioData)
 
-      await cargarClientes(negocioData.id)
+      // 1. Obtener tarjetas
+      const { data: tarjetasData } = await supabase
+        .from('tarjetas')
+        .select('*')
+        .eq('negocio_id', negocioData.id)
+        .order('updated_at', { ascending: false })
+
+      if (!tarjetasData || tarjetasData.length === 0) {
+        setClientes([])
+        setLoading(false)
+        return
+      }
+
+      // 2. Obtener clientes por sus IDs
+      const clienteIds = tarjetasData.map(t => t.cliente_id)
+      const { data: clientesData } = await supabase
+        .from('clientes')
+        .select('id, nombre, email')
+        .in('id', clienteIds)
+
+      // 3. Combinar
+      const clientesMap = {}
+      clientesData?.forEach(c => { clientesMap[c.id] = c })
+      const combined = tarjetasData.map(t => ({
+        ...t,
+        clientes: clientesMap[t.cliente_id] || null,
+      }))
+
+      setClientes(combined)
       setLoading(false)
     }
     init()
