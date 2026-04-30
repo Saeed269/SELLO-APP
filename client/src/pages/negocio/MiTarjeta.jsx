@@ -194,24 +194,48 @@ function GridSellos({ numSellos, premios, selloIcon, premioIcon, cuadrado }) {
 function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
   const col = color || '#E8763A'
   const colDark = darkenColor(col)
+  const cols = numSellos <= 8 ? 4 : 5
+  const marcados = 3
+
   return (
-    <div style={{ borderRadius: '20px', background: `linear-gradient(145deg, ${colDark}, ${col})`, padding: '1.5rem', position: 'relative', overflow: 'hidden', boxShadow: `0 8px 32px ${col}55` }}>
-      <Efecto tipo={efecto} />
+    <div style={{ borderRadius: '28px', background: `linear-gradient(145deg, ${colDark} 0%, ${col} 60%, ${colDark} 100%)`, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 24px 64px ${col}55`, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div style={{ position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -70, right: -70, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', bottom: -50, left: -50, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,215,0,0.12)', top: '40%', right: 10, pointerEvents: 'none' }} />
+
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.1rem' }}>{nombre}</h3>
-        <div style={{ marginBottom: '0.75rem' }}>
-          <GridSellos numSellos={numSellos} premios={premios} selloIcon={selloIcon} premioIcon={premioIcon} cuadrado={false} />
+        <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia,serif' }}>{nombre}</h3>
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '10px' }}>
+        {Array.from({ length: numSellos }).map((_, i) => {
+          const marcado = i < marcados
+          const esUltimo = i === numSellos - 1
+          return (
+            <div key={i} style={{ aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: marcado ? (esUltimo ? '#FFD700' : '#fff') : 'rgba(255,255,255,0.2)', border: marcado ? 'none' : '1.5px solid rgba(255,255,255,0.35)' }}>
+              {marcado && (esUltimo
+                ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '20px', padding: '5px 14px' }}>
+          <p style={{ margin: 0, fontSize: '12px', color: '#fff', fontWeight: '500' }}>🎁 Premio: {premios[premios.length - 1]?.texto || '...'}</p>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-          <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>3 / {numSellos} sellos</p>
-          <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '20px', padding: '3px 10px' }}>
-            <p style={{ margin: 0, fontSize: '10px', color: '#fff' }}>{premios[premios.length - 1]?.texto || 'Premio'}</p>
-          </div>
-        </div>
-        <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '12px', padding: '10px', display: 'flex', justifyContent: 'center' }}>
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1, height: '1px', background: 'rgba(255,255,255,0.15)' }} />
+
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
+        <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.75)', textAlign: 'center' }}>Muestra este QR para recibir tu sello</p>
+        <div style={{ background: '#fff', borderRadius: '16px', padding: '14px', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}>
           {qrUrl
-            ? <QRCodeSVG value={qrUrl} size={110} fgColor="#fff" bgColor="transparent" level="M" />
-            : <div style={{ width: 110, height: 110, background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} />
+            ? <QRCodeSVG value={qrUrl} size={140} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
+            : <div style={{ width: 140, height: 140, background: '#f0f0f0', borderRadius: '8px' }} />
           }
         </div>
       </div>
