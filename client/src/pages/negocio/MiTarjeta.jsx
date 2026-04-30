@@ -103,12 +103,19 @@ function generarPremios(cantidad, numSellos) {
 
 function IconSVG({ path, circle, size = 14, color = 'currentColor' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      {circle && <circle cx={Number(circle.split(' ')[0])} cy={Number(circle.split(' ')[1])} r={Number(circle.split(' ')[2])} />}
-      {path.split('M ').filter(Boolean).map((d, i) => (
-        <path key={i} d={`M ${d.trim()}`} />
-      ))}
-    </svg>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      dangerouslySetInnerHTML={{
+        __html: (circle ? `<circle cx="${circle.split(' ')[0]}" cy="${circle.split(' ')[1]}" r="${circle.split(' ')[2]}"/>` : '') + `<path d="${path}"/>`
+      }}
+    />
   )
 }
 
