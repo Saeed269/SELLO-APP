@@ -14,7 +14,14 @@ export default function Clientes() {
   const [modalMensaje, setModalMensaje] = useState(null)
   const [mensaje, setMensaje] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     const init = async () => {
@@ -28,9 +35,7 @@ export default function Clientes() {
       setNegocio(negocioData)
 
       const { data: tarjetasData } = await supabase
-        .from('tarjetas')
-        .select('*')
-        .eq('negocio_id', negocioData.id)
+        .from('tarjetas').select('*').eq('negocio_id', negocioData.id)
 
       if (!tarjetasData || tarjetasData.length === 0) {
         setClientes([])
@@ -40,19 +45,12 @@ export default function Clientes() {
 
       const clienteIds = tarjetasData.map(t => t.cliente_id)
       const { data: clientesData } = await supabase
-        .from('clientes')
-        .select('id, nombre, email')
-        .in('id', clienteIds)
+        .from('clientes').select('id, nombre, email').in('id', clienteIds)
 
       const clientesMap = {}
       clientesData?.forEach(c => { clientesMap[c.id] = c })
 
-      const combined = tarjetasData.map(t => ({
-        ...t,
-        clientes: clientesMap[t.cliente_id] || null,
-      }))
-
-      setClientes(combined)
+      setClientes(tarjetasData.map(t => ({ ...t, clientes: clientesMap[t.cliente_id] || null })))
       setLoading(false)
     }
     init()
@@ -62,9 +60,7 @@ export default function Clientes() {
     if (tarjeta.sellos_actuales >= negocio.num_sellos) return
     const nuevosSellos = (tarjeta.sellos_actuales || 0) + 1
     const { error } = await supabase
-      .from('tarjetas')
-      .update({ sellos_actuales: nuevosSellos })
-      .eq('id', tarjeta.id)
+      .from('tarjetas').update({ sellos_actuales: nuevosSellos }).eq('id', tarjeta.id)
     if (!error) {
       setClientes(prev => prev.map(c =>
         c.id === tarjeta.id ? { ...c, sellos_actuales: nuevosSellos } : c
@@ -75,11 +71,7 @@ export default function Clientes() {
   const handleEnviarMensaje = async () => {
     if (!mensaje.trim() || !modalMensaje) return
     setEnviando(true)
-    // Guardar mensaje en tarjeta
-    await supabase
-      .from('tarjetas')
-      .update({ mensaje_negocio: mensaje.trim() })
-      .eq('id', modalMensaje.id)
+    await supabase.from('tarjetas').update({ mensaje_negocio: mensaje.trim() }).eq('id', modalMensaje.id)
     setEnviando(false)
     setModalMensaje(null)
     setMensaje('')
@@ -113,7 +105,6 @@ export default function Clientes() {
             <p style={s.subtitulo}>Gestiona tus clientes y añade sellos manualmente</p>
           </div>
 
-          {/* Buscador */}
           <div style={s.searchWrap}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -125,10 +116,9 @@ export default function Clientes() {
               onChange={e => setBusqueda(e.target.value)}
               style={s.searchInput}
             />
-            <span style={s.countBadge}>{clientesFiltrados.length} clientes</span>
+            <span style={{ fontSize: '0.78rem', color: '#888', whiteSpace: 'nowrap' }}>{clientesFiltrados.length} clientes</span>
           </div>
 
-          {/* Lista */}
           {clientesFiltrados.length === 0 ? (
             <div style={s.empty}>
               <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>
@@ -136,61 +126,58 @@ export default function Clientes() {
               </p>
             </div>
           ) : (
-            <div style={s.lista}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {clientesFiltrados.map(tarjeta => {
                 const progreso = Math.min((tarjeta.sellos_actuales / negocio.num_sellos) * 100, 100)
                 const premioGanado = tarjeta.sellos_actuales >= negocio.num_sellos
-                const esBono = negocio.tipo_tarjeta === 'bonos'
                 const inicial = tarjeta.clientes?.nombre?.[0]?.toUpperCase() || '?'
 
                 return (
                   <div key={tarjeta.id} style={s.card}>
-                    {/* Info cliente */}
-                    <div style={s.cardLeft}>
-                      <div style={{ ...s.avatar, backgroundColor: premioGanado ? '#FFD700' : NARANJA }}>
-                        <span style={{ color: premioGanado ? '#1C1C1E' : '#fff', fontWeight: '700', fontSize: '1.1rem' }}>
-                          {inicial}
-                        </span>
+                    {/* Fila principal */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+                      <div style={{ ...s.avatar, backgroundColor: premioGanado ? '#FFD700' : NARANJA, flexShrink: 0 }}>
+                        <span style={{ color: premioGanado ? '#1C1C1E' : '#fff', fontWeight: '700', fontSize: '1.1rem' }}>{inicial}</span>
                       </div>
-                      <div style={{ minWidth: 0 }}>
-                        <p style={s.clienteNombre}>{tarjeta.clientes?.nombre || 'Sin nombre'}</p>
-                        <p style={s.clienteEmail}>{tarjeta.clientes?.email}</p>
-                        <p style={s.clienteFecha}>Registrado: {formatFecha(tarjeta.created_at)}</p>
-                      </div>
-                    </div>
-
-                    {/* Progreso */}
-                    <div style={s.cardMid}>
-                      <p style={{ margin: '0 0 2px', fontSize: '0.75rem', fontWeight: '600', color: premioGanado ? '#92400e' : '#888' }}>
-                        {premioGanado ? '🏆 Premio listo' : esBono ? 'Sesiones' : 'Sellos'}
-                      </p>
-                      <p style={{ margin: '0 0 6px', fontSize: '1.4rem', fontWeight: '700', color: premioGanado ? '#E8763A' : '#1C1C1E' }}>
-                        {tarjeta.sellos_actuales} <span style={{ fontSize: '0.9rem', color: '#888', fontWeight: '400' }}>/ {negocio.num_sellos}</span>
-                      </p>
-                      <div style={s.barraFondo}>
-                        <div style={{ ...s.barraProgreso, width: `${progreso}%`, backgroundColor: premioGanado ? '#FFD700' : NARANJA }} />
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' }}>
+                          {tarjeta.clientes?.nombre || 'Sin nombre'}
+                          {premioGanado && <span style={{ marginLeft: '8px', fontSize: '0.72rem', fontWeight: '600', color: '#92400e', backgroundColor: '#FEF3C7', borderRadius: '20px', padding: '2px 8px' }}>🏆 Premio</span>}
+                        </p>
+                        <p style={{ margin: '2px 0', fontSize: '0.78rem', color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tarjeta.clientes?.email}</p>
+                        <p style={{ margin: 0, fontSize: '0.72rem', color: '#bbb' }}>Desde {formatFecha(tarjeta.created_at)}</p>
                       </div>
                     </div>
 
-                    {/* Acciones */}
-                    <div style={s.cardRight}>
-                      <button
-                        onClick={() => handleAñadirSello(tarjeta)}
-                        disabled={premioGanado}
-                        style={{
-                          ...s.btnAñadir,
-                          opacity: premioGanado ? 0.4 : 1,
-                          cursor: premioGanado ? 'not-allowed' : 'pointer',
-                        }}
-                      >
-                        + Añadir Sello
-                      </button>
-                      <button onClick={() => { setModalMensaje(tarjeta); setMensaje('') }} style={s.btnMensaje}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                        Enviar Mensaje
-                      </button>
+                    {/* Sellos + acciones */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0, flexWrap: isMobile ? 'wrap' : 'nowrap', width: isMobile ? '100%' : 'auto', marginTop: isMobile ? '0.75rem' : 0 }}>
+                      {/* Contador */}
+                      <div style={{ minWidth: 130 }}>
+                        <p style={{ margin: '0 0 2px', fontSize: '0.72rem', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sellos</p>
+                        <p style={{ margin: '0 0 5px', fontSize: '1.3rem', fontWeight: '700', color: '#1C1C1E', lineHeight: 1 }}>
+                          {tarjeta.sellos_actuales} <span style={{ fontSize: '0.85rem', color: '#bbb', fontWeight: '400' }}>/ {negocio.num_sellos}</span>
+                        </p>
+                        <div style={{ height: '5px', backgroundColor: '#f0f0f0', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', borderRadius: '3px', width: `${progreso}%`, backgroundColor: premioGanado ? '#FFD700' : NARANJA, transition: 'width 0.3s' }} />
+                        </div>
+                      </div>
+
+                      {/* Botones */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <button
+                          onClick={() => handleAñadirSello(tarjeta)}
+                          disabled={premioGanado}
+                          style={{ ...s.btnAñadir, opacity: premioGanado ? 0.4 : 1, cursor: premioGanado ? 'not-allowed' : 'pointer' }}
+                        >
+                          + Añadir Sello
+                        </button>
+                        <button onClick={() => { setModalMensaje(tarjeta); setMensaje('') }} style={s.btnMensaje}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                          </svg>
+                          Enviar Mensaje
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )
@@ -200,7 +187,7 @@ export default function Clientes() {
         </div>
       </main>
 
-      {/* Modal enviar mensaje */}
+      {/* Modal mensaje */}
       {modalMensaje && (
         <div style={s.overlay} onClick={() => setModalMensaje(null)}>
           <div style={s.modal} onClick={e => e.stopPropagation()}>
@@ -219,11 +206,7 @@ export default function Clientes() {
             />
             <div style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
               <button onClick={() => setModalMensaje(null)} style={s.btnCancelar}>Cancelar</button>
-              <button
-                onClick={handleEnviarMensaje}
-                disabled={!mensaje.trim() || enviando}
-                style={{ ...s.btnEnviar, opacity: !mensaje.trim() ? 0.5 : 1 }}
-              >
+              <button onClick={handleEnviarMensaje} disabled={!mensaje.trim() || enviando} style={{ ...s.btnEnviar, opacity: !mensaje.trim() ? 0.5 : 1 }}>
                 {enviando ? 'Enviando...' : 'Enviar Mensaje'}
               </button>
             </div>
@@ -240,40 +223,13 @@ const s = {
   inner: { maxWidth: 900, margin: '0 auto' },
   titulo: { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
   subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888' },
-  searchWrap: {
-    display: 'flex', alignItems: 'center', gap: '10px',
-    backgroundColor: '#fff', borderRadius: '12px', padding: '0.75rem 1rem',
-    border: '1.5px solid #e8e8e8', marginBottom: '1rem',
-  },
+  searchWrap: { display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#fff', borderRadius: '12px', padding: '0.75rem 1rem', border: '1.5px solid #e8e8e8', marginBottom: '1rem' },
   searchInput: { flex: 1, border: 'none', outline: 'none', fontSize: '0.9rem', color: '#1C1C1E', backgroundColor: 'transparent' },
-  countBadge: { fontSize: '0.78rem', color: '#888', whiteSpace: 'nowrap' },
   empty: { backgroundColor: '#fff', borderRadius: '16px', padding: '3rem', textAlign: 'center', border: '1.5px solid #e8e8e8' },
-  lista: { display: 'flex', flexDirection: 'column', gap: '10px' },
-  card: {
-    display: 'flex', alignItems: 'center', gap: '1rem',
-    backgroundColor: '#fff', borderRadius: '16px', padding: '1.25rem',
-    border: '1.5px solid #e8e8e8', flexWrap: 'wrap',
-  },
-  cardLeft: { display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 200px', minWidth: 0 },
-  cardMid: { flex: '0 0 160px' },
-  cardRight: { display: 'flex', flexDirection: 'column', gap: '8px', flex: '0 0 140px' },
-  avatar: { width: 48, height: 48, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  clienteNombre: { margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' },
-  clienteEmail: { margin: '2px 0', fontSize: '0.78rem', color: '#888' },
-  clienteFecha: { margin: 0, fontSize: '0.72rem', color: '#bbb' },
-  barraFondo: { height: '6px', backgroundColor: '#f0f0f0', borderRadius: '3px', overflow: 'hidden' },
-  barraProgreso: { height: '100%', borderRadius: '3px', transition: 'width 0.3s ease' },
-  btnAñadir: {
-    padding: '0.6rem 0.75rem', backgroundColor: NARANJA, color: '#fff',
-    border: 'none', borderRadius: '10px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer',
-    textAlign: 'center',
-  },
-  btnMensaje: {
-    padding: '0.6rem 0.75rem', backgroundColor: 'transparent', color: '#555',
-    border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '0.82rem',
-    fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', gap: '6px',
-  },
+  card: { backgroundColor: '#fff', borderRadius: '16px', padding: '1.25rem', border: '1.5px solid #e8e8e8', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' },
+  avatar: { width: 48, height: 48, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  btnAñadir: { padding: '0.55rem 1rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' },
+  btnMensaje: { padding: '0.55rem 1rem', backgroundColor: 'transparent', color: '#555', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '0.82rem', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' },
   overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
   modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '480px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' },
   textarea: { width: '100%', padding: '0.85rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit', color: '#1C1C1E', boxSizing: 'border-box' },
