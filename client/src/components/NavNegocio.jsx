@@ -4,7 +4,7 @@ import { supabase } from '../supabase'
 
 const NARANJA = '#E8763A'
 const SIDEBAR_BG = '#1C1C1E'
-const SIDEBAR_WIDTH = 280
+const SIDEBAR_WIDTH = 360
 
 const icons = {
   inicio: (active) => (
@@ -49,7 +49,7 @@ const icons = {
 
 const items = [
   { label: 'Inicio',      icon: 'inicio',     path: '/negocio/dashboard' },
-  { label: 'Mi Tarjeta', icon: 'tarjeta', path: '/negocio/mi-tarjeta' },
+  { label: 'Mi Tarjeta',  icon: 'tarjeta',    path: null },
   { label: 'Clientes',    icon: 'clientes',   path: null },
   { label: 'Analíticas',  icon: 'analiticas', path: null },
   { label: 'Ayuda',       icon: 'ayuda',      path: null },
