@@ -12,14 +12,10 @@ const ESTILOS = [
 ]
 
 const EFECTOS = [
-  { id: 'bubbles',  nombre: 'Burbujas' },
-  { id: 'none',     nombre: 'Ninguno' },
-  { id: 'lines',    nombre: 'Líneas' },
-  { id: 'dots',     nombre: 'Puntos' },
-  { id: 'waves',    nombre: 'Ondas' },
-  { id: 'hexagons', nombre: 'Hexágonos' },
-  { id: 'gradient', nombre: 'Gradiente' },
-  { id: 'confetti', nombre: 'Confeti' },
+  { id: 'none',    nombre: 'Ninguno' },
+  { id: 'bubbles', nombre: 'Burbujas' },
+  { id: 'lines',   nombre: 'Líneas' },
+  { id: 'waves',   nombre: 'Ondas' },
 ]
 
 const COLORES = [
@@ -199,9 +195,7 @@ function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, pre
 
   return (
     <div style={{ borderRadius: '28px', background: `linear-gradient(145deg, ${colDark} 0%, ${col} 60%, ${colDark} 100%)`, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 24px 64px ${col}55`, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      <div style={{ position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -70, right: -70, pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', bottom: -50, left: -50, pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,215,0,0.12)', top: '40%', right: 10, pointerEvents: 'none' }} />
+      <Efecto tipo={efecto} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia,serif' }}>{nombre}</h3>
@@ -253,7 +247,7 @@ function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, pre
       <div style={{ background: col, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden' }}>
         <Efecto tipo={efecto} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.1rem' }}>{nombre}</h3>
+          <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.75rem', fontWeight: '700' }}>{nombre}</h3>
           <GridSellos numSellos={numSellos} premios={premios} selloIcon={selloIcon} premioIcon={premioIcon} cuadrado />
           <div style={{ marginTop: '8px' }}>
             <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.8)', fontWeight: '500' }}>🎁 Premio: {premios[premios.length - 1]?.texto || '...'}</p>
@@ -503,15 +497,13 @@ export default function MiTarjeta() {
 
           {isMobile ? (
             <div>
-              <div style={{ display: 'flex', background: '#f0f0f0', borderRadius: '10px', padding: '3px', marginBottom: '1.25rem' }}>
-                {[['editar', 'Editar'], ['preview', 'Vista previa']].map(([id, label]) => (
-                  <button key={id} onClick={() => setMobileView(id)} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '500', background: mobileView === id ? '#fff' : 'transparent', color: mobileView === id ? '#1C1C1E' : '#888', boxShadow: mobileView === id ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}>
-                    {label}
-                  </button>
-                ))}
+              {renderTabs()}
+              {tab === 'diseno' ? renderDiseno() : renderConfig()}
+              <div style={{ marginTop: '1.5rem' }}>
+                <p style={s.secLabel}>Vista previa</p>
+                <TarjetaPreview {...previewProps} />
               </div>
-              {mobileView === 'preview' && <TarjetaPreview {...previewProps} />}
-              {mobileView === 'editar' && <div>{renderTabs()}{tab === 'diseno' ? renderDiseno() : renderConfig()}{btnGuardar}</div>}
+              {btnGuardar}
             </div>
           ) : (
             <div style={s.layout}>
@@ -520,9 +512,11 @@ export default function MiTarjeta() {
                 {tab === 'diseno' ? renderDiseno() : renderConfig()}
                 {btnGuardar}
               </div>
-              <div style={{ width: 280, flexShrink: 0 }}>
+              <div style={{ width: 240, flexShrink: 0 }}>
                 <p style={s.secLabel}>Vista previa</p>
-                <TarjetaPreview {...previewProps} />
+                <div style={{ maxWidth: 240 }}>
+                  <TarjetaPreview {...previewProps} />
+                </div>
               </div>
             </div>
           )}
