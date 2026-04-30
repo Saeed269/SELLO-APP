@@ -4,12 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import NavNegocio from '../../components/NavNegocio'
 
-const TIPOS_EMOJI = {
-  'Cafetería': '☕', 'Restaurante': '🍽️', 'Pizzería': '🍕', 'Kebab': '🌯',
-  'Peluquería / Barbería': '✂️', 'Gimnasio': '💪', 'Centro de Yoga': '🧘',
-  'Entrenador Personal': '🏋️', 'Salón de Manicura': '💅', 'Centro de Masaje': '💆',
-}
-
 export default function Dashboard() {
   const [user, setUser] = useState(null)
   const [negocio, setNegocio] = useState(null)
@@ -44,64 +38,47 @@ export default function Dashboard() {
 
   const qrUrl = `${window.location.origin}/cliente/registro?negocio=${negocio?.id}`
 
-  return (
-    <div style={styles.root}>
+  // ── Móvil — igual que antes ───────────────────────────────
+  if (isMobile) return (
+    <div style={s.root}>
       <NavNegocio negocio={negocio} user={user} />
-
-      <main style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: isMobile ? '2rem 1rem 1rem' : '2rem',
-        backgroundColor: '#f5f5f5',
-        minHeight: '100dvh',
-        boxSizing: 'border-box',
-      }}>
-        <div style={{
-          ...styles.tarjeta,
-          maxWidth: isMobile ? '100%' : '460px',
-          padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-          gap: isMobile ? '1rem' : '1rem',
-        }}>
-
-          <div style={styles.blob1} />
-          <div style={styles.blob2} />
-          <div style={styles.blob3} />
-
-          <h1 style={{
-            ...styles.nombre,
-            fontSize: isMobile ? '1.5rem' : '2rem',
-          }}>{negocio?.nombre}</h1>
-
-          <div style={{
-            ...styles.qrWrap,
-            padding: isMobile ? '14px' : '16px',
-          }}>
-            <QRCodeSVG
-              value={qrUrl}
-              size={isMobile ? 200 : 220}
-              fgColor="#1C1C1E"
-              bgColor="#FFFFFF"
-              level="M"
-            />
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem 1rem', backgroundColor: '#f5f5f5', minHeight: '100dvh', boxSizing: 'border-box' }}>
+        <div style={{ ...s.tarjeta, maxWidth: '100%', padding: '2rem 1.5rem', gap: '1rem' }}>
+          <div style={s.blob1} /><div style={s.blob2} /><div style={s.blob3} />
+          <h1 style={{ ...s.nombre, fontSize: '1.5rem' }}>{negocio?.nombre}</h1>
+          <div style={{ ...s.qrWrap, padding: '14px' }}>
+            <QRCodeSVG value={qrUrl} size={200} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
           </div>
-
-          <p style={{ ...styles.hint, fontSize: isMobile ? '0.72rem' : '0.78rem' }}>
-            Los clientes escanean este QR para registrarse
-          </p>
-
-          <button
-            onClick={() => navigate('/negocio/escanear')}
-            style={{ ...styles.btnEscanear, padding: isMobile ? '0.75rem' : '0.9rem' }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
-              <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
-              <line x1="7" y1="12" x2="17" y2="12"/>
-            </svg>
+          <p style={{ ...s.hint, fontSize: '0.72rem' }}>Los clientes escanean este QR para registrarse</p>
+          <button onClick={() => navigate('/negocio/escanear')} style={{ ...s.btnEscanear, padding: '0.75rem' }}>
+            <IconEscanear />
             Escanear QR del Cliente
           </button>
+        </div>
+      </main>
+    </div>
+  )
+
+  // ── Desktop — tarjeta más grande + botón escanear lateral ─
+  return (
+    <div style={s.root}>
+      <NavNegocio negocio={negocio} user={user} />
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', backgroundColor: '#f5f5f5', minHeight: '100dvh', boxSizing: 'border-box' }}>
+        <div style={s.desktopLayout}>
+
+          {/* Tarjeta grande */}
+          <div style={{ ...s.tarjeta, flex: 1, maxWidth: '600px', padding: '3rem 2.5rem', gap: '1.5rem' }}>
+            <div style={s.blob1} /><div style={s.blob2} /><div style={s.blob3} />
+            <h1 style={{ ...s.nombre, fontSize: '2.2rem' }}>{negocio?.nombre}</h1>
+            <div style={{ ...s.qrWrap, padding: '20px' }}>
+              <QRCodeSVG value={qrUrl} size={260} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
+            </div>
+            <p style={{ ...s.hint, fontSize: '0.85rem' }}>Los clientes escanean este QR para registrarse</p>
+            <button onClick={() => navigate('/negocio/escanear')} style={{ ...s.btnEscanear, padding: '1rem', fontSize: '1rem' }}>
+              <IconEscanear />
+              Escanear QR del Cliente
+            </button>
+          </div>
 
         </div>
       </main>
@@ -109,8 +86,28 @@ export default function Dashboard() {
   )
 }
 
-const styles = {
+function IconEscanear() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+      <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+      <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+      <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+      <line x1="7" y1="12" x2="17" y2="12"/>
+    </svg>
+  )
+}
+
+const s = {
   root: { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
+  desktopLayout: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '2rem',
+    width: '100%',
+    maxWidth: '700px',
+  },
   tarjeta: {
     position: 'relative',
     overflow: 'hidden',
@@ -127,16 +124,10 @@ const styles = {
   blob3: { position: 'absolute', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,215,0,0.10)', bottom: 80, right: 20, pointerEvents: 'none' },
   nombre: {
     position: 'relative', zIndex: 1,
-    margin: 0,
-    fontWeight: '700', fontStyle: 'italic',
+    margin: 0, fontWeight: '700', fontStyle: 'italic',
     color: '#fff', textAlign: 'center',
     textShadow: '0 2px 8px rgba(0,0,0,0.15)',
     fontFamily: 'Georgia, serif',
-  },
-  tipo: {
-    position: 'relative', zIndex: 1,
-    margin: 0, fontSize: '0.7rem', fontWeight: '600',
-    color: 'rgba(255,255,255,0.75)', letterSpacing: '0.18em', textAlign: 'center',
   },
   qrWrap: {
     position: 'relative', zIndex: 1,
