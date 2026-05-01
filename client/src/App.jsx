@@ -12,6 +12,7 @@ import MiTarjeta from './pages/negocio/MiTarjeta'
 import Clientes from './pages/negocio/Clientes'
 import Analiticas from './pages/negocio/Analiticas'
 import Ayuda from './pages/negocio/Ayuda'
+import Ajustes from './pages/negocio/Ajustes'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/negocio/clientes" element={<Clientes />} />
         <Route path="/negocio/analiticas" element={<Analiticas />} />
         <Route path="/negocio/ayuda" element={<Ayuda />} />
+        <Route path="/negocio/ajustes" element={<Ajustes />} />
         
       </Routes>
     </BrowserRouter>
