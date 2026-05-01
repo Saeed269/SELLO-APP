@@ -18,7 +18,14 @@ export default function Analiticas() {
   const [clientesHabituales, setClientesHabituales] = useState([])
   const [clientesRiesgo, setClientesRiesgo] = useState([])
   const [sellosUltimos30, setSellosUltimos30] = useState([])
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     const init = async () => {
@@ -128,7 +135,7 @@ export default function Analiticas() {
               { label: 'Premios canjeados', valor: stats.premiosCanjeados, icon: 'M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z', color: '#FFD700' },
               { label: 'Tasa de retorno', valor: `${stats.tasaRetorno}%`, icon: 'M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3', color: '#2D6A4F' },
             ].map(({ label, valor, icon, color }) => (
-              <div key={label} style={s.statCard}>
+              <div key={label} style={{ ...s.statCard, textAlign: isMobile ? 'center' : 'left', flexDirection: isMobile ? 'column' : 'row' }}>
                 <div style={{ ...s.iconWrap, backgroundColor: `${color}18` }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d={icon} />
@@ -167,11 +174,8 @@ export default function Analiticas() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {clientesHabituales.map((t, i) => (
-                    <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#bbb', width: '16px' }}>{i + 1}</span>
-                      <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: NARANJA, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span style={{ color: '#fff', fontWeight: '700', fontSize: '0.85rem' }}>{t.cliente?.nombre?.[0]?.toUpperCase() || '?'}</span>
-                      </div>
+                    <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#bbb', width: '16px', flexShrink: 0 }}>{i + 1}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600', color: '#1C1C1E', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.cliente?.nombre || 'Sin nombre'}</p>
                         <p style={{ margin: 0, fontSize: '0.72rem', color: '#888' }}>{t.sellos_actuales} sellos · {t.total_canjes || 0} canjes</p>
