@@ -10,6 +10,7 @@ import LoginCliente from './pages/cliente/LoginCliente'
 import Tarjeta from './pages/cliente/Tarjeta'
 import MiTarjeta from './pages/negocio/MiTarjeta'
 import Clientes from './pages/negocio/Clientes'
+import Analiticas from './pages/negocio/Analiticas'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/cliente/tarjeta" element={<Tarjeta />} />
         <Route path="/negocio/mi-tarjeta" element={<MiTarjeta />} />
         <Route path="/negocio/clientes" element={<Clientes />} />
+        <Route path="/negocio/analiticas" element={<Analiticas />} />
       </Routes>
     </BrowserRouter>
   )
