@@ -124,7 +124,6 @@ export default function Analiticas() {
           {/* Cards resumen */}
           <div style={s.cardsGrid}>
             {[
-              { label: 'Total clientes', valor: stats.totalClientes, icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', color: '#5C6BC0' },
               { label: 'Activos este mes', valor: stats.clientesActivosMes, icon: 'M22 12h-4l-3 9L9 3l-3 9H2', color: NARANJA },
               { label: 'Premios canjeados', valor: stats.premiosCanjeados, icon: 'M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z', color: '#FFD700' },
               { label: 'Tasa de retorno', valor: `${stats.tasaRetorno}%`, icon: 'M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3', color: '#2D6A4F' },
