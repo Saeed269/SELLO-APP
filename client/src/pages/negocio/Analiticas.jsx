@@ -135,7 +135,7 @@ export default function Analiticas() {
               { label: 'Premios canjeados', valor: stats.premiosCanjeados, icon: 'M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z', color: '#FFD700' },
               { label: 'Tasa de retorno', valor: `${stats.tasaRetorno}%`, icon: 'M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3', color: '#2D6A4F' },
             ].map(({ label, valor, icon, color }) => (
-              <div key={label} style={{ ...s.statCard, textAlign: isMobile ? 'center' : 'left', flexDirection: isMobile ? 'column' : 'row' }}>
+              <div key={label} style={{ ...s.statCard, textAlign: isMobile ? 'center' : 'left' }}>
                 <div style={{ ...s.iconWrap, backgroundColor: `${color}18` }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d={icon} />
