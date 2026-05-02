@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
+import { useNegocio } from '../../context/useNegocio'
 import NavNegocio from '../../components/NavNegocio'
 
 const NARANJA = '#E8763A'
 
 export default function Analiticas() {
-  const [user, setUser] = useState(null)
-  const [negocio, setNegocio] = useState(null)
+  const { user, negocio } = useNegocio()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalClientes: 0,
@@ -29,18 +29,10 @@ export default function Analiticas() {
 
   useEffect(() => {
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { navigate('/negocio/login'); return }
-      setUser(user)
+      if (!negocio) return
 
-      const { data: negocioData } = await supabase
-        .from('negocios').select('*').eq('user_id', user.id).single()
-      if (!negocioData) { navigate('/negocio/onboarding'); return }
-      setNegocio(negocioData)
-
-      // Obtener tarjetas
       const { data: tarjetas } = await supabase
-        .from('tarjetas').select('*').eq('negocio_id', negocioData.id)
+        .from('tarjetas').select('*').eq('negocio_id', negocio.id)
 
       if (!tarjetas || tarjetas.length === 0) {
         setLoading(false)
@@ -102,7 +94,7 @@ export default function Analiticas() {
       setLoading(false)
     }
     init()
-  }, [navigate])
+  }, [navigate, negocio])
 
   const formatFecha = (fecha) => {
     if (!fecha) return '—'
