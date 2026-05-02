@@ -46,7 +46,7 @@ export default function Login() {
           <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 520 }}>
             {/* Logo */}
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-              <h1 style={{ margin: '0 0 0.5rem', fontSize: '3rem', fontWeight: '900', color: '#fff', letterSpacing: '0.1em' }}>SELLO</h1>
+              <h1 style={{ margin: '0 0 1rem', fontSize: '3rem', fontWeight: '900', color: '#fff', letterSpacing: '0.1em' }}>SELLO</h1>
               <p style={{ margin: 0, color: '#fed7aa', fontSize: '0.95rem' }}>Fidelización digital para tu negocio</p>
             </div>
 
