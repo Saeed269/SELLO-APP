@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
+import { useNegocio } from '../../context/useNegocio'
 import NavNegocio from '../../components/NavNegocio'
 
 const NARANJA = '#E8763A'
@@ -53,9 +54,8 @@ function Row({ titulo, valor, onEdit }) {
 }
 
 export default function Ajustes() {
-  const [user, setUser] = useState(null)
-  const [negocio, setNegocio] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user, negocio, updateNegocio } = useNegocio()
+  const [loading, setLoading] = useState(false)
   const [notificaciones, setNotificaciones] = useState(true)
 
   // Modales individuales
@@ -67,11 +67,7 @@ export default function Ajustes() {
   const [modalEliminar, setModalEliminar] = useState(false)
 
   // Campos
-  const [nombre, setNombre] = useState('')
-  const [email, setEmail] = useState('')
-  const [emailConfirm, setEmailConfirm] = useState('')
-  const [telefono, setTelefono] = useState('')
-  const [direccion, setDireccion] = useState('')
+
   const [passwordActual, setPasswordActual] = useState('')
   const [passwordNuevo, setPasswordNuevo] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -84,24 +80,16 @@ export default function Ajustes() {
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { navigate('/negocio/login'); return }
-      setUser(user)
-      setEmail(user.email || '')
-      setEmailConfirm(user.email || '')
-      const { data: negocioData } = await supabase
-        .from('negocios').select('*').eq('user_id', user.id).single()
-      if (!negocioData) { navigate('/negocio/onboarding'); return }
-      setNegocio(negocioData)
-      setNombre(negocioData.nombre || '')
-      setTelefono(negocioData.telefono || '')
-      setDireccion(negocioData.direccion || '')
-      setLoading(false)
-    }
-    init()
-  }, [navigate])
+  const emailInicial = user?.email || ''
+  const nombreInicial = negocio?.nombre || ''
+  const telefonoInicial = negocio?.telefono || ''
+  const direccionInicial = negocio?.direccion || ''
+
+  const [nombre, setNombre] = useState(nombreInicial)
+  const [email, setEmail] = useState(emailInicial)
+  const [emailConfirm, setEmailConfirm] = useState(emailInicial)
+  const [telefono, setTelefono] = useState(telefonoInicial)
+  const [direccion, setDireccion] = useState(direccionInicial)
 
   const cerrar = (setter) => { setter(false); setMsg(null) }
 
@@ -109,7 +97,7 @@ export default function Ajustes() {
     setGuardando(true); setMsg(null)
     const { error } = await supabase.from('negocios').update({ nombre }).eq('id', negocio.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { setNegocio(prev => ({ ...prev, nombre })); setMsg({ tipo: 'ok', texto: 'Nombre actualizado' }); setTimeout(() => cerrar(setModalNombre), 1200) }
+    else { updateNegocio({ nombre }); setMsg({ tipo: 'ok', texto: 'Nombre actualizado' }); setTimeout(() => cerrar(setModalNombre), 1200) }
     setGuardando(false)
   }
 
@@ -126,7 +114,7 @@ export default function Ajustes() {
     setGuardando(true); setMsg(null)
     const { error } = await supabase.from('negocios').update({ telefono }).eq('id', negocio.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { setNegocio(prev => ({ ...prev, telefono })); setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' }); setTimeout(() => cerrar(setModalTelefono), 1200) }
+    else { updateNegocio({ telefono }); setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' }); setTimeout(() => cerrar(setModalTelefono), 1200) }
     setGuardando(false)
   }
 
@@ -134,7 +122,7 @@ export default function Ajustes() {
     setGuardando(true); setMsg(null)
     const { error } = await supabase.from('negocios').update({ direccion }).eq('id', negocio.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { setNegocio(prev => ({ ...prev, direccion })); setMsg({ tipo: 'ok', texto: 'Dirección actualizada' }); setTimeout(() => cerrar(setModalDireccion), 1200) }
+    else { updateNegocio({ direccion }); setMsg({ tipo: 'ok', texto: 'Dirección actualizada' }); setTimeout(() => cerrar(setModalDireccion), 1200) }
     setGuardando(false)
   }
 
@@ -255,8 +243,12 @@ export default function Ajustes() {
       {/* Modal email */}
       {modalEmail && (
         <Modal titulo="Email" onClose={() => cerrar(setModalEmail)}>
-          <FieldInput label="Nuevo email" value={email} onChange={setEmail} placeholder="tu@email.com" type="email" />
-          <FieldInput label="Confirmar email" value={emailConfirm} onChange={setEmailConfirm} placeholder="Confirma tu email" type="email" />
+          <div style={{ marginBottom: '0.85rem', padding: '0.75rem 1rem', borderRadius: '10px', backgroundColor: '#f9f9f9', border: '1.5px solid #e8e8e8' }}>
+            <p style={{ margin: '0 0 2px', fontSize: '0.72rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email actual</p>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: '#1C1C1E' }}>{user?.email}</p>
+          </div>
+          <FieldInput label="Nuevo email" value={email} onChange={setEmail} placeholder="nuevo@email.com" type="email" />
+          <FieldInput label="Confirmar nuevo email" value={emailConfirm} onChange={setEmailConfirm} placeholder="Confirma tu nuevo email" type="email" />
           {msg && <MsgFeedback msg={msg} />}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => cerrar(setModalEmail)} style={s.btnCancelar}>Cancelar</button>
