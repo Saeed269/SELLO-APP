@@ -68,20 +68,20 @@ export default function Login() {
       {/* Panel izquierdo */}
       {!isMobile && (
         <div style={{
-          width: '50%', flexShrink: 0,
+          width: '45%', flexShrink: 0,
           background: 'linear-gradient(135deg, #f97316 0%, #ea580c 40%, #dc2626 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
           position: 'relative', overflow: 'hidden', padding: '3rem 2.5rem',
         }}>
           <div style={{ position: 'absolute', width: 350, height: 350, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', top: -100, right: -100 }} />
           <div style={{ position: 'absolute', width: 250, height: 250, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -60, left: -60 }} />
 
           <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420 }}>
-            <h1 style={{ margin: '0 0 0.25rem', fontSize: '3rem', fontWeight: '900', color: '#fff', letterSpacing: '0.08em' }}>SELLO</h1>
+            <h1 style={{ margin: '0 0 0.25rem', fontSize: '2.8rem', fontWeight: '900', color: '#fff', letterSpacing: '0.08em', textAlign: 'left' }}>SELLO</h1>
             <p style={{ margin: '0 0 2rem', color: '#fed7aa', fontSize: '0.92rem' }}>Fidelización digital para tu negocio</p>
 
-            <h2 style={{ margin: '0 0 0.75rem', color: '#fff', fontSize: '1.1rem', fontWeight: '600' }}>¿Cómo funciona?</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h2 style={{ margin: '0 0 0.75rem', color: '#fff', fontSize: '1rem', fontWeight: '700', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.08em' }}>¿Cómo funciona?</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
               {pasos.map((p, i) => <PasoCard key={p.num} paso={p} index={i} />)}
             </div>
 
@@ -108,8 +108,8 @@ export default function Login() {
           padding: '2.5rem 2rem',
           boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
         }}>
-          <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.9rem', fontWeight: '800', color: '#111827' }}>Bienvenido</h2>
-          <p style={{ margin: '0 0 1.5rem', fontSize: '0.88rem', color: '#6B7280' }}>Inicia sesión para gestionar tu negocio</p>
+          <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.9rem', fontWeight: '800', color: '#111827', textAlign: 'left' }}>Bienvenido</h2>
+          <p style={{ margin: '0 0 1.5rem', fontSize: '0.88rem', color: '#6B7280', textAlign: 'left' }}>Inicia sesión para gestionar tu negocio</p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
