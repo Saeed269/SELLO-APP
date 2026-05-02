@@ -70,6 +70,7 @@ export default function Ajustes() {
   const [guardandoCuenta, setGuardandoCuenta] = useState(false)
   const [msgCuenta, setMsgCuenta] = useState(null)
 
+  const [passwordActual, setPasswordActual] = useState('')
   const [passwordNuevo, setPasswordNuevo] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [guardandoPassword, setGuardandoPassword] = useState(false)
@@ -208,7 +209,7 @@ export default function Ajustes() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
               <div style={{ textAlign: 'left' }}>
                 <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>Notificaciones</p>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Avisos cuando un cliente canjee un premio</p>
+
               </div>
               <button
                 onClick={() => setNotificaciones(!notificaciones)}
@@ -219,14 +220,34 @@ export default function Ajustes() {
             </div>
           </div>
 
+          {/* Plan y facturación */}
+          <div style={s.card}>
+            <p style={s.cardTitle}>Plan y facturación</p>
+            <div style={{ padding: '0.85rem 0', borderBottom: '1px solid #f0f0f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ textAlign: 'left' }}>
+                  <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Plan actual</p>
+                  <p style={{ margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' }}>✦ Básico</p>
+                  <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#9CA3AF' }}>Próxima renovación: 1 junio 2026</p>
+                  <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: '600', color: NARANJA }}>€12,99/mes</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ padding: '0.85rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Método de pago</p>
+                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>VISA •••• •••• •••• 4821</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Expira 09/28</p>
+              </div>
+              <button style={s.btnSecondary}>Cambiar</button>
+            </div>
+          </div>
+
           {/* Eliminar cuenta */}
           <div style={{ ...s.card, border: '1.5px solid #FEE2E2' }}>
             <p style={{ ...s.cardTitle, color: '#dc2626' }}>Eliminar cuenta</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#dc2626' }}>Eliminar mi cuenta</p>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Tienes 30 días para recuperarla</p>
-              </div>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#9CA3AF', textAlign: 'left' }}>Tienes 30 días para recuperarla después de eliminarla</p>
               <button onClick={() => setModalEliminar(true)} style={s.btnPeligro}>Eliminar</button>
             </div>
           </div>
@@ -254,12 +275,13 @@ export default function Ajustes() {
 
       {/* Modal contraseña */}
       {modalPassword && (
-        <Modal titulo="Cambiar contraseña" onClose={() => { setModalPassword(false); setMsgPassword(null); setPasswordNuevo(''); setPasswordConfirm('') }}>
+        <Modal titulo="Cambiar contraseña" onClose={() => { setModalPassword(false); setMsgPassword(null); setPasswordActual(''); setPasswordNuevo(''); setPasswordConfirm('') }}>
+          <Field label="Contraseña actual" value={passwordActual} onChange={setPasswordActual} placeholder="Tu contraseña actual" type="password" />
           <Field label="Nueva contraseña" value={passwordNuevo} onChange={setPasswordNuevo} placeholder="Mínimo 6 caracteres" type="password" />
           <Field label="Confirmar contraseña" value={passwordConfirm} onChange={setPasswordConfirm} placeholder="Repite la contraseña" type="password" />
           {msgPassword && <MsgFeedback msg={msgPassword} />}
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={() => { setModalPassword(false); setMsgPassword(null); setPasswordNuevo(''); setPasswordConfirm('') }} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={() => { setModalPassword(false); setMsgPassword(null); setPasswordActual(''); setPasswordNuevo(''); setPasswordConfirm('') }} style={s.btnCancelar}>Cancelar</button>
             <button onClick={handleCambiarPassword} disabled={guardandoPassword} style={s.btnPrimary}>
               {guardandoPassword ? 'Actualizando...' : 'Cambiar'}
             </button>
