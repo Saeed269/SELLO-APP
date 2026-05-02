@@ -53,52 +53,48 @@ function Row({ titulo, valor, onEdit }) {
 }
 
 export default function Ajustes() {
+  const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [negocio, setNegocio] = useState(null)
   const [loading, setLoading] = useState(true)
   const [notificaciones, setNotificaciones] = useState(true)
-
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { navigate('/negocio/login'); return }
-      setUser(user)
-      const { data: negocioData } = await supabase
-        .from('negocios').select('*').eq('user_id', user.id).single()
-      if (!negocioData) { navigate('/negocio/onboarding'); return }
-      setNegocio(negocioData)
-      setLoading(false)
-    }
-    init()
-  }, [navigate])
-
-  // Modales individuales
   const [modalNombre, setModalNombre] = useState(false)
   const [modalEmail, setModalEmail] = useState(false)
   const [modalTelefono, setModalTelefono] = useState(false)
   const [modalDireccion, setModalDireccion] = useState(false)
   const [modalPassword, setModalPassword] = useState(false)
   const [modalEliminar, setModalEliminar] = useState(false)
-
-  // Campos
-
-  const [passwordActual, setPasswordActual] = useState('')
-  const [passwordNuevo, setPasswordNuevo] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [confirmTexto, setConfirmTexto] = useState('')
-
-  // Estados
-  const [guardando, setGuardando] = useState(false)
-  const [msg, setMsg] = useState(null)
-  const [eliminando, setEliminando] = useState(false)
-
-  const navigate = useNavigate()
-
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [emailConfirm, setEmailConfirm] = useState('')
   const [telefono, setTelefono] = useState('')
   const [direccion, setDireccion] = useState('')
+  const [passwordActual, setPasswordActual] = useState('')
+  const [passwordNuevo, setPasswordNuevo] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [confirmTexto, setConfirmTexto] = useState('')
+  const [guardando, setGuardando] = useState(false)
+  const [msg, setMsg] = useState(null)
+  const [eliminando, setEliminando] = useState(false)
+
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { navigate('/negocio/login'); return }
+      setUser(user)
+      setEmail(user.email || '')
+      setEmailConfirm(user.email || '')
+      const { data: negocioData } = await supabase
+        .from('negocios').select('*').eq('user_id', user.id).single()
+      if (!negocioData) { navigate('/negocio/onboarding'); return }
+      setNegocio(negocioData)
+      setNombre(negocioData.nombre || '')
+      setTelefono(negocioData.telefono || '')
+      setDireccion(negocioData.direccion || '')
+      setLoading(false)
+    }
+    init()
+  }, [navigate])
 
   const cerrar = (setter) => { setter(false); setMsg(null) }
 
@@ -169,7 +165,6 @@ export default function Ajustes() {
             <p style={s.subtitulo}>Gestiona tu cuenta y preferencias</p>
           </div>
 
-          {/* Información de la cuenta */}
           <div style={s.card}>
             <p style={s.cardTitle}>Información de la cuenta</p>
             <Row titulo="Nombre del negocio" valor={negocio?.nombre} onEdit={() => { setNombre(negocio?.nombre || ''); setModalNombre(true) }} />
@@ -184,7 +179,6 @@ export default function Ajustes() {
             </div>
           </div>
 
-          {/* Seguridad */}
           <div style={s.card}>
             <p style={s.cardTitle}>Seguridad</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
@@ -196,7 +190,6 @@ export default function Ajustes() {
             </div>
           </div>
 
-          {/* Preferencias */}
           <div style={s.card}>
             <p style={s.cardTitle}>Preferencias</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
@@ -207,7 +200,6 @@ export default function Ajustes() {
             </div>
           </div>
 
-          {/* Plan y facturación */}
           <div style={s.card}>
             <p style={s.cardTitle}>Plan y facturación</p>
             <div style={{ padding: '0.85rem 0', borderBottom: '1px solid #f0f0f0', textAlign: 'left' }}>
@@ -226,7 +218,6 @@ export default function Ajustes() {
             </div>
           </div>
 
-          {/* Eliminar cuenta */}
           <div style={{ ...s.card, border: '1.5px solid #FEE2E2' }}>
             <p style={{ ...s.cardTitle, color: '#dc2626' }}>Eliminar cuenta</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
@@ -237,7 +228,6 @@ export default function Ajustes() {
         </div>
       </main>
 
-      {/* Modal nombre */}
       {modalNombre && (
         <Modal titulo="Nombre del negocio" onClose={() => cerrar(setModalNombre)}>
           <FieldInput label="Nombre del negocio" value={nombre} onChange={setNombre} placeholder="Nombre del negocio" />
@@ -249,7 +239,6 @@ export default function Ajustes() {
         </Modal>
       )}
 
-      {/* Modal email */}
       {modalEmail && (
         <Modal titulo="Email" onClose={() => cerrar(setModalEmail)}>
           <div style={{ marginBottom: '0.85rem', padding: '0.75rem 1rem', borderRadius: '10px', backgroundColor: '#f9f9f9', border: '1.5px solid #e8e8e8' }}>
@@ -266,7 +255,6 @@ export default function Ajustes() {
         </Modal>
       )}
 
-      {/* Modal teléfono */}
       {modalTelefono && (
         <Modal titulo="Teléfono" onClose={() => cerrar(setModalTelefono)}>
           <FieldInput label="Teléfono" value={telefono} onChange={setTelefono} placeholder="+34 600 000 000" type="tel" />
@@ -278,7 +266,6 @@ export default function Ajustes() {
         </Modal>
       )}
 
-      {/* Modal dirección */}
       {modalDireccion && (
         <Modal titulo="Dirección" onClose={() => cerrar(setModalDireccion)}>
           <FieldInput label="Dirección" value={direccion} onChange={setDireccion} placeholder="Calle, número, ciudad" />
@@ -290,7 +277,6 @@ export default function Ajustes() {
         </Modal>
       )}
 
-      {/* Modal contraseña */}
       {modalPassword && (
         <Modal titulo="Cambiar contraseña" onClose={() => cerrar(setModalPassword)}>
           <FieldInput label="Contraseña actual" value={passwordActual} onChange={setPasswordActual} placeholder="Tu contraseña actual" type="password" />
@@ -304,7 +290,6 @@ export default function Ajustes() {
         </Modal>
       )}
 
-      {/* Modal eliminar */}
       {modalEliminar && (
         <Modal titulo="Eliminar cuenta" onClose={() => { setModalEliminar(false); setConfirmTexto('') }}>
           <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>
