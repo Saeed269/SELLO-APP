@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '../../supabase'
+import { useNavigate } from 'react-router-dom'
 import NavNegocio from '../../components/NavNegocio'
 
 const NARANJA = '#E65100'
@@ -59,7 +61,22 @@ function FaqItem({ pregunta, respuesta }) {
 }
 
 export default function Ayuda() {
+  const [user, setUser] = useState(null)
+  const [negocio, setNegocio] = useState(null)
+  const navigate = useNavigate()
   const [modalAbierto, setModalAbierto] = useState(false)
+
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { navigate('/negocio/login'); return }
+      setUser(user)
+      const { data: negocioData } = await supabase
+        .from('negocios').select('*').eq('user_id', user.id).single()
+      if (negocioData) setNegocio(negocioData)
+    }
+    init()
+  }, [navigate])
   const [mensaje, setMensaje] = useState('')
   const [enviado, setEnviado] = useState(false)
   const [enviando, setEnviando] = useState(false)
