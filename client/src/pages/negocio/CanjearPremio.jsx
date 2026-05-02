@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 
-const MARRON = '#E8763A'
+const MARRON = '#E65100'
 
 export default function CanjearPremio() {
   const [searchParams] = useSearchParams()
@@ -51,7 +51,7 @@ export default function CanjearPremio() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
     </div>
   )
@@ -86,7 +86,7 @@ export default function CanjearPremio() {
             <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
               Al confirmar, el contador de sellos vuelve a 0 y el cliente puede empezar de nuevo.
             </p>
-            {error && <p style={{ color: '#dc2626', fontSize: '0.9rem', marginBottom: '1rem' }}>{error}</p>}
+            {error && <p style={{ color: '#d4380a', fontSize: '0.9rem', marginBottom: '1rem' }}>{error}</p>}
             <button onClick={handleCanjear} style={s.button} disabled={loading}>
               {loading ? 'Canjeando...' : '✓ Confirmar canje'}
             </button>
@@ -101,13 +101,13 @@ export default function CanjearPremio() {
 const s = {
   container: { minHeight: '100dvh', backgroundColor: '#f9f5f2' },
   header: { backgroundColor: '#fff', padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
-  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#E8763A', margin: 0, letterSpacing: '0.1em' },
-  backBtn: { padding: '0.5rem 1rem', backgroundColor: 'transparent', border: '1.5px solid #E8763A', borderRadius: '8px', color: '#E8763A', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem' },
+  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#E65100', margin: 0, letterSpacing: '0.1em' },
+  backBtn: { padding: '0.5rem 1rem', backgroundColor: 'transparent', border: '1.5px solid #E65100', borderRadius: '8px', color: '#E65100', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem' },
   content: { maxWidth: '440px', margin: '3rem auto', padding: '0 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' },
   card: { backgroundColor: '#fff', borderRadius: '20px', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' },
   successCard: { backgroundColor: '#fff', borderRadius: '20px', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', border: '2px solid #4ADE80' },
   icon: { fontSize: '3rem', margin: '0 0 0.5rem' },
   premioBox: { backgroundColor: '#FDF5EE', borderRadius: '12px', padding: '1rem 2rem', marginBottom: '1.5rem', border: `2px solid ${MARRON}44`, width: '100%', boxSizing: 'border-box' },
-  button: { padding: '0.85rem', backgroundColor: '#E8763A', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', width: '100%', marginBottom: '0.75rem' },
+  button: { padding: '0.85rem', backgroundColor: '#E65100', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', width: '100%', marginBottom: '0.75rem' },
   cancelBtn: { padding: '0.75rem', backgroundColor: 'transparent', color: '#888', border: '1.5px solid #e0e0e0', borderRadius: '10px', fontSize: '0.95rem', cursor: 'pointer', width: '100%' },
 }

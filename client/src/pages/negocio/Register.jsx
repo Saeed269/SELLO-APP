@@ -40,7 +40,7 @@ export default function Register() {
 
   const inputStyle = (focused) => ({
     padding: '0.85rem 1rem', borderRadius: '12px',
-    border: focused ? '2px solid #f97316' : '1.5px solid #E5E7EB',
+    border: focused ? '2px solid #E65100' : '1.5px solid #E5E7EB',
     fontSize: '0.92rem', outline: 'none', backgroundColor: '#fff',
     color: '#111827', width: '100%', boxSizing: 'border-box',
     transition: 'border-color 0.15s',
@@ -53,7 +53,7 @@ export default function Register() {
       {!isMobile && (
         <div style={{
           flex: 1,
-          background: 'linear-gradient(135deg, #f97316 0%, #ea580c 40%, #dc2626 100%)',
+          background: 'linear-gradient(135deg, #E65100 0%, #bf360c 40%, #d4380a 100%)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           position: 'relative', overflow: 'hidden', padding: '3rem',
         }}>
@@ -98,7 +98,7 @@ export default function Register() {
       }}>
         {isMobile && (
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: '900', color: '#f97316', margin: 0, letterSpacing: '0.1em' }}>SELLO</h1>
+            <h1 style={{ fontSize: '2.5rem', fontWeight: '900', color: '#E65100', margin: 0, letterSpacing: '0.1em' }}>SELLO</h1>
           </div>
         )}
 
@@ -136,11 +136,11 @@ export default function Register() {
               <input type="password" placeholder="••••••••" value={confirm} onChange={e => setConfirm(e.target.value)} onFocus={() => setConfirmFocus(true)} onBlur={() => setConfirmFocus(false)} style={inputStyle(confirmFocus)} required />
             </div>
 
-            {error && <p style={{ color: '#dc2626', fontSize: '0.85rem', margin: 0 }}>{error}</p>}
+            {error && <p style={{ color: '#d4380a', fontSize: '0.85rem', margin: 0 }}>{error}</p>}
 
             <button
               type="submit" disabled={loading}
-              style={{ padding: '0.9rem', border: 'none', borderRadius: '12px', background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', width: '100%', boxShadow: '0 4px 16px rgba(249,115,22,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              style={{ padding: '0.9rem', border: 'none', borderRadius: '12px', background: 'linear-gradient(135deg, #E65100, #bf360c)', color: '#fff', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', width: '100%', boxShadow: '0 4px 16px rgba(249,115,22,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
             >
               {loading ? 'Creando cuenta...' : <>Crear cuenta gratis <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>}
             </button>
@@ -148,15 +148,15 @@ export default function Register() {
 
           <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.88rem', color: '#6B7280' }}>
             ¿Ya tienes cuenta?{' '}
-            <Link to="/negocio/login" style={{ color: '#f97316', fontWeight: '700', textDecoration: 'none' }}>Inicia sesión</Link>
+            <Link to="/negocio/login" style={{ color: '#E65100', fontWeight: '700', textDecoration: 'none' }}>Inicia sesión</Link>
           </p>
         </div>
 
         <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.75rem', color: '#9CA3AF', lineHeight: 1.6 }}>
           Al registrarte, aceptas nuestros{' '}
-          <span style={{ color: '#f97316', cursor: 'pointer' }}>Términos de Servicio</span>
+          <span style={{ color: '#E65100', cursor: 'pointer' }}>Términos de Servicio</span>
           {' '}y{' '}
-          <span style={{ color: '#f97316', cursor: 'pointer' }}>Política de Privacidad</span>
+          <span style={{ color: '#E65100', cursor: 'pointer' }}>Política de Privacidad</span>
         </p>
       </div>
 

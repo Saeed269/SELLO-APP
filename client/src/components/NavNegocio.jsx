@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../supabase'
 
-const NARANJA = '#E8763A'
+const NARANJA = '#E65100'
 const SIDEBAR_BG = '#1C1C1E'
 const SIDEBAR_WIDTH = 360
 
@@ -51,9 +51,9 @@ const items = [
   { label: 'Inicio',      icon: 'inicio',     path: '/negocio/dashboard' },
   { label: 'Mi Tarjeta',  icon: 'tarjeta',    path: '/negocio/mi-tarjeta' },
   { label: 'Clientes',    icon: 'clientes',   path: '/negocio/clientes' },
-  { label: 'Analíticas', icon: 'analiticas', path: '/negocio/analiticas' },
-  { label: 'Ayuda', icon: 'ayuda', path: '/negocio/ayuda' },
-  { label: 'Ajustes', icon: 'ajustes', path: '/negocio/ajustes' },
+  { label: 'Analíticas',  icon: 'analiticas', path: null },
+  { label: 'Ayuda',       icon: 'ayuda',      path: null },
+  { label: 'Ajustes',     icon: 'ajustes',    path: null },
 ]
 
 const idiomas = ['Español', 'Català', 'English']

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
+import { useNegocio } from '../../context/useNegocio'
 import NavNegocio from '../../components/NavNegocio'
 
-const NARANJA = '#E8763A'
+const NARANJA = '#E65100'
 
 export default function Analiticas() {
-  const [user, setUser] = useState(null)
-  const [negocio, setNegocio] = useState(null)
+  const { user, negocio } = useNegocio()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalClientes: 0,
@@ -29,18 +29,10 @@ export default function Analiticas() {
 
   useEffect(() => {
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { navigate('/negocio/login'); return }
-      setUser(user)
+      if (!negocio) return
 
-      const { data: negocioData } = await supabase
-        .from('negocios').select('*').eq('user_id', user.id).single()
-      if (!negocioData) { navigate('/negocio/onboarding'); return }
-      setNegocio(negocioData)
-
-      // Obtener tarjetas
       const { data: tarjetas } = await supabase
-        .from('tarjetas').select('*').eq('negocio_id', negocioData.id)
+        .from('tarjetas').select('*').eq('negocio_id', negocio.id)
 
       if (!tarjetas || tarjetas.length === 0) {
         setLoading(false)
@@ -102,7 +94,7 @@ export default function Analiticas() {
       setLoading(false)
     }
     init()
-  }, [navigate])
+  }, [navigate, negocio])
 
   const formatFecha = (fecha) => {
     if (!fecha) return '—'
@@ -110,7 +102,7 @@ export default function Analiticas() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
     </div>
   )
@@ -203,7 +195,7 @@ export default function Analiticas() {
                         <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600', color: '#1C1C1E', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.cliente?.nombre || 'Sin nombre'}</p>
                         <p style={{ margin: 0, fontSize: '0.72rem', color: '#888' }}>Última visita: {formatFecha(t.updated_at)}</p>
                       </div>
-                      <span style={{ fontSize: '0.7rem', color: '#dc2626', backgroundColor: '#fee2e2', borderRadius: '20px', padding: '2px 8px', whiteSpace: 'nowrap' }}>En riesgo</span>
+                      <span style={{ fontSize: '0.7rem', color: '#d4380a', backgroundColor: '#fee2e2', borderRadius: '20px', padding: '2px 8px', whiteSpace: 'nowrap' }}>En riesgo</span>
                     </div>
                   ))}
                 </div>

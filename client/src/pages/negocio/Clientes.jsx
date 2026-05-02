@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
+import { useNegocio } from '../../context/useNegocio'
 import NavNegocio from '../../components/NavNegocio'
 
-const NARANJA = '#E8763A'
+const NARANJA = '#E65100'
 
 export default function Clientes() {
-  const [user, setUser] = useState(null)
-  const [negocio, setNegocio] = useState(null)
+  const { user, negocio } = useNegocio()
   const [clientes, setClientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')
@@ -18,17 +18,10 @@ export default function Clientes() {
 
   useEffect(() => {
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { navigate('/negocio/login'); return }
-      setUser(user)
-
-      const { data: negocioData } = await supabase
-        .from('negocios').select('*').eq('user_id', user.id).single()
-      if (!negocioData) { navigate('/negocio/onboarding'); return }
-      setNegocio(negocioData)
+      if (!negocio) return
 
       const { data: tarjetasData } = await supabase
-        .from('tarjetas').select('*').eq('negocio_id', negocioData.id)
+        .from('tarjetas').select('*').eq('negocio_id', negocio.id)
 
       if (!tarjetasData || tarjetasData.length === 0) {
         setClientes([])
@@ -46,7 +39,7 @@ export default function Clientes() {
       setLoading(false)
     }
     init()
-  }, [navigate])
+  }, [navigate, negocio])
 
   const handleAñadirSello = async (tarjeta) => {
     if (tarjeta.sellos_actuales >= negocio.num_sellos) return
@@ -80,7 +73,7 @@ export default function Clientes() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
     </div>
   )

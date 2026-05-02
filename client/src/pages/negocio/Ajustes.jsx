@@ -3,7 +3,7 @@ import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
 import NavNegocio from '../../components/NavNegocio'
 
-const NARANJA = '#E8763A'
+const NARANJA = '#E65100'
 
 function Modal({ titulo, onClose, children }) {
   return (
@@ -25,7 +25,7 @@ function Modal({ titulo, onClose, children }) {
 
 function MsgFeedback({ msg }) {
   return (
-    <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: msg.tipo === 'ok' ? '#2D6A4F' : '#dc2626', backgroundColor: msg.tipo === 'ok' ? '#ECFDF5' : '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '8px' }}>
+    <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: msg.tipo === 'ok' ? '#2D6A4F' : '#d4380a', backgroundColor: msg.tipo === 'ok' ? '#ECFDF5' : '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '8px' }}>
       {msg.texto}
     </p>
   )
@@ -150,7 +150,7 @@ export default function Ajustes() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
     </div>
   )
@@ -219,7 +219,7 @@ export default function Ajustes() {
           </div>
 
           <div style={{ ...s.card, border: '1.5px solid #FEE2E2' }}>
-            <p style={{ ...s.cardTitle, color: '#dc2626' }}>Eliminar cuenta</p>
+            <p style={{ ...s.cardTitle, color: '#d4380a' }}>Eliminar cuenta</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#9CA3AF', textAlign: 'left' }}>Tienes 30 días para recuperarla después de eliminarla</p>
               <button onClick={() => setModalEliminar(true)} style={s.btnPeligro}>Eliminar</button>
@@ -320,8 +320,8 @@ const s = {
   input: { width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', color: '#1C1C1E', boxSizing: 'border-box', fontFamily: 'inherit' },
   btnPrimary: { flex: 1, padding: '0.85rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
   btnSecondary: { padding: '0.45rem 1rem', backgroundColor: '#F3F4F6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
-  btnPeligro: { padding: '0.45rem 1rem', backgroundColor: '#FEF2F2', color: '#dc2626', border: '1.5px solid #FCA5A5', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
-  btnEliminar: { flex: 1, padding: '0.85rem', backgroundColor: '#dc2626', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
+  btnPeligro: { padding: '0.45rem 1rem', backgroundColor: '#FEF2F2', color: '#d4380a', border: '1.5px solid #FCA5A5', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
+  btnEliminar: { flex: 1, padding: '0.85rem', backgroundColor: '#d4380a', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
   btnCancelar: { flex: 1, padding: '0.85rem', backgroundColor: '#f5f5f5', color: '#888', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
   overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
   modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxHeight: '90dvh', overflowY: 'auto' },
