@@ -16,25 +16,23 @@ function PasoCard({ paso, index }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        display: 'flex', alignItems: 'flex-start', gap: '12px',
+        display: 'flex', alignItems: 'center', gap: '10px',
         background: hover ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
         backdropFilter: 'blur(8px)',
-        borderRadius: '14px', padding: '0.85rem 1rem',
+        borderRadius: '12px', padding: '0.65rem 0.85rem',
         border: '1px solid rgba(255,255,255,0.15)',
         transition: 'background 0.2s',
       }}
     >
-      <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: 'rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#fff' }}>{paso.num}</span>
+      <div style={{ width: 24, height: 24, borderRadius: '50%', flexShrink: 0, background: 'rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#fff' }}>{paso.num}</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flex: 1 }}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '3px' }}>
-          <path d={paso.icon} />
-        </svg>
-        <div>
-          <p style={{ margin: '0 0 2px', fontSize: '0.83rem', fontWeight: '700', color: '#fff' }}>{paso.titulo}</p>
-          <p style={{ margin: 0, fontSize: '0.73rem', color: '#fed7aa', lineHeight: 1.5 }}>{paso.desc}</p>
-        </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+        <path d={paso.icon} />
+      </svg>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ margin: '0 0 1px', fontSize: '0.82rem', fontWeight: '700', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{paso.titulo}</p>
+        <p style={{ margin: 0, fontSize: '0.7rem', color: '#fed7aa', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{paso.desc}</p>
       </div>
     </div>
   )
@@ -77,10 +75,10 @@ export default function Login() {
           <div style={{ position: 'absolute', width: 250, height: 250, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -60, left: -60 }} />
 
           <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420 }}>
-            <h1 style={{ margin: '0 0 0.25rem', fontSize: '2.8rem', fontWeight: '900', color: '#fff', letterSpacing: '0.08em', textAlign: 'left' }}>SELLO</h1>
-            <p style={{ margin: '0 0 2rem', color: '#fed7aa', fontSize: '0.92rem' }}>Fidelización digital para tu negocio</p>
+            <h1 style={{ margin: '0 0 0.25rem', fontSize: '2.8rem', fontWeight: '900', color: '#fff', letterSpacing: '0.08em', textAlign: 'center' }}>SELLO</h1>
+            <p style={{ margin: '0 0 2rem', color: '#fed7aa', fontSize: '0.92rem', textAlign: 'center' }}>Fidelización digital para tu negocio</p>
 
-            <h2 style={{ margin: '0 0 0.75rem', color: '#fff', fontSize: '1rem', fontWeight: '700', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.08em' }}>¿Cómo funciona?</h2>
+            <h2 style={{ margin: '0 0 0.75rem', color: '#fff', fontSize: '1rem', fontWeight: '700', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>¿Cómo funciona?</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
               {pasos.map((p, i) => <PasoCard key={p.num} paso={p} index={i} />)}
             </div>
