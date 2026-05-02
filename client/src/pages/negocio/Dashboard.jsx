@@ -30,7 +30,7 @@ export default function Dashboard() {
   }, [navigate])
 
   if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
     </div>
   )
@@ -94,14 +94,14 @@ const s = {
   tarjeta: {
     position: 'relative',
     overflow: 'hidden',
-    background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)',
+    background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)',
     borderRadius: '28px',
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: '1.25rem',
-    boxShadow: '0 24px 64px rgba(192,58,6,0.35)',
+    boxShadow: '0 24px 64px rgba(230,81,0,0.35)',
   },
   blob1: { position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', top: -50, right: -50, pointerEvents: 'none' },
   blob2: { position: 'absolute', width: 150, height: 150, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: 80, left: -40, pointerEvents: 'none' },
