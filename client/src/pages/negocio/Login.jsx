@@ -64,8 +64,8 @@ export default function Login() {
                     <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#fff' }}>{p.num}</span>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff' }}>{p.titulo}</span>
-                    <span style={{ fontSize: '0.78rem', color: '#fed7aa', marginLeft: '6px' }}>{p.desc}</span>
+                    <p style={{ margin: '0 0 2px', fontSize: '0.85rem', fontWeight: '700', color: '#fff' }}>{p.titulo}</p>
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#fed7aa' }}>{p.desc}</p>
                   </div>
                 </div>
               ))}
