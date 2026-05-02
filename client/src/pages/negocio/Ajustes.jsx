@@ -31,16 +31,23 @@ function MsgFeedback({ msg }) {
   )
 }
 
-function SettingRow({ titulo, descripcion, accion, onAccion, peligro }) {
+function Field({ label, value, onChange, placeholder, type = 'text' }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '1rem 0', borderBottom: '1px solid #f0f0f0' }}>
+    <div style={{ marginBottom: '0.85rem' }}>
+      <label style={s.label}>{label}</label>
+      <input value={value} onChange={e => onChange(e.target.value)} style={s.input} placeholder={placeholder} type={type} />
+    </div>
+  )
+}
+
+function SectionRow({ titulo, descripcion, onEdit }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0', borderBottom: '1px solid #f0f0f0' }}>
       <div style={{ textAlign: 'left' }}>
-        <p style={{ margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '600', color: peligro ? '#dc2626' : '#1C1C1E' }}>{titulo}</p>
-        <p style={{ margin: 0, fontSize: '0.78rem', color: '#888' }}>{descripcion}</p>
+        <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>{titulo}</p>
+        {descripcion && <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>{descripcion}</p>}
       </div>
-      {onAccion && (
-        <button onClick={onAccion} style={peligro ? s.btnPeligro : s.btnSecondary}>{accion}</button>
-      )}
+      <button onClick={onEdit} style={s.btnSecondary}>Editar</button>
     </div>
   )
 }
@@ -50,20 +57,27 @@ export default function Ajustes() {
   const [negocio, setNegocio] = useState(null)
   const [loading, setLoading] = useState(true)
   const [notificaciones, setNotificaciones] = useState(true)
+
   const [modalCuenta, setModalCuenta] = useState(false)
   const [modalPassword, setModalPassword] = useState(false)
   const [modalEliminar, setModalEliminar] = useState(false)
+
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [emailConfirm, setEmailConfirm] = useState('')
+  const [telefono, setTelefono] = useState('')
+  const [direccion, setDireccion] = useState('')
   const [guardandoCuenta, setGuardandoCuenta] = useState(false)
   const [msgCuenta, setMsgCuenta] = useState(null)
+
   const [passwordNuevo, setPasswordNuevo] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [guardandoPassword, setGuardandoPassword] = useState(false)
   const [msgPassword, setMsgPassword] = useState(null)
+
   const [confirmTexto, setConfirmTexto] = useState('')
   const [eliminando, setEliminando] = useState(false)
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -73,11 +87,14 @@ export default function Ajustes() {
       setUser(user)
       setEmail(user.email || '')
       setEmailConfirm(user.email || '')
+
       const { data: negocioData } = await supabase
         .from('negocios').select('*').eq('user_id', user.id).single()
       if (!negocioData) { navigate('/negocio/onboarding'); return }
       setNegocio(negocioData)
       setNombre(negocioData.nombre || '')
+      setTelefono(negocioData.telefono || '')
+      setDireccion(negocioData.direccion || '')
       setLoading(false)
     }
     init()
@@ -90,7 +107,10 @@ export default function Ajustes() {
     }
     setGuardandoCuenta(true)
     setMsgCuenta(null)
-    const { error } = await supabase.from('negocios').update({ nombre }).eq('id', negocio.id)
+
+    const { error } = await supabase
+      .from('negocios').update({ nombre, telefono, direccion }).eq('id', negocio.id)
+
     if (email !== user.email) {
       const { error: emailError } = await supabase.auth.updateUser({ email })
       if (emailError) {
@@ -99,11 +119,12 @@ export default function Ajustes() {
         return
       }
     }
+
     if (error) {
       setMsgCuenta({ tipo: 'error', texto: error.message })
     } else {
-      setNegocio(prev => ({ ...prev, nombre }))
-      setMsgCuenta({ tipo: 'ok', texto: 'Cambios guardados correctamente' })
+      setNegocio(prev => ({ ...prev, nombre, telefono, direccion }))
+      setMsgCuenta({ tipo: 'ok', texto: 'Información actualizada correctamente' })
       setTimeout(() => { setModalCuenta(false); setMsgCuenta(null) }, 1500)
     }
     setGuardandoCuenta(false)
@@ -160,20 +181,34 @@ export default function Ajustes() {
             <p style={s.subtitulo}>Gestiona tu cuenta y preferencias</p>
           </div>
 
-          {/* Sección cuenta */}
+          {/* Información de la cuenta */}
           <div style={s.card}>
-            <p style={s.cardTitle}>Cuenta</p>
-            <SettingRow titulo="Nombre del negocio y correo" descripcion="Actualiza el nombre de tu negocio o tu email de acceso" accion="Editar" onAccion={() => setModalCuenta(true)} />
-            <SettingRow titulo="Contraseña" descripcion="Cambia tu contraseña de acceso" accion="Cambiar" onAccion={() => setModalPassword(true)} />
+            <p style={s.cardTitle}>Información de la cuenta</p>
+            <SectionRow titulo="Nombre del negocio" descripcion={negocio?.nombre} onEdit={() => setModalCuenta(true)} />
+            <SectionRow titulo="Email" descripcion={user?.email} onEdit={() => setModalCuenta(true)} />
+            <SectionRow titulo="Teléfono" descripcion={negocio?.telefono || 'No especificado'} onEdit={() => setModalCuenta(true)} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>Dirección</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>{negocio?.direccion || 'No especificada'}</p>
+              </div>
+              <button onClick={() => setModalCuenta(true)} style={s.btnSecondary}>Editar</button>
+            </div>
           </div>
 
-          {/* Notificaciones */}
+          {/* Cambiar contraseña */}
+          <div style={s.card}>
+            <p style={s.cardTitle}>Seguridad</p>
+            <SectionRow titulo="Cambiar contraseña" descripcion="Actualiza tu contraseña de acceso" onEdit={() => setModalPassword(true)} />
+          </div>
+
+          {/* Preferencias */}
           <div style={s.card}>
             <p style={s.cardTitle}>Preferencias</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '1rem 0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
               <div style={{ textAlign: 'left' }}>
-                <p style={{ margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '600', color: '#1C1C1E' }}>Notificaciones</p>
-                <p style={{ margin: 0, fontSize: '0.78rem', color: '#888' }}>Avisos cuando un cliente canjee un premio</p>
+                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>Notificaciones</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Avisos cuando un cliente canjee un premio</p>
               </div>
               <button
                 onClick={() => setNotificaciones(!notificaciones)}
@@ -186,28 +221,27 @@ export default function Ajustes() {
 
           {/* Eliminar cuenta */}
           <div style={{ ...s.card, border: '1.5px solid #FEE2E2' }}>
-            <p style={{ ...s.cardTitle, color: '#dc2626' }}>Zona de peligro</p>
-            <SettingRow titulo="Eliminar cuenta" descripcion="Tienes 30 días para recuperarla después de eliminarla" accion="Eliminar" onAccion={() => setModalEliminar(true)} peligro />
+            <p style={{ ...s.cardTitle, color: '#dc2626' }}>Eliminar cuenta</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#dc2626' }}>Eliminar mi cuenta</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Tienes 30 días para recuperarla</p>
+              </div>
+              <button onClick={() => setModalEliminar(true)} style={s.btnPeligro}>Eliminar</button>
+            </div>
           </div>
 
         </div>
       </main>
 
-      {/* Modal cuenta */}
+      {/* Modal información cuenta */}
       {modalCuenta && (
-        <Modal titulo="Editar cuenta" onClose={() => { setModalCuenta(false); setMsgCuenta(null) }}>
-          <div style={s.field}>
-            <label style={s.label}>Nombre del negocio</label>
-            <input value={nombre} onChange={e => setNombre(e.target.value)} style={s.input} placeholder="Nombre del negocio" />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Correo electrónico</label>
-            <input value={email} onChange={e => setEmail(e.target.value)} style={s.input} placeholder="tu@email.com" type="email" />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Confirmar correo</label>
-            <input value={emailConfirm} onChange={e => setEmailConfirm(e.target.value)} style={s.input} placeholder="Confirma tu email" type="email" />
-          </div>
+        <Modal titulo="Información de la cuenta" onClose={() => { setModalCuenta(false); setMsgCuenta(null) }}>
+          <Field label="Nombre del negocio" value={nombre} onChange={setNombre} placeholder="Nombre del negocio" />
+          <Field label="Email" value={email} onChange={setEmail} placeholder="tu@email.com" type="email" />
+          <Field label="Confirmar email" value={emailConfirm} onChange={setEmailConfirm} placeholder="Confirma tu email" type="email" />
+          <Field label="Teléfono" value={telefono} onChange={setTelefono} placeholder="+34 600 000 000" type="tel" />
+          <Field label="Dirección" value={direccion} onChange={setDireccion} placeholder="Calle, número, ciudad" />
           {msgCuenta && <MsgFeedback msg={msgCuenta} />}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => { setModalCuenta(false); setMsgCuenta(null) }} style={s.btnCancelar}>Cancelar</button>
@@ -221,14 +255,8 @@ export default function Ajustes() {
       {/* Modal contraseña */}
       {modalPassword && (
         <Modal titulo="Cambiar contraseña" onClose={() => { setModalPassword(false); setMsgPassword(null); setPasswordNuevo(''); setPasswordConfirm('') }}>
-          <div style={s.field}>
-            <label style={s.label}>Nueva contraseña</label>
-            <input value={passwordNuevo} onChange={e => setPasswordNuevo(e.target.value)} style={s.input} placeholder="Mínimo 6 caracteres" type="password" />
-          </div>
-          <div style={s.field}>
-            <label style={s.label}>Confirmar contraseña</label>
-            <input value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} style={s.input} placeholder="Repite la contraseña" type="password" />
-          </div>
+          <Field label="Nueva contraseña" value={passwordNuevo} onChange={setPasswordNuevo} placeholder="Mínimo 6 caracteres" type="password" />
+          <Field label="Confirmar contraseña" value={passwordConfirm} onChange={setPasswordConfirm} placeholder="Repite la contraseña" type="password" />
           {msgPassword && <MsgFeedback msg={msgPassword} />}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => { setModalPassword(false); setMsgPassword(null); setPasswordNuevo(''); setPasswordConfirm('') }} style={s.btnCancelar}>Cancelar</button>
@@ -245,10 +273,7 @@ export default function Ajustes() {
           <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>
             Tendrás <strong>30 días</strong> para cancelarlo contactando en <strong>soporte@sello.app</strong>. Pasado ese tiempo todos tus datos se eliminarán permanentemente.
           </p>
-          <div style={s.field}>
-            <label style={s.label}>Escribe ELIMINAR para confirmar</label>
-            <input value={confirmTexto} onChange={e => setConfirmTexto(e.target.value)} style={s.input} placeholder="ELIMINAR" />
-          </div>
+          <Field label="Escribe ELIMINAR para confirmar" value={confirmTexto} onChange={setConfirmTexto} placeholder="ELIMINAR" />
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => { setModalEliminar(false); setConfirmTexto('') }} style={s.btnCancelar}>Cancelar</button>
             <button onClick={handleEliminarCuenta} disabled={confirmTexto !== 'ELIMINAR' || eliminando}
@@ -270,7 +295,6 @@ const s = {
   subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888' },
   card: { backgroundColor: '#fff', borderRadius: '14px', padding: '0 1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '10px' },
   cardTitle: { margin: 0, fontSize: '0.72rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', paddingTop: '1rem', textAlign: 'left' },
-  field: { marginBottom: '0.85rem' },
   label: { display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' },
   input: { width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', color: '#1C1C1E', boxSizing: 'border-box', fontFamily: 'inherit' },
   btnPrimary: { flex: 1, padding: '0.85rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
@@ -279,5 +303,5 @@ const s = {
   btnEliminar: { flex: 1, padding: '0.85rem', backgroundColor: '#dc2626', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
   btnCancelar: { flex: 1, padding: '0.85rem', backgroundColor: '#f5f5f5', color: '#888', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
   overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
-  modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)' },
+  modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxHeight: '90dvh', overflowY: 'auto' },
 }
