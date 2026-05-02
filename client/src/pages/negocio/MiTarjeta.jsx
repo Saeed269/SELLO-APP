@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
-import { useNegocio } from '../../context/useNegocio'
 import { QRCodeSVG } from 'qrcode.react'
 import NavNegocio from '../../components/NavNegocio'
 
