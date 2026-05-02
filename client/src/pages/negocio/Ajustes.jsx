@@ -5,22 +5,50 @@ import NavNegocio from '../../components/NavNegocio'
 
 const NARANJA = '#E8763A'
 
+function Modal({ titulo, onClose, children }) {
+  return (
+    <div style={s.overlay} onClick={onClose}>
+      <div style={s.modal} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#1C1C1E' }}>{titulo}</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export default function Ajustes() {
   const [user, setUser] = useState(null)
   const [negocio, setNegocio] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [notificaciones, setNotificaciones] = useState(true)
+
+  // Modales
+  const [modalCuenta, setModalCuenta] = useState(false)
+  const [modalPassword, setModalPassword] = useState(false)
+  const [modalEliminar, setModalEliminar] = useState(false)
+
+  // Campos cuenta
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
-  const [passwordActual, setPasswordActual] = useState('')
-  const [passwordNuevo, setPasswordNuevo] = useState('')
-  const [notificaciones, setNotificaciones] = useState(true)
   const [guardandoCuenta, setGuardandoCuenta] = useState(false)
-  const [guardandoPassword, setGuardandoPassword] = useState(false)
   const [msgCuenta, setMsgCuenta] = useState(null)
+
+  // Campos contraseña
+  const [passwordNuevo, setPasswordNuevo] = useState('')
+  const [guardandoPassword, setGuardandoPassword] = useState(false)
   const [msgPassword, setMsgPassword] = useState(null)
-  const [modalEliminar, setModalEliminar] = useState(false)
+
+  // Eliminar cuenta
   const [confirmTexto, setConfirmTexto] = useState('')
   const [eliminando, setEliminando] = useState(false)
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -43,23 +71,22 @@ export default function Ajustes() {
   const handleGuardarCuenta = async () => {
     setGuardandoCuenta(true)
     setMsgCuenta(null)
-
-    const { error } = await supabase
-      .from('negocios').update({ nombre }).eq('id', negocio.id)
-
+    const { error } = await supabase.from('negocios').update({ nombre }).eq('id', negocio.id)
     if (email !== user.email) {
       const { error: emailError } = await supabase.auth.updateUser({ email })
       if (emailError) {
-        setMsgCuenta({ tipo: 'error', texto: 'Error al actualizar el email: ' + emailError.message })
+        setMsgCuenta({ tipo: 'error', texto: emailError.message })
         setGuardandoCuenta(false)
         return
       }
     }
-
-    setMsgCuenta(error
-      ? { tipo: 'error', texto: 'Error al guardar: ' + error.message }
-      : { tipo: 'ok', texto: 'Cambios guardados correctamente' }
-    )
+    if (error) {
+      setMsgCuenta({ tipo: 'error', texto: error.message })
+    } else {
+      setNegocio(prev => ({ ...prev, nombre }))
+      setMsgCuenta({ tipo: 'ok', texto: 'Cambios guardados correctamente' })
+      setTimeout(() => { setModalCuenta(false); setMsgCuenta(null) }, 1500)
+    }
     setGuardandoCuenta(false)
   }
 
@@ -70,22 +97,24 @@ export default function Ajustes() {
     }
     setGuardandoPassword(true)
     setMsgPassword(null)
-
     const { error } = await supabase.auth.updateUser({ password: passwordNuevo })
-    setMsgPassword(error
-      ? { tipo: 'error', texto: 'Error al cambiar contraseña: ' + error.message }
-      : { tipo: 'ok', texto: 'Contraseña actualizada correctamente' }
-    )
-    setPasswordActual('')
-    setPasswordNuevo('')
+    if (error) {
+      setMsgPassword({ tipo: 'error', texto: error.message })
+    } else {
+      setMsgPassword({ tipo: 'ok', texto: 'Contraseña actualizada correctamente' })
+      setPasswordNuevo('')
+      setTimeout(() => { setModalPassword(false); setMsgPassword(null) }, 1500)
+    }
     setGuardandoPassword(false)
   }
 
   const handleEliminarCuenta = async () => {
     if (confirmTexto !== 'ELIMINAR') return
     setEliminando(true)
-    // Marcar negocio como pendiente de eliminar (en 30 días)
-    await supabase.from('negocios').update({ pendiente_eliminar: true, fecha_eliminar: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() }).eq('id', negocio.id)
+    await supabase.from('negocios').update({
+      pendiente_eliminar: true,
+      fecha_eliminar: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    }).eq('id', negocio.id)
     await supabase.auth.signOut()
     navigate('/negocio/login')
   }
@@ -109,56 +138,32 @@ export default function Ajustes() {
 
           {/* Cuenta */}
           <div style={s.section}>
-            <h2 style={s.sectionTitle}>Cuenta</h2>
-
-            <div style={s.field}>
-              <label style={s.label}>Nombre del negocio</label>
-              <input value={nombre} onChange={e => setNombre(e.target.value)} style={s.input} placeholder="Nombre del negocio" />
+            <div style={s.row}>
+              <div>
+                <p style={s.rowTitle}>Cuenta</p>
+                <p style={s.rowSub}>{negocio?.nombre} · {user?.email}</p>
+              </div>
+              <button onClick={() => setModalCuenta(true)} style={s.btnSecondary}>Editar</button>
             </div>
-
-            <div style={s.field}>
-              <label style={s.label}>Email</label>
-              <input value={email} onChange={e => setEmail(e.target.value)} style={s.input} placeholder="tu@email.com" type="email" />
-            </div>
-
-            {msgCuenta && (
-              <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: msgCuenta.tipo === 'ok' ? '#2D6A4F' : '#dc2626', backgroundColor: msgCuenta.tipo === 'ok' ? '#ECFDF5' : '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '8px' }}>
-                {msgCuenta.texto}
-              </p>
-            )}
-
-            <button onClick={handleGuardarCuenta} disabled={guardandoCuenta} style={s.btnPrimary}>
-              {guardandoCuenta ? 'Guardando...' : 'Guardar cambios'}
-            </button>
           </div>
 
           {/* Contraseña */}
           <div style={s.section}>
-            <h2 style={s.sectionTitle}>Contraseña</h2>
-
-            <div style={s.field}>
-              <label style={s.label}>Nueva contraseña</label>
-              <input value={passwordNuevo} onChange={e => setPasswordNuevo(e.target.value)} style={s.input} placeholder="Mínimo 6 caracteres" type="password" />
+            <div style={s.row}>
+              <div>
+                <p style={s.rowTitle}>Contraseña</p>
+                <p style={s.rowSub}>Cambia tu contraseña de acceso</p>
+              </div>
+              <button onClick={() => setModalPassword(true)} style={s.btnSecondary}>Cambiar</button>
             </div>
-
-            {msgPassword && (
-              <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: msgPassword.tipo === 'ok' ? '#2D6A4F' : '#dc2626', backgroundColor: msgPassword.tipo === 'ok' ? '#ECFDF5' : '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '8px' }}>
-                {msgPassword.texto}
-              </p>
-            )}
-
-            <button onClick={handleCambiarPassword} disabled={guardandoPassword} style={s.btnPrimary}>
-              {guardandoPassword ? 'Actualizando...' : 'Cambiar contraseña'}
-            </button>
           </div>
 
           {/* Notificaciones */}
           <div style={s.section}>
-            <h2 style={s.sectionTitle}>Notificaciones</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={s.row}>
               <div>
-                <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: '500', color: '#1C1C1E' }}>Avisos de actividad</p>
-                <p style={{ margin: 0, fontSize: '0.78rem', color: '#888' }}>Recibe notificaciones cuando un cliente canjee un premio</p>
+                <p style={s.rowTitle}>Notificaciones</p>
+                <p style={s.rowSub}>Avisos cuando un cliente canjee un premio</p>
               </div>
               <button
                 onClick={() => setNotificaciones(!notificaciones)}
@@ -171,49 +176,87 @@ export default function Ajustes() {
 
           {/* Eliminar cuenta */}
           <div style={{ ...s.section, border: '1.5px solid #FEE2E2' }}>
-            <h2 style={{ ...s.sectionTitle, color: '#dc2626' }}>Eliminar cuenta</h2>
-            <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#888', lineHeight: 1.6 }}>
-              Si eliminas tu cuenta, tendrás <strong>30 días</strong> para recuperarla contactando con soporte. Pasado ese tiempo, todos tus datos serán eliminados permanentemente.
-            </p>
-            <button onClick={() => setModalEliminar(true)} style={s.btnPeligro}>
-              Eliminar mi cuenta
-            </button>
+            <div style={s.row}>
+              <div>
+                <p style={{ ...s.rowTitle, color: '#dc2626' }}>Eliminar cuenta</p>
+                <p style={s.rowSub}>Tienes 30 días para recuperarla</p>
+              </div>
+              <button onClick={() => setModalEliminar(true)} style={s.btnPeligro}>Eliminar</button>
+            </div>
           </div>
 
         </div>
       </main>
 
-      {/* Modal eliminar cuenta */}
-      {modalEliminar && (
-        <div style={s.overlay} onClick={() => { setModalEliminar(false); setConfirmTexto('') }}>
-          <div style={s.modal} onClick={e => e.stopPropagation()}>
-            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.2rem', fontWeight: '700', color: '#dc2626' }}>¿Eliminar cuenta?</h2>
-            <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>
-              Esta acción iniciará el proceso de eliminación. Tendrás <strong>30 días</strong> para cancelarlo contactando con soporte en <strong>soporte@sello.app</strong>.
-            </p>
-            <p style={{ margin: '0 0 0.5rem', fontSize: '0.85rem', color: '#1C1C1E', fontWeight: '500' }}>
-              Escribe <strong>ELIMINAR</strong> para confirmar:
-            </p>
-            <input
-              value={confirmTexto}
-              onChange={e => setConfirmTexto(e.target.value)}
-              placeholder="ELIMINAR"
-              style={{ ...s.input, marginBottom: '1rem' }}
-            />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => { setModalEliminar(false); setConfirmTexto('') }} style={s.btnCancelar}>Cancelar</button>
-              <button
-                onClick={handleEliminarCuenta}
-                disabled={confirmTexto !== 'ELIMINAR' || eliminando}
-                style={{ ...s.btnPeligro, flex: 1, opacity: confirmTexto !== 'ELIMINAR' ? 0.4 : 1 }}
-              >
-                {eliminando ? 'Eliminando...' : 'Confirmar eliminación'}
-              </button>
-            </div>
+      {/* Modal cuenta */}
+      {modalCuenta && (
+        <Modal titulo="Editar cuenta" onClose={() => { setModalCuenta(false); setMsgCuenta(null) }}>
+          <div style={s.field}>
+            <label style={s.label}>Nombre del negocio</label>
+            <input value={nombre} onChange={e => setNombre(e.target.value)} style={s.input} placeholder="Nombre del negocio" />
           </div>
-        </div>
+          <div style={s.field}>
+            <label style={s.label}>Email</label>
+            <input value={email} onChange={e => setEmail(e.target.value)} style={s.input} placeholder="tu@email.com" type="email" />
+          </div>
+          {msgCuenta && <Msg msg={msgCuenta} />}
+          <div style={{ display: 'flex', gap: '10px', marginTop: '0.5rem' }}>
+            <button onClick={() => { setModalCuenta(false); setMsgCuenta(null) }} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={handleGuardarCuenta} disabled={guardandoCuenta} style={s.btnPrimary}>
+              {guardandoCuenta ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal contraseña */}
+      {modalPassword && (
+        <Modal titulo="Cambiar contraseña" onClose={() => { setModalPassword(false); setMsgPassword(null); setPasswordNuevo('') }}>
+          <div style={s.field}>
+            <label style={s.label}>Nueva contraseña</label>
+            <input value={passwordNuevo} onChange={e => setPasswordNuevo(e.target.value)} style={s.input} placeholder="Mínimo 6 caracteres" type="password" />
+          </div>
+          {msgPassword && <Msg msg={msgPassword} />}
+          <div style={{ display: 'flex', gap: '10px', marginTop: '0.5rem' }}>
+            <button onClick={() => { setModalPassword(false); setMsgPassword(null); setPasswordNuevo('') }} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={handleCambiarPassword} disabled={guardandoPassword} style={s.btnPrimary}>
+              {guardandoPassword ? 'Actualizando...' : 'Cambiar'}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal eliminar */}
+      {modalEliminar && (
+        <Modal titulo="Eliminar cuenta" onClose={() => { setModalEliminar(false); setConfirmTexto('') }}>
+          <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>
+            Esta acción iniciará el proceso de eliminación. Tendrás <strong>30 días</strong> para cancelarlo contactando en <strong>soporte@sello.app</strong>.
+          </p>
+          <div style={s.field}>
+            <label style={s.label}>Escribe ELIMINAR para confirmar</label>
+            <input value={confirmTexto} onChange={e => setConfirmTexto(e.target.value)} style={s.input} placeholder="ELIMINAR" />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '0.5rem' }}>
+            <button onClick={() => { setModalEliminar(false); setConfirmTexto('') }} style={s.btnCancelar}>Cancelar</button>
+            <button
+              onClick={handleEliminarCuenta}
+              disabled={confirmTexto !== 'ELIMINAR' || eliminando}
+              style={{ ...s.btnPeligro, flex: 1, opacity: confirmTexto !== 'ELIMINAR' ? 0.4 : 1 }}
+            >
+              {eliminando ? 'Eliminando...' : 'Confirmar'}
+            </button>
+          </div>
+        </Modal>
       )}
     </div>
+  )
+}
+
+function Msg({ msg }) {
+  return (
+    <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: msg.tipo === 'ok' ? '#2D6A4F' : '#dc2626', backgroundColor: msg.tipo === 'ok' ? '#ECFDF5' : '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '8px' }}>
+      {msg.texto}
+    </p>
   )
 }
 
@@ -223,14 +266,17 @@ const s = {
   inner: { maxWidth: 600, margin: '0 auto' },
   titulo: { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
   subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888' },
-  section: { backgroundColor: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '1rem' },
-  sectionTitle: { margin: '0 0 1rem', fontSize: '1rem', fontWeight: '700', color: '#1C1C1E' },
+  section: { backgroundColor: '#fff', borderRadius: '14px', padding: '1.1rem 1.5rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '10px' },
+  row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' },
+  rowTitle: { margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '600', color: '#1C1C1E' },
+  rowSub: { margin: 0, fontSize: '0.78rem', color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '300px' },
   field: { marginBottom: '0.85rem' },
-  label: { display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' },
+  label: { display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' },
   input: { width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', color: '#1C1C1E', boxSizing: 'border-box', fontFamily: 'inherit' },
-  btnPrimary: { width: '100%', padding: '0.85rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
-  btnPeligro: { width: '100%', padding: '0.85rem', backgroundColor: '#FEF2F2', color: '#dc2626', border: '1.5px solid #FCA5A5', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
-  overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
-  modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '460px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)' },
+  btnPrimary: { flex: 1, padding: '0.85rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
+  btnSecondary: { padding: '0.5rem 1rem', backgroundColor: '#F3F4F6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
+  btnPeligro: { padding: '0.5rem 1rem', backgroundColor: '#FEF2F2', color: '#dc2626', border: '1.5px solid #FCA5A5', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
   btnCancelar: { flex: 1, padding: '0.85rem', backgroundColor: '#f5f5f5', color: '#888', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
+  overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
+  modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)' },
 }
