@@ -112,7 +112,8 @@ export default function Login() {
 const s = {
   root: { display: 'flex', minHeight: '100dvh' },
   left: {
-    flex: 1,
+    width: '45%',
+    flexShrink: 0,
     background: 'linear-gradient(160deg, #c03a06 0%, #E8763A 50%, #d4520f 100%)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     position: 'relative', overflow: 'hidden', padding: '3rem 2.5rem',
@@ -137,12 +138,11 @@ const s = {
   pasoDesc: { margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.5 },
   right: {
     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    padding: '2rem 1.5rem', backgroundColor: '#f9f9f9',
+    padding: '2rem 2.5rem', backgroundColor: '#f5f5f5',
   },
   formWrap: {
-    width: '100%', maxWidth: '380px', backgroundColor: '#fff',
-    borderRadius: '20px', padding: '2.5rem 2rem',
-    boxShadow: '0 4px 32px rgba(0,0,0,0.08)',
+    width: '100%', maxWidth: '380px',
+    padding: '0',
   },
   titulo: { margin: 0, fontSize: '1.6rem', fontWeight: '800', color: '#1C1C1E' },
   subtitulo: { margin: '0.35rem 0 0', fontSize: '0.88rem', color: '#888' },
