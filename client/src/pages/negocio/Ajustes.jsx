@@ -31,7 +31,7 @@ function MsgFeedback({ msg }) {
   )
 }
 
-function Field({ label, value, onChange, placeholder, type = 'text' }) {
+function FieldInput({ label, value, onChange, placeholder, type = 'text' }) {
   return (
     <div style={{ marginBottom: '0.85rem' }}>
       <label style={s.label}>{label}</label>
@@ -40,12 +40,12 @@ function Field({ label, value, onChange, placeholder, type = 'text' }) {
   )
 }
 
-function SectionRow({ titulo, descripcion, onEdit }) {
+function Row({ titulo, valor, onEdit }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0', borderBottom: '1px solid #f0f0f0' }}>
-      <div style={{ textAlign: 'left' }}>
+      <div style={{ textAlign: 'left', minWidth: 0 }}>
         <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>{titulo}</p>
-        {descripcion && <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>{descripcion}</p>}
+        <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{valor || 'No especificado'}</p>
       </div>
       <button onClick={onEdit} style={s.btnSecondary}>Editar</button>
     </div>
@@ -58,25 +58,28 @@ export default function Ajustes() {
   const [loading, setLoading] = useState(true)
   const [notificaciones, setNotificaciones] = useState(true)
 
-  const [modalCuenta, setModalCuenta] = useState(false)
+  // Modales individuales
+  const [modalNombre, setModalNombre] = useState(false)
+  const [modalEmail, setModalEmail] = useState(false)
+  const [modalTelefono, setModalTelefono] = useState(false)
+  const [modalDireccion, setModalDireccion] = useState(false)
   const [modalPassword, setModalPassword] = useState(false)
   const [modalEliminar, setModalEliminar] = useState(false)
 
+  // Campos
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [emailConfirm, setEmailConfirm] = useState('')
   const [telefono, setTelefono] = useState('')
   const [direccion, setDireccion] = useState('')
-  const [guardandoCuenta, setGuardandoCuenta] = useState(false)
-  const [msgCuenta, setMsgCuenta] = useState(null)
-
   const [passwordActual, setPasswordActual] = useState('')
   const [passwordNuevo, setPasswordNuevo] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [guardandoPassword, setGuardandoPassword] = useState(false)
-  const [msgPassword, setMsgPassword] = useState(null)
-
   const [confirmTexto, setConfirmTexto] = useState('')
+
+  // Estados
+  const [guardando, setGuardando] = useState(false)
+  const [msg, setMsg] = useState(null)
   const [eliminando, setEliminando] = useState(false)
 
   const navigate = useNavigate()
@@ -88,7 +91,6 @@ export default function Ajustes() {
       setUser(user)
       setEmail(user.email || '')
       setEmailConfirm(user.email || '')
-
       const { data: negocioData } = await supabase
         .from('negocios').select('*').eq('user_id', user.id).single()
       if (!negocioData) { navigate('/negocio/onboarding'); return }
@@ -101,66 +103,55 @@ export default function Ajustes() {
     init()
   }, [navigate])
 
-  const handleGuardarCuenta = async () => {
-    if (email !== emailConfirm) {
-      setMsgCuenta({ tipo: 'error', texto: 'Los emails no coinciden' })
-      return
-    }
-    setGuardandoCuenta(true)
-    setMsgCuenta(null)
+  const cerrar = (setter) => { setter(false); setMsg(null) }
 
-    const { error } = await supabase
-      .from('negocios').update({ nombre, telefono, direccion }).eq('id', negocio.id)
-
-    if (email !== user.email) {
-      const { error: emailError } = await supabase.auth.updateUser({ email })
-      if (emailError) {
-        setMsgCuenta({ tipo: 'error', texto: emailError.message })
-        setGuardandoCuenta(false)
-        return
-      }
-    }
-
-    if (error) {
-      setMsgCuenta({ tipo: 'error', texto: error.message })
-    } else {
-      setNegocio(prev => ({ ...prev, nombre, telefono, direccion }))
-      setMsgCuenta({ tipo: 'ok', texto: 'Información actualizada correctamente' })
-      setTimeout(() => { setModalCuenta(false); setMsgCuenta(null) }, 1500)
-    }
-    setGuardandoCuenta(false)
+  const guardarNombre = async () => {
+    setGuardando(true); setMsg(null)
+    const { error } = await supabase.from('negocios').update({ nombre }).eq('id', negocio.id)
+    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
+    else { setNegocio(prev => ({ ...prev, nombre })); setMsg({ tipo: 'ok', texto: 'Nombre actualizado' }); setTimeout(() => cerrar(setModalNombre), 1200) }
+    setGuardando(false)
   }
 
-  const handleCambiarPassword = async () => {
-    if (passwordNuevo.length < 6) {
-      setMsgPassword({ tipo: 'error', texto: 'Mínimo 6 caracteres' })
-      return
-    }
-    if (passwordNuevo !== passwordConfirm) {
-      setMsgPassword({ tipo: 'error', texto: 'Las contraseñas no coinciden' })
-      return
-    }
-    setGuardandoPassword(true)
-    setMsgPassword(null)
+  const guardarEmail = async () => {
+    if (email !== emailConfirm) { setMsg({ tipo: 'error', texto: 'Los emails no coinciden' }); return }
+    setGuardando(true); setMsg(null)
+    const { error } = await supabase.auth.updateUser({ email })
+    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
+    else { setMsg({ tipo: 'ok', texto: 'Email actualizado. Revisa tu bandeja de entrada.' }); setTimeout(() => cerrar(setModalEmail), 1500) }
+    setGuardando(false)
+  }
+
+  const guardarTelefono = async () => {
+    setGuardando(true); setMsg(null)
+    const { error } = await supabase.from('negocios').update({ telefono }).eq('id', negocio.id)
+    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
+    else { setNegocio(prev => ({ ...prev, telefono })); setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' }); setTimeout(() => cerrar(setModalTelefono), 1200) }
+    setGuardando(false)
+  }
+
+  const guardarDireccion = async () => {
+    setGuardando(true); setMsg(null)
+    const { error } = await supabase.from('negocios').update({ direccion }).eq('id', negocio.id)
+    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
+    else { setNegocio(prev => ({ ...prev, direccion })); setMsg({ tipo: 'ok', texto: 'Dirección actualizada' }); setTimeout(() => cerrar(setModalDireccion), 1200) }
+    setGuardando(false)
+  }
+
+  const guardarPassword = async () => {
+    if (passwordNuevo.length < 6) { setMsg({ tipo: 'error', texto: 'Mínimo 6 caracteres' }); return }
+    if (passwordNuevo !== passwordConfirm) { setMsg({ tipo: 'error', texto: 'Las contraseñas no coinciden' }); return }
+    setGuardando(true); setMsg(null)
     const { error } = await supabase.auth.updateUser({ password: passwordNuevo })
-    if (error) {
-      setMsgPassword({ tipo: 'error', texto: error.message })
-    } else {
-      setMsgPassword({ tipo: 'ok', texto: 'Contraseña actualizada correctamente' })
-      setPasswordNuevo('')
-      setPasswordConfirm('')
-      setTimeout(() => { setModalPassword(false); setMsgPassword(null) }, 1500)
-    }
-    setGuardandoPassword(false)
+    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
+    else { setMsg({ tipo: 'ok', texto: 'Contraseña actualizada' }); setPasswordActual(''); setPasswordNuevo(''); setPasswordConfirm(''); setTimeout(() => cerrar(setModalPassword), 1200) }
+    setGuardando(false)
   }
 
-  const handleEliminarCuenta = async () => {
+  const handleEliminar = async () => {
     if (confirmTexto !== 'ELIMINAR') return
     setEliminando(true)
-    await supabase.from('negocios').update({
-      pendiente_eliminar: true,
-      fecha_eliminar: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-    }).eq('id', negocio.id)
+    await supabase.from('negocios').update({ pendiente_eliminar: true, fecha_eliminar: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() }).eq('id', negocio.id)
     await supabase.auth.signOut()
     navigate('/negocio/login')
   }
@@ -174,7 +165,6 @@ export default function Ajustes() {
   return (
     <div style={s.root}>
       <NavNegocio negocio={negocio} user={user} />
-
       <main style={s.main}>
         <div style={s.inner}>
           <div style={{ marginBottom: '1.5rem' }}>
@@ -185,36 +175,36 @@ export default function Ajustes() {
           {/* Información de la cuenta */}
           <div style={s.card}>
             <p style={s.cardTitle}>Información de la cuenta</p>
-            <SectionRow titulo="Nombre del negocio" descripcion={negocio?.nombre} onEdit={() => setModalCuenta(true)} />
-            <SectionRow titulo="Email" descripcion={user?.email} onEdit={() => setModalCuenta(true)} />
-            <SectionRow titulo="Teléfono" descripcion={negocio?.telefono || 'No especificado'} onEdit={() => setModalCuenta(true)} />
+            <Row titulo="Nombre del negocio" valor={negocio?.nombre} onEdit={() => { setNombre(negocio?.nombre || ''); setModalNombre(true) }} />
+            <Row titulo="Email" valor={user?.email} onEdit={() => { setEmail(user?.email || ''); setEmailConfirm(user?.email || ''); setModalEmail(true) }} />
+            <Row titulo="Teléfono" valor={negocio?.telefono} onEdit={() => { setTelefono(negocio?.telefono || ''); setModalTelefono(true) }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
-              <div style={{ textAlign: 'left' }}>
+              <div style={{ textAlign: 'left', minWidth: 0 }}>
                 <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>Dirección</p>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>{negocio?.direccion || 'No especificada'}</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{negocio?.direccion || 'No especificada'}</p>
               </div>
-              <button onClick={() => setModalCuenta(true)} style={s.btnSecondary}>Editar</button>
+              <button onClick={() => { setDireccion(negocio?.direccion || ''); setModalDireccion(true) }} style={s.btnSecondary}>Editar</button>
             </div>
           </div>
 
-          {/* Cambiar contraseña */}
+          {/* Seguridad */}
           <div style={s.card}>
             <p style={s.cardTitle}>Seguridad</p>
-            <SectionRow titulo="Cambiar contraseña" descripcion="Actualiza tu contraseña de acceso" onEdit={() => setModalPassword(true)} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>Contraseña</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Actualiza tu contraseña de acceso</p>
+              </div>
+              <button onClick={() => { setPasswordActual(''); setPasswordNuevo(''); setPasswordConfirm(''); setModalPassword(true) }} style={s.btnSecondary}>Cambiar</button>
+            </div>
           </div>
 
           {/* Preferencias */}
           <div style={s.card}>
             <p style={s.cardTitle}>Preferencias</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>Notificaciones</p>
-
-              </div>
-              <button
-                onClick={() => setNotificaciones(!notificaciones)}
-                style={{ width: 48, height: 28, borderRadius: '14px', border: 'none', cursor: 'pointer', backgroundColor: notificaciones ? NARANJA : '#E5E7EB', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
-              >
+              <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E', textAlign: 'left' }}>Notificaciones</p>
+              <button onClick={() => setNotificaciones(!notificaciones)} style={{ width: 48, height: 28, borderRadius: '14px', border: 'none', cursor: 'pointer', backgroundColor: notificaciones ? NARANJA : '#E5E7EB', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
                 <div style={{ width: 22, height: 22, borderRadius: '50%', backgroundColor: '#fff', position: 'absolute', top: 3, left: notificaciones ? 23 : 3, transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
               </button>
             </div>
@@ -223,19 +213,15 @@ export default function Ajustes() {
           {/* Plan y facturación */}
           <div style={s.card}>
             <p style={s.cardTitle}>Plan y facturación</p>
-            <div style={{ padding: '0.85rem 0', borderBottom: '1px solid #f0f0f0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ textAlign: 'left' }}>
-                  <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Plan actual</p>
-                  <p style={{ margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' }}>✦ Básico</p>
-                  <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#9CA3AF' }}>Próxima renovación: 1 junio 2026</p>
-                  <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: '600', color: NARANJA }}>€12,99/mes</p>
-                </div>
-              </div>
+            <div style={{ padding: '0.85rem 0', borderBottom: '1px solid #f0f0f0', textAlign: 'left' }}>
+              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Plan actual</p>
+              <p style={{ margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' }}>✦ Básico</p>
+              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#9CA3AF' }}>Próxima renovación: 1 junio 2026</p>
+              <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600', color: NARANJA }}>€12,99/mes</p>
             </div>
-            <div style={{ padding: '0.85rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
               <div style={{ textAlign: 'left' }}>
-                <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Método de pago</p>
+                <p style={{ margin: '0 0 2px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Método de pago</p>
                 <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>VISA •••• •••• •••• 4821</p>
                 <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Expira 09/28</p>
               </div>
@@ -251,40 +237,68 @@ export default function Ajustes() {
               <button onClick={() => setModalEliminar(true)} style={s.btnPeligro}>Eliminar</button>
             </div>
           </div>
-
         </div>
       </main>
 
-      {/* Modal información cuenta */}
-      {modalCuenta && (
-        <Modal titulo="Información de la cuenta" onClose={() => { setModalCuenta(false); setMsgCuenta(null) }}>
-          <Field label="Nombre del negocio" value={nombre} onChange={setNombre} placeholder="Nombre del negocio" />
-          <Field label="Email" value={email} onChange={setEmail} placeholder="tu@email.com" type="email" />
-          <Field label="Confirmar email" value={emailConfirm} onChange={setEmailConfirm} placeholder="Confirma tu email" type="email" />
-          <Field label="Teléfono" value={telefono} onChange={setTelefono} placeholder="+34 600 000 000" type="tel" />
-          <Field label="Dirección" value={direccion} onChange={setDireccion} placeholder="Calle, número, ciudad" />
-          {msgCuenta && <MsgFeedback msg={msgCuenta} />}
+      {/* Modal nombre */}
+      {modalNombre && (
+        <Modal titulo="Nombre del negocio" onClose={() => cerrar(setModalNombre)}>
+          <FieldInput label="Nombre del negocio" value={nombre} onChange={setNombre} placeholder="Nombre del negocio" />
+          {msg && <MsgFeedback msg={msg} />}
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={() => { setModalCuenta(false); setMsgCuenta(null) }} style={s.btnCancelar}>Cancelar</button>
-            <button onClick={handleGuardarCuenta} disabled={guardandoCuenta} style={s.btnPrimary}>
-              {guardandoCuenta ? 'Guardando...' : 'Guardar'}
-            </button>
+            <button onClick={() => cerrar(setModalNombre)} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={guardarNombre} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal email */}
+      {modalEmail && (
+        <Modal titulo="Email" onClose={() => cerrar(setModalEmail)}>
+          <FieldInput label="Nuevo email" value={email} onChange={setEmail} placeholder="tu@email.com" type="email" />
+          <FieldInput label="Confirmar email" value={emailConfirm} onChange={setEmailConfirm} placeholder="Confirma tu email" type="email" />
+          {msg && <MsgFeedback msg={msg} />}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => cerrar(setModalEmail)} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={guardarEmail} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal teléfono */}
+      {modalTelefono && (
+        <Modal titulo="Teléfono" onClose={() => cerrar(setModalTelefono)}>
+          <FieldInput label="Teléfono" value={telefono} onChange={setTelefono} placeholder="+34 600 000 000" type="tel" />
+          {msg && <MsgFeedback msg={msg} />}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => cerrar(setModalTelefono)} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={guardarTelefono} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal dirección */}
+      {modalDireccion && (
+        <Modal titulo="Dirección" onClose={() => cerrar(setModalDireccion)}>
+          <FieldInput label="Dirección" value={direccion} onChange={setDireccion} placeholder="Calle, número, ciudad" />
+          {msg && <MsgFeedback msg={msg} />}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => cerrar(setModalDireccion)} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={guardarDireccion} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
           </div>
         </Modal>
       )}
 
       {/* Modal contraseña */}
       {modalPassword && (
-        <Modal titulo="Cambiar contraseña" onClose={() => { setModalPassword(false); setMsgPassword(null); setPasswordActual(''); setPasswordNuevo(''); setPasswordConfirm('') }}>
-          <Field label="Contraseña actual" value={passwordActual} onChange={setPasswordActual} placeholder="Tu contraseña actual" type="password" />
-          <Field label="Nueva contraseña" value={passwordNuevo} onChange={setPasswordNuevo} placeholder="Mínimo 6 caracteres" type="password" />
-          <Field label="Confirmar contraseña" value={passwordConfirm} onChange={setPasswordConfirm} placeholder="Repite la contraseña" type="password" />
-          {msgPassword && <MsgFeedback msg={msgPassword} />}
+        <Modal titulo="Cambiar contraseña" onClose={() => cerrar(setModalPassword)}>
+          <FieldInput label="Contraseña actual" value={passwordActual} onChange={setPasswordActual} placeholder="Tu contraseña actual" type="password" />
+          <FieldInput label="Nueva contraseña" value={passwordNuevo} onChange={setPasswordNuevo} placeholder="Mínimo 6 caracteres" type="password" />
+          <FieldInput label="Confirmar nueva contraseña" value={passwordConfirm} onChange={setPasswordConfirm} placeholder="Repite la nueva contraseña" type="password" />
+          {msg && <MsgFeedback msg={msg} />}
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={() => { setModalPassword(false); setMsgPassword(null); setPasswordActual(''); setPasswordNuevo(''); setPasswordConfirm('') }} style={s.btnCancelar}>Cancelar</button>
-            <button onClick={handleCambiarPassword} disabled={guardandoPassword} style={s.btnPrimary}>
-              {guardandoPassword ? 'Actualizando...' : 'Cambiar'}
-            </button>
+            <button onClick={() => cerrar(setModalPassword)} style={s.btnCancelar}>Cancelar</button>
+            <button onClick={guardarPassword} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Actualizando...' : 'Cambiar'}</button>
           </div>
         </Modal>
       )}
@@ -295,11 +309,10 @@ export default function Ajustes() {
           <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#555', lineHeight: 1.6 }}>
             Tendrás <strong>30 días</strong> para cancelarlo contactando en <strong>soporte@sello.app</strong>. Pasado ese tiempo todos tus datos se eliminarán permanentemente.
           </p>
-          <Field label="Escribe ELIMINAR para confirmar" value={confirmTexto} onChange={setConfirmTexto} placeholder="ELIMINAR" />
+          <FieldInput label="Escribe ELIMINAR para confirmar" value={confirmTexto} onChange={setConfirmTexto} placeholder="ELIMINAR" />
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => { setModalEliminar(false); setConfirmTexto('') }} style={s.btnCancelar}>Cancelar</button>
-            <button onClick={handleEliminarCuenta} disabled={confirmTexto !== 'ELIMINAR' || eliminando}
-              style={{ ...s.btnEliminar, opacity: confirmTexto !== 'ELIMINAR' ? 0.4 : 1 }}>
+            <button onClick={handleEliminar} disabled={confirmTexto !== 'ELIMINAR' || eliminando} style={{ ...s.btnEliminar, opacity: confirmTexto !== 'ELIMINAR' ? 0.4 : 1 }}>
               {eliminando ? 'Eliminando...' : 'Confirmar'}
             </button>
           </div>
