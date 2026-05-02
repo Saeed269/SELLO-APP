@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
-import { useNegocio } from '../../context/useNegocio'
 import NavNegocio from '../../components/NavNegocio'
 
 const NARANJA = '#E8763A'
 
 export default function Clientes() {
-  const { user, negocio } = useNegocio()
+  const [user, setUser] = useState(null)
+  const [negocio, setNegocio] = useState(null)
   const [clientes, setClientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')
@@ -18,10 +18,17 @@ export default function Clientes() {
 
   useEffect(() => {
     const init = async () => {
-      if (!negocio) return
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { navigate('/negocio/login'); return }
+      setUser(user)
+
+      const { data: negocioData } = await supabase
+        .from('negocios').select('*').eq('user_id', user.id).single()
+      if (!negocioData) { navigate('/negocio/onboarding'); return }
+      setNegocio(negocioData)
 
       const { data: tarjetasData } = await supabase
-        .from('tarjetas').select('*').eq('negocio_id', negocio.id)
+        .from('tarjetas').select('*').eq('negocio_id', negocioData.id)
 
       if (!tarjetasData || tarjetasData.length === 0) {
         setClientes([])
@@ -39,7 +46,7 @@ export default function Clientes() {
       setLoading(false)
     }
     init()
-  }, [navigate, negocio])
+  }, [navigate])
 
   const handleAñadirSello = async (tarjeta) => {
     if (tarjeta.sellos_actuales >= negocio.num_sellos) return

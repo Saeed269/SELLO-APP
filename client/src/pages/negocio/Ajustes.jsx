@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
-import { useNegocio } from '../../context/useNegocio'
 import NavNegocio from '../../components/NavNegocio'
 
 const NARANJA = '#E8763A'
@@ -54,8 +53,9 @@ function Row({ titulo, valor, onEdit }) {
 }
 
 export default function Ajustes() {
-  const { user, negocio, updateNegocio } = useNegocio()
-  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState(null)
+  const [negocio, setNegocio] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [notificaciones, setNotificaciones] = useState(true)
 
   // Modales individuales
@@ -67,7 +67,11 @@ export default function Ajustes() {
   const [modalEliminar, setModalEliminar] = useState(false)
 
   // Campos
-
+  const [nombre, setNombre] = useState('')
+  const [email, setEmail] = useState('')
+  const [emailConfirm, setEmailConfirm] = useState('')
+  const [telefono, setTelefono] = useState('')
+  const [direccion, setDireccion] = useState('')
   const [passwordActual, setPasswordActual] = useState('')
   const [passwordNuevo, setPasswordNuevo] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -80,16 +84,24 @@ export default function Ajustes() {
 
   const navigate = useNavigate()
 
-  const emailInicial = user?.email || ''
-  const nombreInicial = negocio?.nombre || ''
-  const telefonoInicial = negocio?.telefono || ''
-  const direccionInicial = negocio?.direccion || ''
-
-  const [nombre, setNombre] = useState(nombreInicial)
-  const [email, setEmail] = useState(emailInicial)
-  const [emailConfirm, setEmailConfirm] = useState(emailInicial)
-  const [telefono, setTelefono] = useState(telefonoInicial)
-  const [direccion, setDireccion] = useState(direccionInicial)
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { navigate('/negocio/login'); return }
+      setUser(user)
+      setEmail(user.email || '')
+      setEmailConfirm(user.email || '')
+      const { data: negocioData } = await supabase
+        .from('negocios').select('*').eq('user_id', user.id).single()
+      if (!negocioData) { navigate('/negocio/onboarding'); return }
+      setNegocio(negocioData)
+      setNombre(negocioData.nombre || '')
+      setTelefono(negocioData.telefono || '')
+      setDireccion(negocioData.direccion || '')
+      setLoading(false)
+    }
+    init()
+  }, [navigate])
 
   const cerrar = (setter) => { setter(false); setMsg(null) }
 
@@ -97,7 +109,7 @@ export default function Ajustes() {
     setGuardando(true); setMsg(null)
     const { error } = await supabase.from('negocios').update({ nombre }).eq('id', negocio.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { updateNegocio({ nombre }); setMsg({ tipo: 'ok', texto: 'Nombre actualizado' }); setTimeout(() => cerrar(setModalNombre), 1200) }
+    else { setNegocio(prev => ({ ...prev, nombre })); setMsg({ tipo: 'ok', texto: 'Nombre actualizado' }); setTimeout(() => cerrar(setModalNombre), 1200) }
     setGuardando(false)
   }
 
@@ -114,7 +126,7 @@ export default function Ajustes() {
     setGuardando(true); setMsg(null)
     const { error } = await supabase.from('negocios').update({ telefono }).eq('id', negocio.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { updateNegocio({ telefono }); setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' }); setTimeout(() => cerrar(setModalTelefono), 1200) }
+    else { setNegocio(prev => ({ ...prev, telefono })); setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' }); setTimeout(() => cerrar(setModalTelefono), 1200) }
     setGuardando(false)
   }
 
@@ -122,7 +134,7 @@ export default function Ajustes() {
     setGuardando(true); setMsg(null)
     const { error } = await supabase.from('negocios').update({ direccion }).eq('id', negocio.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { updateNegocio({ direccion }); setMsg({ tipo: 'ok', texto: 'Dirección actualizada' }); setTimeout(() => cerrar(setModalDireccion), 1200) }
+    else { setNegocio(prev => ({ ...prev, direccion })); setMsg({ tipo: 'ok', texto: 'Dirección actualizada' }); setTimeout(() => cerrar(setModalDireccion), 1200) }
     setGuardando(false)
   }
 

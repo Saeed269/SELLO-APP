@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import NavNegocio from '../../components/NavNegocio'
-import { useNegocio } from '../../context/useNegocio'
 
 const NARANJA = '#E8763A'
 
@@ -60,7 +59,6 @@ function FaqItem({ pregunta, respuesta }) {
 }
 
 export default function Ayuda() {
-  const { user, negocio } = useNegocio()
   const [modalAbierto, setModalAbierto] = useState(false)
   const [mensaje, setMensaje] = useState('')
   const [enviado, setEnviado] = useState(false)
@@ -82,7 +80,7 @@ export default function Ayuda() {
 
   return (
     <div style={s.root}>
-      <NavNegocio negocio={negocio} user={user} />
+      <NavNegocio />
 
       <main style={s.main}>
         <div style={s.inner}>
