@@ -6,7 +6,7 @@ const pasos = [
   { num: '1', titulo: 'El negocio se registra', desc: 'Crea tu cuenta y configura tu tarjeta de fidelización en minutos' },
   { num: '2', titulo: 'El cliente escanea el QR', desc: 'Tu cliente escanea el QR del negocio desde su móvil' },
   { num: '3', titulo: 'Se genera la tarjeta', desc: 'El cliente recibe su tarjeta digital y comienza a acumular sellos' },
-  { num: '4', titulo: 'Ganan hasta el premio', desc: 'Acumula sellos en cada compra y consigue tu recompensa' },
+  { num: '4', titulo: 'Fideliza a tus clientes', desc: 'Cada visita cuenta — construye lealtad con tu programa de sellos' },
 ]
 
 export default function Login() {
