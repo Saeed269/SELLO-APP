@@ -31,8 +31,8 @@ function PasoCard({ paso, index }) {
         <path d={paso.icon} />
       </svg>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ margin: '0 0 1px', fontSize: '0.82rem', fontWeight: '700', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{paso.titulo}</p>
-        <p style={{ margin: 0, fontSize: '0.7rem', color: '#fed7aa', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{paso.desc}</p>
+        <p style={{ margin: '0 0 1px', fontSize: '0.82rem', fontWeight: '700', color: '#fff' }}>{paso.titulo}</p>
+        <p style={{ margin: 0, fontSize: '0.7rem', color: '#fed7aa' }}>{paso.desc}</p>
       </div>
     </div>
   )
@@ -66,7 +66,7 @@ export default function Login() {
       {/* Panel izquierdo */}
       {!isMobile && (
         <div style={{
-          width: '45%', flexShrink: 0,
+          width: '52%', flexShrink: 0,
           background: 'linear-gradient(135deg, #f97316 0%, #ea580c 40%, #dc2626 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
           position: 'relative', overflow: 'hidden', padding: '3rem 2.5rem',
@@ -75,7 +75,7 @@ export default function Login() {
           <div style={{ position: 'absolute', width: 250, height: 250, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -60, left: -60 }} />
 
           <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420 }}>
-            <h1 style={{ margin: '0 0 0.25rem', fontSize: '2.8rem', fontWeight: '900', color: '#fff', letterSpacing: '0.08em', textAlign: 'center' }}>SELLO</h1>
+            <h1 style={{ margin: '0 0 0.6rem', fontSize: '2.8rem', fontWeight: '900', color: '#fff', letterSpacing: '0.08em', textAlign: 'center' }}>SELLO</h1>
             <p style={{ margin: '0 0 2rem', color: '#fed7aa', fontSize: '0.92rem', textAlign: 'center' }}>Fidelización digital para tu negocio</p>
 
             <h2 style={{ margin: '0 0 0.75rem', color: '#fff', fontSize: '1rem', fontWeight: '700', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>¿Cómo funciona?</h2>
