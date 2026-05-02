@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
+import { useNegocio } from '../../context/useNegocio'
 import { QRCodeSVG } from 'qrcode.react'
 import NavNegocio from '../../components/NavNegocio'
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null)
-  const [negocio, setNegocio] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user, negocio, loading } = useNegocio()
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const navigate = useNavigate()
 
@@ -18,21 +16,13 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { navigate('/negocio/login'); return }
-      setUser(user)
-      const { data } = await supabase.from('negocios').select('*').eq('user_id', user.id).single()
-      if (!data) { navigate('/negocio/onboarding') } else { setNegocio(data) }
-      setLoading(false)
-    }
-    init()
-  }, [navigate])
+    if (!loading && !user) navigate('/negocio/login')
+    if (!loading && user && !negocio) navigate('/negocio/onboarding')
+  }, [loading, user, negocio, navigate])
 
   if (loading) return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #c03a06 0%, #E8763A 60%, #d4520f 100%)' }}>
       <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
-      <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)' }}>Fidelización digital para tu negocio</p>
     </div>
   )
 
