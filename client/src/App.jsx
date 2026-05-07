@@ -15,6 +15,8 @@ import Ayuda from './pages/negocio/Ayuda'
 import Ajustes from './pages/negocio/Ajustes'
 import ResetPassword from './pages/negocio/ResetPassword'
 import UpdatePassword from './pages/negocio/UpdatePassword'
+import Terminos from './pages/Terminos'
+import Privacidad from './pages/Privacidad'
 
 function App() {
   return (
@@ -37,6 +39,8 @@ function App() {
         <Route path="/cliente/registro" element={<RegistroCliente />} />
         <Route path="/cliente/login" element={<LoginCliente />} />
         <Route path="/cliente/tarjeta" element={<Tarjeta />} />
+        <Route path="/terminos" element={<Terminos />} />
+        <Route path="/privacidad" element={<Privacidad />} />
       </Routes>
     </BrowserRouter>
   )
