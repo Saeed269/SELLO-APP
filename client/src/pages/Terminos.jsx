@@ -1,15 +1,16 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const NARANJA = '#E65100'
 
 export default function Terminos() {
+  const navigate = useNavigate()
   return (
     <div style={{ minHeight: '100dvh', backgroundColor: '#f9fafb', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '2rem 1.25rem' }}>
 
         <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h1 style={{ margin: 0, fontSize: '1.8rem', fontWeight: '900', color: NARANJA, letterSpacing: '0.08em' }}>SELLO</h1>
-          <Link to="/negocio/login" style={{ fontSize: '0.85rem', color: '#6B7280', textDecoration: 'none' }}>← Volver</Link>
+          <button onClick={() => navigate(-1)} style={{ fontSize: '0.85rem', color: '#6B7280', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>← Volver</button>
         </div>
 
         <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '2rem', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
