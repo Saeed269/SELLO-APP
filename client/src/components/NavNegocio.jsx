@@ -56,7 +56,7 @@ const items = [
   { label: 'Ajustes',     icon: 'ajustes',    path: '/negocio/ajustes' },
 ]
 
-const idiomas = ['Español', 'Català', 'English']
+const idiomas = ['Español']
 
 export default function NavNegocio({ negocio, user }) {
   const navigate = useNavigate()
