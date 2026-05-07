@@ -67,6 +67,7 @@ export default function Ajustes() {
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [emailConfirm, setEmailConfirm] = useState('')
+  const [emailActual, setEmailActual] = useState('')
   const [telefono, setTelefono] = useState('')
   const [direccion, setDireccion] = useState('')
   const [passwordActual, setPasswordActual] = useState('')
@@ -107,6 +108,9 @@ export default function Ajustes() {
   }
 
   const guardarEmail = async () => {
+    if (!emailActual.trim()) { setMsg({ tipo: 'error', texto: 'Introduce tu email actual' }); return }
+    if (emailActual !== user?.email) { setMsg({ tipo: 'error', texto: 'El email actual no es correcto' }); return }
+    if (!email.trim()) { setMsg({ tipo: 'error', texto: 'Introduce el nuevo email' }); return }
     if (email !== emailConfirm) { setMsg({ tipo: 'error', texto: 'Los emails no coinciden' }); return }
     setGuardando(true); setMsg(null)
     const { error } = await supabase.auth.updateUser({ email })
@@ -117,7 +121,7 @@ export default function Ajustes() {
 
   const guardarTelefono = async () => {
     setGuardando(true); setMsg(null)
-    const { error } = await supabase.from('negocios').update({ telefono }).eq('id', negocio.id)
+    const { error } = await supabase.from('negocios').update({ telefono }).eq('user_id', user.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
     else { setNegocio(prev => ({ ...prev, telefono })); setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' }); setTimeout(() => cerrar(setModalTelefono), 1200) }
     setGuardando(false)
@@ -125,7 +129,7 @@ export default function Ajustes() {
 
   const guardarDireccion = async () => {
     setGuardando(true); setMsg(null)
-    const { error } = await supabase.from('negocios').update({ direccion }).eq('id', negocio.id)
+    const { error } = await supabase.from('negocios').update({ direccion }).eq('user_id', user.id)
     if (error) { setMsg({ tipo: 'error', texto: error.message }) }
     else { setNegocio(prev => ({ ...prev, direccion })); setMsg({ tipo: 'ok', texto: 'Dirección actualizada' }); setTimeout(() => cerrar(setModalDireccion), 1200) }
     setGuardando(false)
@@ -168,7 +172,7 @@ export default function Ajustes() {
           <div style={s.card}>
             <p style={s.cardTitle}>Información de la cuenta</p>
             <Row titulo="Nombre del negocio" valor={negocio?.nombre} onEdit={() => { setNombre(negocio?.nombre || ''); setModalNombre(true) }} />
-            <Row titulo="Email" valor={user?.email} onEdit={() => { setEmail(user?.email || ''); setEmailConfirm(user?.email || ''); setModalEmail(true) }} />
+            <Row titulo="Email" valor={user?.email} onEdit={() => { setEmailActual(''); setEmail(''); setEmailConfirm(''); setModalEmail(true) }} />
             <Row titulo="Teléfono" valor={negocio?.telefono} onEdit={() => { setTelefono(negocio?.telefono || ''); setModalTelefono(true) }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
               <div style={{ textAlign: 'left', minWidth: 0 }}>
@@ -223,10 +227,7 @@ export default function Ajustes() {
 
       {modalEmail && (
         <Modal titulo="Email" onClose={() => cerrar(setModalEmail)}>
-          <div style={{ marginBottom: '0.85rem', padding: '0.75rem 1rem', borderRadius: '10px', backgroundColor: '#f9f9f9', border: '1.5px solid #e8e8e8' }}>
-            <p style={{ margin: '0 0 2px', fontSize: '0.72rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email actual</p>
-            <p style={{ margin: 0, fontSize: '0.9rem', color: '#1C1C1E' }}>{user?.email}</p>
-          </div>
+          <FieldInput label="Email actual" value={emailActual} onChange={setEmailActual} placeholder="Tu email actual" type="email" />
           <FieldInput label="Nuevo email" value={email} onChange={setEmail} placeholder="nuevo@email.com" type="email" />
           <FieldInput label="Confirmar nuevo email" value={emailConfirm} onChange={setEmailConfirm} placeholder="Confirma tu nuevo email" type="email" />
           {msg && <MsgFeedback msg={msg} />}
