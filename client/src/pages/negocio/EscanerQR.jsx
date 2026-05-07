@@ -167,6 +167,10 @@ export default function EscanerQR() {
             <button onClick={() => { setResultado(null); setError(''); iniciarEscaner() }} style={styles.nuevoBtn}>
               Escanear otro cliente
             </button>
+
+            <button onClick={() => navigate('/negocio/dashboard')} style={{ ...styles.nuevoBtn, marginTop: '0.5rem', color: '#6B7280', borderColor: '#E5E7EB' }}>
+              Volver al inicio
+            </button>
           </div>
         )}
       </div>
