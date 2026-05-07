@@ -69,7 +69,7 @@ export default function EscanerQR() {
 
       html5Qrcode.start(
         { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { fps: 15, qrbox: { width: 280, height: 280 } },
         async (decodedText) => {
           await html5Qrcode.stop()
           setEscaneando(false)
@@ -94,6 +94,7 @@ export default function EscanerQR() {
       await scannerRef.current.stop().catch(() => {})
     }
     setEscaneando(false)
+    navigate('/negocio/dashboard')
   }
 
   const añadirSello = async () => {
@@ -128,7 +129,11 @@ export default function EscanerQR() {
         )}
 
         {!escaneando && !resultado && !error && (
-          <p style={styles.cargando}>Iniciando cámara...</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '2rem' }}>
+            <div style={{ width: 48, height: 48, border: '4px solid #f0f0f0', borderTop: '4px solid #E65100', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <p style={{ color: '#888', fontSize: '0.95rem', margin: 0 }}>Iniciando cámara...</p>
+            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+          </div>
         )}
 
         {loading && <p style={styles.loadingText}>Procesando...</p>}
