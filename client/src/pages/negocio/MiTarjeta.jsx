@@ -172,7 +172,7 @@ function Efecto({ tipo }) {
 
 function GridSellos({ numSellos, premios, selloIcon, premioIcon, cuadrado }) {
   const cols = numSellos <= 8 ? 4 : 5
-  const marcados = 3
+  const marcados = 0
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '6px' }}>
       {Array.from({ length: numSellos }).map((_, i) => {
@@ -206,7 +206,7 @@ function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, pre
   const col = color || '#E65100'
   const colDark = darkenColor(col)
   const cols = numSellos <= 8 ? 4 : 5
-  const marcados = 3
+  const marcados = 0
 
   return (
     <div style={{ borderRadius: '28px', background: `linear-gradient(145deg, ${colDark} 0%, ${col} 60%, ${colDark} 100%)`, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 24px 64px ${col}55`, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
