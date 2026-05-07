@@ -200,24 +200,6 @@ export default function Ajustes() {
             </div>
           </div>
 
-          <div style={s.card}>
-            <p style={s.cardTitle}>Plan y facturación</p>
-            <div style={{ padding: '0.85rem 0', borderBottom: '1px solid #f0f0f0', textAlign: 'left' }}>
-              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Plan actual</p>
-              <p style={{ margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '700', color: '#1C1C1E' }}>✦ Básico</p>
-              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#9CA3AF' }}>Próxima renovación: 1 junio 2026</p>
-              <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600', color: NARANJA }}>€12,99/mes</p>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ margin: '0 0 2px', fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Método de pago</p>
-                <p style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E' }}>VISA •••• •••• •••• 4821</p>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: '#9CA3AF' }}>Expira 09/28</p>
-              </div>
-              <button style={s.btnSecondary}>Cambiar</button>
-            </div>
-          </div>
-
           <div style={{ ...s.card, border: '1.5px solid #FEE2E2' }}>
             <p style={{ ...s.cardTitle, color: '#d4380a' }}>Eliminar cuenta</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
