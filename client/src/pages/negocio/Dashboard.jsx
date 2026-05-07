@@ -4,6 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import NavNegocio from '../../components/NavNegocio'
 
+function darkenColor(hex) {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, ${Math.max(0, b - 60)})`
+}
+
 export default function Dashboard() {
   const [user, setUser] = useState(null)
   const [negocio, setNegocio] = useState(null)
@@ -35,27 +42,31 @@ export default function Dashboard() {
     </div>
   )
 
+  const diseno = negocio?.diseno || {}
+  const color = diseno.color || '#E65100'
+  const colDark = darkenColor(color)
+  const estilo = diseno.estilo || 'blob'
+
   const qrUrl = `${window.location.origin}/cliente/registro?negocio=${negocio?.id}`
   const qrSize = isMobile ? 200 : 260
   const cardPadding = isMobile ? '2rem 1.5rem' : '3rem 3rem'
   const cardMaxWidth = isMobile ? '100%' : '520px'
   const nombreSize = isMobile ? '1.5rem' : '2.2rem'
 
+  const bgStyle = estilo === 'dark'
+    ? { background: color }
+    : { background: `linear-gradient(145deg, ${colDark} 0%, ${color} 60%, ${colDark} 100%)` }
+
   return (
     <div style={s.root}>
       <NavNegocio negocio={negocio} user={user} />
 
       <main style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: isMobile ? '2rem 1rem 1rem' : '3rem 2rem',
-        backgroundColor: '#f5f5f5',
-        minHeight: '100dvh',
-        boxSizing: 'border-box',
+        backgroundColor: '#f5f5f5', minHeight: '100dvh', boxSizing: 'border-box',
       }}>
-        <div style={{ ...s.tarjeta, maxWidth: cardMaxWidth, padding: cardPadding }}>
+        <div style={{ ...s.tarjeta, ...bgStyle, maxWidth: cardMaxWidth, padding: cardPadding, boxShadow: `0 24px 64px ${color}55` }}>
           <div style={s.blob1} />
           <div style={s.blob2} />
           <div style={s.blob3} />
@@ -92,48 +103,26 @@ export default function Dashboard() {
 const s = {
   root: { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
   tarjeta: {
-    position: 'relative',
-    overflow: 'hidden',
-    background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)',
-    borderRadius: '28px',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '1.25rem',
-    boxShadow: '0 24px 64px rgba(230,81,0,0.35)',
+    position: 'relative', overflow: 'hidden',
+    borderRadius: '28px', width: '100%',
+    display: 'flex', flexDirection: 'column',
+    alignItems: 'center', gap: '1.25rem',
   },
   blob1: { position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', top: -50, right: -50, pointerEvents: 'none' },
   blob2: { position: 'absolute', width: 150, height: 150, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: 80, left: -40, pointerEvents: 'none' },
   blob3: { position: 'absolute', width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,215,0,0.10)', bottom: 100, right: 30, pointerEvents: 'none' },
   nombre: {
-    position: 'relative', zIndex: 1,
-    margin: 0, fontWeight: '700', fontStyle: 'italic',
-    color: '#fff', textAlign: 'center',
-    textShadow: '0 2px 8px rgba(0,0,0,0.15)',
-    fontFamily: 'Georgia, serif',
+    position: 'relative', zIndex: 1, margin: 0, fontWeight: '700', fontStyle: 'italic',
+    color: '#fff', textAlign: 'center', textShadow: '0 2px 8px rgba(0,0,0,0.15)', fontFamily: 'Georgia, serif',
   },
-  qrWrap: {
-    position: 'relative', zIndex: 1,
-    backgroundColor: '#fff', borderRadius: '20px',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-  },
-  hint: {
-    position: 'relative', zIndex: 1,
-    margin: 0, color: 'rgba(255,255,255,0.8)',
-    textAlign: 'center', lineHeight: 1.5,
-  },
+  qrWrap: { position: 'relative', zIndex: 1, backgroundColor: '#fff', borderRadius: '20px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' },
+  hint: { position: 'relative', zIndex: 1, margin: 0, color: 'rgba(255,255,255,0.8)', textAlign: 'center', lineHeight: 1.5 },
   btnEscanear: {
-    position: 'relative', zIndex: 1,
-    width: '100%',
-    background: 'rgba(255,255,255,0.15)',
-    color: '#fff',
-    border: '1.5px solid rgba(255,255,255,0.5)',
-    borderRadius: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    gap: '10px',
+    position: 'relative', zIndex: 1, width: '100%',
+    background: 'rgba(255,255,255,0.15)', color: '#fff',
+    border: '1.5px solid rgba(255,255,255,0.5)', borderRadius: '14px',
+    fontWeight: '600', cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
     backdropFilter: 'blur(8px)',
   },
 }
