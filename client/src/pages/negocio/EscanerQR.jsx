@@ -113,13 +113,6 @@ export default function EscanerQR() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.logo}>SELLO</h1>
-        <button onClick={() => navigate('/negocio/dashboard')} style={styles.backBtn}>
-          ← Dashboard
-        </button>
-      </div>
-
       <div style={styles.content}>
         {escaneando && (
           <div style={styles.scannerContainer}>
@@ -183,17 +176,7 @@ export default function EscanerQR() {
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: '#f5f5f5' },
-  header: {
-    backgroundColor: '#fff', padding: '1rem 2rem',
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-  },
-  logo: { fontSize: '1.8rem', fontWeight: 'bold', color: '#E65100', margin: 0 },
-  backBtn: {
-    padding: '0.5rem 1rem', backgroundColor: 'transparent',
-    border: '1.5px solid #E65100', borderRadius: '8px',
-    color: '#E65100', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem',
-  },
+
   content: {
     maxWidth: '500px', margin: '2rem auto', padding: '0 1rem',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
