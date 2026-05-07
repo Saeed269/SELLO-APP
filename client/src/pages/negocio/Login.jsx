@@ -139,9 +139,9 @@ export default function Login() {
 
         <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.75rem', color: '#9CA3AF', lineHeight: 1.6 }}>
           Al continuar, aceptas nuestros{' '}
-          <span style={{ color: '#E65100', cursor: 'pointer' }}>Términos de Servicio</span>
+          <Link to="/terminos" style={{ color: '#E65100', textDecoration: 'none' }}>Términos de Servicio</Link>
           {' '}y{' '}
-          <span style={{ color: '#E65100', cursor: 'pointer' }}>Política de Privacidad</span>
+          <Link to="/privacidad" style={{ color: '#E65100', textDecoration: 'none' }}>Política de Privacidad</Link>
         </p>
       </div>
 
