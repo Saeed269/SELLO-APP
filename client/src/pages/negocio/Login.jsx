@@ -110,7 +110,7 @@ export default function Login() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <label style={{ fontSize: '0.82rem', fontWeight: '600', color: '#374151' }}>Contraseña</label>
-                <span style={{ fontSize: '0.78rem', color: '#E65100', cursor: 'pointer', fontWeight: '500' }}>¿Olvidaste tu contraseña?</span>
+                <Link to="/negocio/reset-password" style={{ fontSize: '0.78rem', color: '#E65100', fontWeight: '500', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</Link>
               </div>
               <input
                 type="password" placeholder="••••••••" value={password}
