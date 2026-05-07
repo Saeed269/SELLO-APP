@@ -11,9 +11,6 @@ export default function Clientes() {
   const [clientes, setClientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [busqueda, setBusqueda] = useState('')
-  const [modalMensaje, setModalMensaje] = useState(null)
-  const [mensaje, setMensaje] = useState('')
-  const [enviando, setEnviando] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -58,15 +55,6 @@ export default function Clientes() {
         c.id === tarjeta.id ? { ...c, sellos_actuales: nuevosSellos } : c
       ))
     }
-  }
-
-  const handleEnviarMensaje = async () => {
-    if (!mensaje.trim() || !modalMensaje) return
-    setEnviando(true)
-    await supabase.from('tarjetas').update({ mensaje_negocio: mensaje.trim() }).eq('id', modalMensaje.id)
-    setEnviando(false)
-    setModalMensaje(null)
-    setMensaje('')
   }
 
   const clientesFiltrados = clientes.filter(c =>
@@ -169,23 +157,7 @@ export default function Clientes() {
                         >
                           + Sello
                         </button>
-                        <button
-                          onClick={() => { setModalMensaje(tarjeta); setMensaje('') }}
-                          style={{
-                            padding: '0.4rem 0.75rem',
-                            backgroundColor: '#F3F4F6',
-                            color: '#374151',
-                            border: 'none', borderRadius: '8px',
-                            fontSize: '0.78rem', fontWeight: '500',
-                            cursor: 'pointer', whiteSpace: 'nowrap',
-                            display: 'flex', alignItems: 'center', gap: '4px',
-                          }}
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                          </svg>
-                          Mensaje
-                        </button>
+
                       </div>
                     </div>
                   </div>
@@ -196,36 +168,7 @@ export default function Clientes() {
         </div>
       </main>
 
-      {/* Modal mensaje */}
-      {modalMensaje && (
-        <div style={s.overlay} onClick={() => { setModalMensaje(null); setMensaje('') }}>
-          <div style={s.modal} onClick={e => e.stopPropagation()}>
-            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.2rem', fontWeight: '700', color: '#1C1C1E' }}>
-              Enviar Mensaje a {modalMensaje.clientes?.nombre}
-            </h2>
-            <p style={{ margin: '0 0 1.25rem', fontSize: '0.88rem', color: '#6B7280' }}>
-              Este mensaje aparecerá en la tarjeta digital del cliente cuando la abra.
-            </p>
-            <textarea
-              placeholder="Escribe tu mensaje u oferta especial..."
-              value={mensaje}
-              onChange={e => setMensaje(e.target.value)}
-              rows={4}
-              style={s.textarea}
-            />
-            <div style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
-              <button onClick={() => { setModalMensaje(null); setMensaje('') }} style={s.btnCancelar}>Cancelar</button>
-              <button
-                onClick={handleEnviarMensaje}
-                disabled={!mensaje.trim() || enviando}
-                style={{ ...s.btnEnviar, opacity: !mensaje.trim() ? 0.5 : 1 }}
-              >
-                {enviando ? 'Enviando...' : 'Enviar Mensaje'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   )
 }
@@ -241,9 +184,4 @@ const s = {
   searchInput: { flex: 1, border: 'none', outline: 'none', fontSize: '0.9rem', color: '#1C1C1E', backgroundColor: 'transparent' },
   empty: { backgroundColor: '#fff', borderRadius: '14px', padding: '3rem', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
   card: { backgroundColor: '#fff', borderRadius: '14px', padding: '1rem 1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #F3F4F6' },
-  overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.45)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
-  modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '480px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)' },
-  textarea: { width: '100%', padding: '0.85rem', borderRadius: '10px', border: '1.5px solid #E5E7EB', fontSize: '0.9rem', outline: 'none', resize: 'none', fontFamily: 'inherit', color: '#1C1C1E', boxSizing: 'border-box' },
-  btnCancelar: { flex: 1, padding: '0.85rem', backgroundColor: '#F3F4F6', color: '#374151', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
-  btnEnviar: { flex: 1, padding: '0.85rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
 }
