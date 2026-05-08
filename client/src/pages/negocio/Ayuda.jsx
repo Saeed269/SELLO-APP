@@ -107,7 +107,7 @@ export default function Ayuda() {
             <p style={{ margin: '0 0 1.25rem', fontSize: '0.88rem', color: '#888', lineHeight: 1.6 }}>
               Si no encuentras la respuesta que buscas, contacta con nuestro equipo. Respondemos en menos de 24 horas.
             </p>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div>
               <button onClick={() => setModalAbierto(true)} style={s.btnContacto}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -132,7 +132,7 @@ const s = {
   titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
   subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#888', textAlign: 'center' },
   section:     { backgroundColor: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '1rem' },
-  sectionTitle:{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
+  sectionTitle:{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: '700', color: '#1C1C1E' },
   btnContacto: { display: 'flex', alignItems: 'center', gap: '8px', padding: '0.75rem 1.25rem', borderRadius: '10px', fontSize: '0.88rem', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: COLORS.primary, color: '#fff' },
   overlay:     { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
   modal:       { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '480px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)' },
