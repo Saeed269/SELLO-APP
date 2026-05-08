@@ -3,25 +3,9 @@ import { supabase } from '../../supabase'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import LoadingScreen from '../../components/ui/LoadingScreen'
+import IconSVG from '../../components/tarjeta/IconSVG'
 import Efecto from '../../components/tarjeta/Efecto'
-import { COLORS } from '../../constants'
-
-// ─── Helpers ──────────────────────────────────────────────────
-function darkenColor(hex) {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, ${Math.max(0, b - 60)})`
-}
-
-function IconSVG({ path, size = 14, color = 'currentColor' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
-      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      dangerouslySetInnerHTML={{ __html: `<path d="${path}"/>` }}
-    />
-  )
-}
+import { COLORS, darkenColor } from '../../constants'
 
 // ─── Datos de iconos ──────────────────────────────────────────
 const ICONOS_SELLO = {
@@ -46,9 +30,9 @@ const ICONOS_PREMIO = {
 
 // ─── Tarjeta Moderno ──────────────────────────────────────────
 function TarjetaModerno({ diseno, nombre, totalSellos, sellosActuales, premios, qrCliente, premioGanado, selloPath, premioPath }) {
-  const col      = diseno?.color || COLORS.primary
-  const colDark  = darkenColor(col)
-  const cols     = totalSellos <= 8 ? 4 : 5
+  const col          = diseno?.color || COLORS.primary
+  const colDark      = darkenColor(col)
+  const cols         = totalSellos <= 8 ? 4 : 5
   const ultimoPremio = premios?.[premios.length - 1]?.texto || ''
 
   return (
@@ -91,8 +75,8 @@ function TarjetaModerno({ diseno, nombre, totalSellos, sellosActuales, premios, 
 
 // ─── Tarjeta Clásico ──────────────────────────────────────────
 function TarjetaClasico({ diseno, nombre, totalSellos, sellosActuales, premios, qrCliente, premioGanado, selloPath, premioPath }) {
-  const col  = diseno?.color || COLORS.primary
-  const cols = totalSellos <= 8 ? 4 : 5
+  const col          = diseno?.color || COLORS.primary
+  const cols         = totalSellos <= 8 ? 4 : 5
   const ultimoPremio = premios?.[premios.length - 1]?.texto || ''
 
   return (
@@ -177,8 +161,8 @@ export default function Tarjeta() {
 
   if (loading) return <LoadingScreen />
 
-  const diseno       = negocio?.diseno || {}
-  const premios      = Array.isArray(negocio?.premios) && negocio.premios.length > 0
+  const diseno         = negocio?.diseno || {}
+  const premios        = Array.isArray(negocio?.premios) && negocio.premios.length > 0
     ? negocio.premios
     : [{ sellos: negocio?.num_sellos || 10, texto: negocio?.premio || '' }]
   const sellosActuales = tarjeta?.sellos_actuales || 0
