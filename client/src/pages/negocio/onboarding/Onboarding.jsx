@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import LoadingScreen from '../../../components/ui/LoadingScreen'
 import { COLORS } from '../../../constants'
 
-// ─── Datos estáticos ──────────────────────────────────────────
 const CATEGORIAS = [
   { nombre: 'Hostelería',        tipos: ['Cafetería', 'Restaurante', 'Panadería & Pastelería'] },
   { nombre: 'Belleza & Bienestar', tipos: ['Peluquería & Barbería', 'Manicura & Estética', 'Masajes & Spa'] },
@@ -14,7 +13,6 @@ const CATEGORIAS = [
 
 const TIPOS_CON_BONOS = new Set(['Yoga & Pilates', 'Entrenador Personal', 'Lavandería', 'Lavado de Coches', 'Comercio', 'Otro'])
 
-// ─── Subcomponentes ───────────────────────────────────────────
 function ProgressBar({ paso, total }) {
   return (
     <>
@@ -140,7 +138,6 @@ function PasoConfigurar({ tipoTarjeta, numSellos, premio, caducidad, onNumSellos
   )
 }
 
-// ─── Página principal ─────────────────────────────────────────
 export default function Onboarding() {
   const [paso,        setPaso]        = useState(1)
   const [tipo,        setTipo]        = useState('')

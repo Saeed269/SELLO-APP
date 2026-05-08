@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth'
 import LoadingScreen from '../../components/ui/LoadingScreen'
 import { COLORS } from '../../constants'
 
+// ─── Datos estáticos ──────────────────────────────────────────
 const FAQS = [
   { pregunta: '¿Cómo se registra un nuevo cliente?',        respuesta: 'El cliente escanea el QR de tu negocio (visible en el Dashboard), crea una cuenta y su tarjeta se genera automáticamente.' },
   { pregunta: '¿Los clientes necesitan descargar una app?', respuesta: 'No. SELLO es una PWA — los clientes acceden desde el navegador escaneando tu QR. Pueden guardarla en su pantalla de inicio como si fuera una app.' },
@@ -14,6 +15,7 @@ const FAQS = [
   { pregunta: '¿Qué pasa cuando caduca una tarjeta?',      respuesta: 'Cuando los sellos de un cliente caducan, su contador vuelve a 0 automáticamente según el período configurado.' },
 ]
 
+// ─── Subcomponentes ───────────────────────────────────────────
 function FaqItem({ pregunta, respuesta }) {
   const [abierto, setAbierto] = useState(false)
   return (
@@ -78,6 +80,7 @@ function ModalContacto({ onClose }) {
   )
 }
 
+// ─── Página principal ─────────────────────────────────────────
 export default function Ayuda() {
   const { user, negocio, loading } = useAuth()
   const [modalAbierto, setModalAbierto] = useState(false)
@@ -125,11 +128,11 @@ export default function Ayuda() {
 const s = {
   root:        { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
   main:        { flex: 1, overflowY: 'auto', padding: '4rem 1.25rem 2rem' },
-  inner:       { maxWidth: 700, margin: '0 auto' },
+  inner:       { maxWidth: 900, margin: '0 auto' },
   titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
   subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#888', textAlign: 'center' },
   section:     { backgroundColor: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '1rem' },
-  sectionTitle:{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: '700', color: '#1C1C1E' },
+  sectionTitle:{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
   btnContacto: { display: 'flex', alignItems: 'center', gap: '8px', padding: '0.75rem 1.25rem', borderRadius: '10px', fontSize: '0.88rem', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: COLORS.primary, color: '#fff' },
   overlay:     { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
   modal:       { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '480px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)' },
