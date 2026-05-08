@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth'
 import LoadingScreen from '../../components/ui/LoadingScreen'
 import { COLORS } from '../../constants'
 
+// ─── Datos estáticos ──────────────────────────────────────────
 const FAQS = [
   { pregunta: '¿Cómo se registra un nuevo cliente?',        respuesta: 'El cliente escanea el QR de tu negocio (visible en el Dashboard), crea una cuenta y su tarjeta se genera automáticamente.' },
   { pregunta: '¿Los clientes necesitan descargar una app?', respuesta: 'No. SELLO es una PWA — los clientes acceden desde el navegador escaneando tu QR. Pueden guardarla en su pantalla de inicio como si fuera una app.' },
@@ -14,6 +15,7 @@ const FAQS = [
   { pregunta: '¿Qué pasa cuando caduca una tarjeta?',      respuesta: 'Cuando los sellos de un cliente caducan, su contador vuelve a 0 automáticamente según el período configurado.' },
 ]
 
+// ─── Subcomponentes ───────────────────────────────────────────
 function FaqItem({ pregunta, respuesta }) {
   const [abierto, setAbierto] = useState(false)
   return (
@@ -78,6 +80,7 @@ function ModalContacto({ onClose }) {
   )
 }
 
+// ─── Página principal ─────────────────────────────────────────
 export default function Ayuda() {
   const { user, negocio, loading } = useAuth()
   const [modalAbierto, setModalAbierto] = useState(false)
@@ -126,7 +129,7 @@ const s = {
   root:        { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
   main:        { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
   inner:       { maxWidth: 700, margin: '0 auto' },
-  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
+  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
   subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#888' },
   section:     { backgroundColor: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '1rem' },
   sectionTitle:{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: '700', color: '#1C1C1E' },

@@ -344,10 +344,10 @@ export default function MiTarjeta() {
 
 const s = {
   root:      { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
-  main:      { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
+  main:      { flex: 1, overflowY: 'auto', padding: '4rem 1.25rem 2rem' },
   inner:     { maxWidth: 900, margin: '0 auto' },
-  titulo:    { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
-  subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888' },
+  titulo:    { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
+  subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888', textAlign: 'center' },
   layout:    { display: 'flex', gap: '2rem', alignItems: 'flex-start' },
   tabs:      { display: 'flex', borderBottom: '1px solid #e8e8e8', marginBottom: '1.25rem' },
   tab:       { padding: '0.65rem 1.25rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' },

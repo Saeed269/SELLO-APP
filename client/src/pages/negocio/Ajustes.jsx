@@ -6,6 +6,7 @@ import LoadingScreen from '../../components/ui/LoadingScreen'
 import { useAuth } from '../../hooks/useAuth'
 import { COLORS } from '../../constants'
 
+// ─── Subcomponentes ───────────────────────────────────────────
 function Modal({ titulo, onClose, children }) {
   return (
     <div style={s.overlay} onClick={onClose}>
@@ -55,11 +56,13 @@ function Row({ titulo, valor, onEdit }) {
   )
 }
 
+// ─── Página principal ─────────────────────────────────────────
 export default function Ajustes() {
   const { user, negocio, loading, setNegocio } = useAuth()
   const navigate = useNavigate()
   const [notificaciones, setNotificaciones] = useState(true)
 
+  // Modales
   const [modalNombre,   setModalNombre]   = useState(false)
   const [modalEmail,    setModalEmail]    = useState(false)
   const [modalTelefono, setModalTelefono] = useState(false)
@@ -67,6 +70,7 @@ export default function Ajustes() {
   const [modalPassword, setModalPassword] = useState(false)
   const [modalEliminar, setModalEliminar] = useState(false)
 
+  // Campos de formulario
   const [nombre,         setNombre]         = useState('')
   const [email,          setEmail]          = useState('')
   const [emailActual,    setEmailActual]    = useState('')
@@ -78,6 +82,7 @@ export default function Ajustes() {
   const [passwordConfirm,setPasswordConfirm]= useState('')
   const [confirmTexto,   setConfirmTexto]   = useState('')
 
+  // Estado de guardado
   const [guardando,  setGuardando]  = useState(false)
   const [eliminando, setEliminando] = useState(false)
   const [msg,        setMsg]        = useState(null)
@@ -276,7 +281,7 @@ const s = {
   root:        { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
   main:        { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
   inner:       { maxWidth: 600, margin: '0 auto' },
-  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
+  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
   subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#888' },
   card:        { backgroundColor: '#fff', borderRadius: '14px', padding: '0 1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '10px' },
   cardTitle:   { margin: 0, fontSize: '0.72rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', paddingTop: '1rem', textAlign: 'left' },

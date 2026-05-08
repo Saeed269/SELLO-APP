@@ -5,11 +5,13 @@ import LoadingScreen from '../../components/ui/LoadingScreen'
 import { useAuth } from '../../hooks/useAuth'
 import { COLORS } from '../../constants'
 
+// ─── Helpers ──────────────────────────────────────────────────
 function formatFecha(fecha) {
   if (!fecha) return '—'
   return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+// ─── Subcomponentes ───────────────────────────────────────────
 function BuscadorClientes({ busqueda, onChange, total }) {
   return (
     <div style={s.searchCard}>
@@ -81,6 +83,7 @@ function TarjetaCliente({ tarjeta, maxSellos, onAñadirSello }) {
   )
 }
 
+// ─── Página principal ─────────────────────────────────────────
 export default function Clientes() {
   const { user, negocio, loading } = useAuth()
   const [clientes, setClientes]   = useState([])
@@ -173,8 +176,8 @@ const s = {
   root:        { display: 'flex', minHeight: '100dvh', backgroundColor: '#F9FAFB' },
   main:        { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
   inner:       { maxWidth: 900, margin: '0 auto' },
-  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
-  subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#6B7280' },
+  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
+  subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#6B7280', textAlign: 'center' },
   searchCard:  { backgroundColor: '#fff', borderRadius: '14px', padding: '1rem 1.25rem', marginBottom: '1rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
   searchWrap:  { display: 'flex', alignItems: 'center', gap: '10px', border: '1.5px solid #E5E7EB', borderRadius: '10px', padding: '0.65rem 1rem' },
   searchInput: { flex: 1, border: 'none', outline: 'none', fontSize: '0.9rem', color: '#1C1C1E', backgroundColor: 'transparent' },
