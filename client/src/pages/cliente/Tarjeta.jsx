@@ -39,7 +39,7 @@ function TarjetaModerno({ diseno, nombre, totalSellos, sellosActuales, premios, 
     <div style={{ borderRadius: '28px', background: `linear-gradient(145deg, ${colDark} 0%, ${col} 60%, ${colDark} 100%)`, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 24px 64px ${col}55`, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <Efecto tipo={diseno?.efecto || 'blobs'} />
 
-      <h2 style={{ position: 'relative', zIndex: 1, margin: 0, fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia, serif' }}>{nombre}</h2>
+      <h2 style={{ position: 'relative', zIndex: 1, margin: 0, fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia, serif', textAlign: 'center' }}>{nombre}</h2>
 
       <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '10px' }}>
         {Array.from({ length: totalSellos }).map((_, i) => {
@@ -84,7 +84,7 @@ function TarjetaClasico({ diseno, nombre, totalSellos, sellosActuales, premios, 
       <div style={{ background: col, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden' }}>
         <Efecto tipo={diseno?.efecto || 'none'} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <h2 style={{ margin: '0 0 1rem', fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia, serif' }}>{nombre}</h2>
+          <h2 style={{ margin: '0 0 1rem', fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia, serif', textAlign: 'center' }}>{nombre}</h2>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '10px' }}>
             {Array.from({ length: totalSellos }).map((_, i) => {
               const marcado  = i < sellosActuales

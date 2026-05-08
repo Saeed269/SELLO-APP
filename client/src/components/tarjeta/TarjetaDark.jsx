@@ -2,7 +2,9 @@ import { QRCodeSVG } from 'qrcode.react'
 import Efecto from './Efecto'
 import IconSVG from './IconSVG'
 
-
+/**
+ * Classic two-tone card style: color on top, dark gray on bottom.
+ */
 export default function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
   const col  = color || '#E65100'
   const cols = numSellos <= 8 ? 4 : 5
@@ -13,7 +15,7 @@ export default function TarjetaDark({ efecto, color, nombre, numSellos, premios,
       <div style={{ background: col, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden' }}>
         <Efecto tipo={efecto} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.75rem', fontWeight: '700' }}>
+          <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.75rem', fontWeight: '700', textAlign: 'center' }}>
             {nombre}
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '6px' }}>

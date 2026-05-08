@@ -27,7 +27,7 @@ export default function TarjetaBlob({ efecto, color, nombre, numSellos, premios,
       <Efecto tipo={efecto} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia,serif' }}>
+        <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia,serif', textAlign: 'center' }}>
           {nombre}
         </h3>
       </div>
