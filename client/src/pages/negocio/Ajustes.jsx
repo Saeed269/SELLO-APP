@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
 import NavNegocio from '../../components/NavNegocio'
-
-const NARANJA = '#E65100'
+import LoadingScreen from '../../components/ui/LoadingScreen'
+import { useAuth } from '../../hooks/useAuth'
+import { COLORS } from '../../constants'
 
 function Modal({ titulo, onClose, children }) {
   return (
@@ -23,9 +24,11 @@ function Modal({ titulo, onClose, children }) {
   )
 }
 
-function MsgFeedback({ msg }) {
+function Feedback({ msg }) {
+  if (!msg) return null
+  const ok = msg.tipo === 'ok'
   return (
-    <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: msg.tipo === 'ok' ? '#2D6A4F' : '#d4380a', backgroundColor: msg.tipo === 'ok' ? '#ECFDF5' : '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '8px' }}>
+    <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: ok ? '#2D6A4F' : COLORS.danger, backgroundColor: ok ? '#ECFDF5' : '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '8px' }}>
       {msg.texto}
     </p>
   )
@@ -53,49 +56,31 @@ function Row({ titulo, valor, onEdit }) {
 }
 
 export default function Ajustes() {
+  const { user, negocio, loading, setNegocio } = useAuth()
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-  const [negocio, setNegocio] = useState(null)
-  const [loading, setLoading] = useState(true)
   const [notificaciones, setNotificaciones] = useState(true)
-  const [modalNombre, setModalNombre] = useState(false)
-  const [modalEmail, setModalEmail] = useState(false)
+
+  const [modalNombre,   setModalNombre]   = useState(false)
+  const [modalEmail,    setModalEmail]    = useState(false)
   const [modalTelefono, setModalTelefono] = useState(false)
-  const [modalDireccion, setModalDireccion] = useState(false)
+  const [modalDireccion,setModalDireccion]= useState(false)
   const [modalPassword, setModalPassword] = useState(false)
   const [modalEliminar, setModalEliminar] = useState(false)
-  const [nombre, setNombre] = useState('')
-  const [email, setEmail] = useState('')
-  const [emailConfirm, setEmailConfirm] = useState('')
-  const [emailActual, setEmailActual] = useState('')
-  const [telefono, setTelefono] = useState('')
-  const [direccion, setDireccion] = useState('')
-  const [passwordActual, setPasswordActual] = useState('')
-  const [passwordNuevo, setPasswordNuevo] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [confirmTexto, setConfirmTexto] = useState('')
-  const [guardando, setGuardando] = useState(false)
-  const [msg, setMsg] = useState(null)
-  const [eliminando, setEliminando] = useState(false)
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { navigate('/negocio/login'); return }
-      setUser(user)
-      setEmail(user.email || '')
-      setEmailConfirm(user.email || '')
-      const { data: negocioData } = await supabase
-        .from('negocios').select('*').eq('user_id', user.id).single()
-      if (!negocioData) { navigate('/negocio/onboarding'); return }
-      setNegocio(negocioData)
-      setNombre(negocioData.nombre || '')
-      setTelefono(negocioData.telefono || '')
-      setDireccion(negocioData.direccion || '')
-      setLoading(false)
-    }
-    init()
-  }, [navigate])
+  const [nombre,         setNombre]         = useState('')
+  const [email,          setEmail]          = useState('')
+  const [emailActual,    setEmailActual]    = useState('')
+  const [emailConfirm,   setEmailConfirm]   = useState('')
+  const [telefono,       setTelefono]       = useState('')
+  const [direccion,      setDireccion]      = useState('')
+  const [passwordActual, setPasswordActual] = useState('')
+  const [passwordNuevo,  setPasswordNuevo]  = useState('')
+  const [passwordConfirm,setPasswordConfirm]= useState('')
+  const [confirmTexto,   setConfirmTexto]   = useState('')
+
+  const [guardando,  setGuardando]  = useState(false)
+  const [eliminando, setEliminando] = useState(false)
+  const [msg,        setMsg]        = useState(null)
 
   const cerrar = (setter) => { setter(false); setMsg(null) }
 
@@ -153,11 +138,7 @@ export default function Ajustes() {
     navigate('/negocio/login')
   }
 
-  if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)' }}>
-      <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
-    </div>
-  )
+  if (loading) return <LoadingScreen />
 
   return (
     <div style={s.root}>
@@ -198,14 +179,14 @@ export default function Ajustes() {
             <p style={s.cardTitle}>Preferencias</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
               <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: '600', color: '#1C1C1E', textAlign: 'left' }}>Notificaciones</p>
-              <button onClick={() => setNotificaciones(!notificaciones)} style={{ width: 48, height: 28, borderRadius: '14px', border: 'none', cursor: 'pointer', backgroundColor: notificaciones ? NARANJA : '#E5E7EB', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
+              <button onClick={() => setNotificaciones(!notificaciones)} style={{ width: 48, height: 28, borderRadius: '14px', border: 'none', cursor: 'pointer', backgroundColor: notificaciones ? COLORS.primary : '#E5E7EB', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
                 <div style={{ width: 22, height: 22, borderRadius: '50%', backgroundColor: '#fff', position: 'absolute', top: 3, left: notificaciones ? 23 : 3, transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
               </button>
             </div>
           </div>
 
           <div style={{ ...s.card, border: '1.5px solid #FEE2E2' }}>
-            <p style={{ ...s.cardTitle, color: '#d4380a' }}>Eliminar cuenta</p>
+            <p style={{ ...s.cardTitle, color: COLORS.danger }}>Eliminar cuenta</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '0.85rem 0' }}>
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#9CA3AF', textAlign: 'left' }}>Tienes 30 días para recuperarla después de eliminarla</p>
               <button onClick={() => setModalEliminar(true)} style={s.btnPeligro}>Eliminar</button>
@@ -217,7 +198,7 @@ export default function Ajustes() {
       {modalNombre && (
         <Modal titulo="Nombre del negocio" onClose={() => cerrar(setModalNombre)}>
           <FieldInput label="Nombre del negocio" value={nombre} onChange={setNombre} placeholder="Nombre del negocio" />
-          {msg && <MsgFeedback msg={msg} />}
+          <Feedback msg={msg} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => cerrar(setModalNombre)} style={s.btnCancelar}>Cancelar</button>
             <button onClick={guardarNombre} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
@@ -226,11 +207,11 @@ export default function Ajustes() {
       )}
 
       {modalEmail && (
-        <Modal titulo="Email" onClose={() => cerrar(setModalEmail)}>
+        <Modal titulo="Cambiar email" onClose={() => cerrar(setModalEmail)}>
           <FieldInput label="Email actual" value={emailActual} onChange={setEmailActual} placeholder="Tu email actual" type="email" />
           <FieldInput label="Nuevo email" value={email} onChange={setEmail} placeholder="nuevo@email.com" type="email" />
           <FieldInput label="Confirmar nuevo email" value={emailConfirm} onChange={setEmailConfirm} placeholder="Confirma tu nuevo email" type="email" />
-          {msg && <MsgFeedback msg={msg} />}
+          <Feedback msg={msg} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => cerrar(setModalEmail)} style={s.btnCancelar}>Cancelar</button>
             <button onClick={guardarEmail} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
@@ -241,7 +222,7 @@ export default function Ajustes() {
       {modalTelefono && (
         <Modal titulo="Teléfono" onClose={() => cerrar(setModalTelefono)}>
           <FieldInput label="Teléfono" value={telefono} onChange={setTelefono} placeholder="+34 600 000 000" type="tel" />
-          {msg && <MsgFeedback msg={msg} />}
+          <Feedback msg={msg} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => cerrar(setModalTelefono)} style={s.btnCancelar}>Cancelar</button>
             <button onClick={guardarTelefono} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
@@ -252,7 +233,7 @@ export default function Ajustes() {
       {modalDireccion && (
         <Modal titulo="Dirección" onClose={() => cerrar(setModalDireccion)}>
           <FieldInput label="Dirección" value={direccion} onChange={setDireccion} placeholder="Calle, número, ciudad" />
-          {msg && <MsgFeedback msg={msg} />}
+          <Feedback msg={msg} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => cerrar(setModalDireccion)} style={s.btnCancelar}>Cancelar</button>
             <button onClick={guardarDireccion} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Guardando...' : 'Guardar'}</button>
@@ -265,7 +246,7 @@ export default function Ajustes() {
           <FieldInput label="Contraseña actual" value={passwordActual} onChange={setPasswordActual} placeholder="Tu contraseña actual" type="password" />
           <FieldInput label="Nueva contraseña" value={passwordNuevo} onChange={setPasswordNuevo} placeholder="Mínimo 6 caracteres" type="password" />
           <FieldInput label="Confirmar nueva contraseña" value={passwordConfirm} onChange={setPasswordConfirm} placeholder="Repite la nueva contraseña" type="password" />
-          {msg && <MsgFeedback msg={msg} />}
+          <Feedback msg={msg} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => cerrar(setModalPassword)} style={s.btnCancelar}>Cancelar</button>
             <button onClick={guardarPassword} disabled={guardando} style={s.btnPrimary}>{guardando ? 'Actualizando...' : 'Cambiar'}</button>
@@ -292,20 +273,20 @@ export default function Ajustes() {
 }
 
 const s = {
-  root: { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
-  main: { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
-  inner: { maxWidth: 600, margin: '0 auto' },
-  titulo: { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
-  subtitulo: { margin: 0, fontSize: '0.9rem', color: '#888' },
-  card: { backgroundColor: '#fff', borderRadius: '14px', padding: '0 1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '10px' },
-  cardTitle: { margin: 0, fontSize: '0.72rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', paddingTop: '1rem', textAlign: 'left' },
-  label: { display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' },
-  input: { width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', color: '#1C1C1E', boxSizing: 'border-box', fontFamily: 'inherit' },
-  btnPrimary: { flex: 1, padding: '0.85rem', backgroundColor: NARANJA, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
-  btnSecondary: { padding: '0.45rem 1rem', backgroundColor: '#F3F4F6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
-  btnPeligro: { padding: '0.45rem 1rem', backgroundColor: '#FEF2F2', color: '#d4380a', border: '1.5px solid #FCA5A5', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
-  btnEliminar: { flex: 1, padding: '0.85rem', backgroundColor: '#d4380a', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
+  root:        { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
+  main:        { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
+  inner:       { maxWidth: 600, margin: '0 auto' },
+  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
+  subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#888' },
+  card:        { backgroundColor: '#fff', borderRadius: '14px', padding: '0 1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '10px' },
+  cardTitle:   { margin: 0, fontSize: '0.72rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', paddingTop: '1rem', textAlign: 'left' },
+  label:       { display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' },
+  input:       { width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', color: '#1C1C1E', boxSizing: 'border-box', fontFamily: 'inherit' },
+  btnPrimary:  { flex: 1, padding: '0.85rem', backgroundColor: COLORS.primary, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
+  btnSecondary:{ padding: '0.45rem 1rem', backgroundColor: '#F3F4F6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
+  btnPeligro:  { padding: '0.45rem 1rem', backgroundColor: '#FEF2F2', color: COLORS.danger, border: '1.5px solid #FCA5A5', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
+  btnEliminar: { flex: 1, padding: '0.85rem', backgroundColor: COLORS.danger, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
   btnCancelar: { flex: 1, padding: '0.85rem', backgroundColor: '#f5f5f5', color: '#888', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
-  overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
-  modal: { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxHeight: '90dvh', overflowY: 'auto' },
+  overlay:     { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
+  modal:       { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxHeight: '90dvh', overflowY: 'auto' },
 }

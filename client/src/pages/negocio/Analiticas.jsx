@@ -5,13 +5,11 @@ import LoadingScreen from '../../components/ui/LoadingScreen'
 import { useAuth } from '../../hooks/useAuth'
 import { COLORS } from '../../constants'
 
-// ─── Helpers ──────────────────────────────────────────────────
 function formatFecha(fecha) {
   if (!fecha) return '—'
   return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
 }
 
-// ─── Subcomponentes ───────────────────────────────────────────
 function StatCard({ label, valor, icon, color, isMobile }) {
   return (
     <div style={{ ...s.statCard, textAlign: isMobile ? 'center' : 'left', justifyContent: isMobile ? 'center' : 'flex-start' }}>
@@ -55,7 +53,6 @@ function GraficaActividad({ datos, maxSellos }) {
   )
 }
 
-// ─── Página principal ─────────────────────────────────────────
 export default function Analiticas() {
   const { user, negocio, loading } = useAuth()
   const [isMobile, setIsMobile]   = useState(window.innerWidth < 768)

@@ -5,13 +5,11 @@ import LoadingScreen from '../../components/ui/LoadingScreen'
 import { useAuth } from '../../hooks/useAuth'
 import { COLORS } from '../../constants'
 
-// ─── Helpers ──────────────────────────────────────────────────
 function formatFecha(fecha) {
   if (!fecha) return '—'
   return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// ─── Subcomponentes ───────────────────────────────────────────
 function BuscadorClientes({ busqueda, onChange, total }) {
   return (
     <div style={s.searchCard}>
@@ -83,7 +81,6 @@ function TarjetaCliente({ tarjeta, maxSellos, onAñadirSello }) {
   )
 }
 
-// ─── Página principal ─────────────────────────────────────────
 export default function Clientes() {
   const { user, negocio, loading } = useAuth()
   const [clientes, setClientes]   = useState([])

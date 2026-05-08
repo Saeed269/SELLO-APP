@@ -4,7 +4,6 @@ import { useAuth } from '../../hooks/useAuth'
 import LoadingScreen from '../../components/ui/LoadingScreen'
 import { COLORS } from '../../constants'
 
-// ─── Datos estáticos ──────────────────────────────────────────
 const FAQS = [
   { pregunta: '¿Cómo se registra un nuevo cliente?',        respuesta: 'El cliente escanea el QR de tu negocio (visible en el Dashboard), crea una cuenta y su tarjeta se genera automáticamente.' },
   { pregunta: '¿Los clientes necesitan descargar una app?', respuesta: 'No. SELLO es una PWA — los clientes acceden desde el navegador escaneando tu QR. Pueden guardarla en su pantalla de inicio como si fuera una app.' },
@@ -15,7 +14,6 @@ const FAQS = [
   { pregunta: '¿Qué pasa cuando caduca una tarjeta?',      respuesta: 'Cuando los sellos de un cliente caducan, su contador vuelve a 0 automáticamente según el período configurado.' },
 ]
 
-// ─── Subcomponentes ───────────────────────────────────────────
 function FaqItem({ pregunta, respuesta }) {
   const [abierto, setAbierto] = useState(false)
   return (
@@ -80,7 +78,6 @@ function ModalContacto({ onClose }) {
   )
 }
 
-// ─── Página principal ─────────────────────────────────────────
 export default function Ayuda() {
   const { user, negocio, loading } = useAuth()
   const [modalAbierto, setModalAbierto] = useState(false)
