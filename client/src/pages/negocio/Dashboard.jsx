@@ -35,6 +35,8 @@ export default function Dashboard() {
   const colDark  = darkenColor(color)
   const estilo   = diseno.estilo || 'blob'
   const qrUrl    = `${window.location.origin}/cliente/registro?negocio=${negocio?.id}`
+  const isMobile = window.innerWidth < 768
+  const qrSize   = isMobile ? 180 : 240
   const bgStyle  = estilo === 'dark'
     ? { background: color }
     : { background: `linear-gradient(145deg, ${colDark} 0%, ${color} 60%, ${colDark} 100%)` }
@@ -43,15 +45,15 @@ export default function Dashboard() {
     <div style={s.root}>
       <NavNegocio negocio={negocio} user={user} />
       <main style={s.main}>
-        <div style={{ ...s.card, ...bgStyle, boxShadow: `0 24px 64px ${color}55` }}>
+        <div style={{ ...s.card, ...bgStyle, boxShadow: `0 24px 64px ${color}55`, padding: isMobile ? '1.5rem 1rem' : '3rem' }}>
           <div style={s.blob1} />
           <div style={s.blob2} />
           <div style={s.blob3} />
 
-          <h1 style={s.nombre}>{negocio?.nombre}</h1>
+          <h1 style={{ ...s.nombre, fontSize: isMobile ? '1.6rem' : '2.2rem' }}>{negocio?.nombre}</h1>
 
           <div style={s.qrWrap}>
-            <QRCodeSVG value={qrUrl} size={240} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
+            <QRCodeSVG value={qrUrl} size={qrSize} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
           </div>
 
           <p style={s.hint}>Los clientes escanean este QR para registrarse</p>
@@ -68,7 +70,7 @@ export default function Dashboard() {
 
 const s = {
   root:    { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
-  main:    { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 2rem', minHeight: '100dvh', boxSizing: 'border-box' },
+  main:    { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', minHeight: '100dvh', boxSizing: 'border-box' },
   card:    { position: 'relative', overflow: 'hidden', borderRadius: '28px', width: '100%', maxWidth: '520px', padding: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' },
   blob1:   { position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', top: -50, right: -50, pointerEvents: 'none' },
   blob2:   { position: 'absolute', width: 150, height: 150, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: 80, left: -40, pointerEvents: 'none' },
