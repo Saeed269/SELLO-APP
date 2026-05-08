@@ -174,7 +174,7 @@ export default function Clientes() {
 
 const s = {
   root:        { display: 'flex', minHeight: '100dvh', backgroundColor: '#F9FAFB' },
-  main:        { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
+  main:        { flex: 1, overflowY: 'auto', padding: '4rem 1.25rem 2rem' },
   inner:       { maxWidth: 900, margin: '0 auto' },
   titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
   subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#6B7280', textAlign: 'center' },

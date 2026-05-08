@@ -5,13 +5,11 @@ import LoadingScreen from '../../components/ui/LoadingScreen'
 import { useAuth } from '../../hooks/useAuth'
 import { COLORS } from '../../constants'
 
-// ─── Helpers ──────────────────────────────────────────────────
 function formatFecha(fecha) {
   if (!fecha) return '—'
   return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
 }
 
-// ─── Subcomponentes ───────────────────────────────────────────
 function StatCard({ label, valor, icon, color, isMobile }) {
   return (
     <div style={{ ...s.statCard, textAlign: isMobile ? 'center' : 'left', justifyContent: isMobile ? 'center' : 'flex-start' }}>
@@ -55,7 +53,6 @@ function GraficaActividad({ datos, maxSellos }) {
   )
 }
 
-// ─── Página principal ─────────────────────────────────────────
 export default function Analiticas() {
   const { user, negocio, loading } = useAuth()
   const [isMobile, setIsMobile]   = useState(window.innerWidth < 768)
@@ -198,9 +195,9 @@ export default function Analiticas() {
 
 const s = {
   root:         { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
-  main:         { flex: 1, overflowY: 'auto', padding: '2rem 1.25rem' },
+  main:         { flex: 1, overflowY: 'auto', padding: '4rem 1.25rem 2rem' },
   inner:        { maxWidth: 900, margin: '0 auto' },
-  titulo:       { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E' },
+  titulo:       { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
   subtitulo:    { margin: 0, fontSize: '0.9rem', color: '#888', textAlign: 'center' },
   cardsGrid:    { display: 'grid', gap: '12px', marginBottom: '1.25rem' },
   statCard:     { backgroundColor: '#fff', borderRadius: '14px', padding: '1.1rem', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
