@@ -1,30 +1,25 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
-import { QRCodeSVG } from 'qrcode.react'
 import NavNegocio from '../../components/NavNegocio'
+import LoadingScreen from '../../components/ui/LoadingScreen'
+import TarjetaPreview from '../../components/tarjeta/TarjetaPreview'
+import { CARD_STYLES, CARD_EFFECTS, COLOR_PALETTE, DEFAULT_CARD } from '../../constants'
 
-// ─── Datos estáticos ──────────────────────────────────────────
+// ─── Icono SVG inline simple ──────────────────────────────────
+function IconSVG({ path, circle, size = 14, color = 'currentColor' }) {
+  const circleEl = circle
+    ? `<circle cx="${circle.split(' ')[0]}" cy="${circle.split(' ')[1]}" r="${circle.split(' ')[2]}"/>`
+    : ''
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      dangerouslySetInnerHTML={{ __html: circleEl + `<path d="${path}"/>` }}
+    />
+  )
+}
 
-const ESTILOS = [
-  { id: 'blob', nombre: 'Moderno', desc: 'Gradiente con burbujas' },
-  { id: 'dark', nombre: 'Clásico', desc: 'Color arriba, gris abajo' },
-]
-
-const EFECTOS = [
-  { id: 'none',    nombre: 'Ninguno' },
-  { id: 'blobs',   nombre: 'Blobs' },
-  { id: 'bubbles', nombre: 'Burbujas' },
-  { id: 'lines',   nombre: 'Líneas' },
-  { id: 'waves',   nombre: 'Ondas' },
-]
-
-const COLORES = [
-  '#E65100', '#B71C1C', '#1565C0', '#2D6A4F', '#6B2D6B',
-  '#C2185B', '#bf360c', '#F57C00', '#5C6BC0', '#00838F',
-  '#558B2F', '#795548', '#4527A0', '#880E4F', '#37474F',
-]
-
+// ─── Datos de iconos ──────────────────────────────────────────
 const ICONOS_SELLO_POR_TIPO = {
   'Cafetería': [
     { id: 'cup',     label: 'Taza',     path: 'M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z' },
@@ -83,15 +78,7 @@ const ICONOS_PREMIO = [
   { id: 'sparkle', path: 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z' },
 ]
 
-// ─── Utilidades ───────────────────────────────────────────────
-
-function darkenColor(hex) {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, ${Math.max(0, b - 60)})`
-}
-
+// ─── Helpers ──────────────────────────────────────────────────
 function generarPremios(cantidad, numSellos) {
   return Array.from({ length: cantidad }, (_, i) => ({
     sellos: Math.round((numSellos / cantidad) * (i + 1)),
@@ -99,217 +86,46 @@ function generarPremios(cantidad, numSellos) {
   }))
 }
 
-// ─── Componentes visuales (definidos fuera del render) ────────
-
-function IconSVG({ path, circle, size = 14, color = 'currentColor' }) {
+// ─── Subcomponentes de UI ─────────────────────────────────────
+function TabBar({ tab, onChange }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      dangerouslySetInnerHTML={{
-        __html: (circle ? `<circle cx="${circle.split(' ')[0]}" cy="${circle.split(' ')[1]}" r="${circle.split(' ')[2]}"/>` : '') + `<path d="${path}"/>`
-      }}
-    />
-  )
-}
-
-function Efecto({ tipo }) {
-  const svgStyle = { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }
-  if (tipo === 'blobs') return (
-    <>
-      <div style={{ position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -70, right: -70, pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', bottom: -50, left: -50, pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,215,0,0.12)', top: '40%', right: 10, pointerEvents: 'none', zIndex: 0 }} />
-    </>
-  )
-  if (tipo === 'bubbles') return (
-    <>
-      <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -50, right: -50, pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'absolute', width: 110, height: 110, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', bottom: -30, left: -30, pointerEvents: 'none', zIndex: 0 }} />
-    </>
-  )
-  if (tipo === 'lines') return (
-    <svg style={svgStyle} viewBox="0 0 300 300" opacity="0.08">
-      {[0,1,2,3,4,5,6].map(i => <line key={i} x1={i*50-10} y1="0" x2={i*50+30} y2="300" stroke="white" strokeWidth="1.5" />)}
-    </svg>
-  )
-  if (tipo === 'dots') return (
-    <svg style={svgStyle} viewBox="0 0 300 300" opacity="0.12">
-      {Array.from({length:9}).map((_,x) => Array.from({length:9}).map((_,y) => (
-        <circle key={`${x}-${y}`} cx={x*34+12} cy={y*34+12} r="2.5" fill="white" />
-      )))}
-    </svg>
-  )
-  if (tipo === 'waves') return (
-    <svg style={svgStyle} viewBox="0 0 300 300" preserveAspectRatio="none" opacity="0.1">
-      <path d="M0,80 Q75,60 150,80 Q225,100 300,80 L300,300 L0,300 Z" fill="white" />
-      <path d="M0,140 Q75,120 150,140 Q225,160 300,140 L300,300 L0,300 Z" fill="white" />
-    </svg>
-  )
-  if (tipo === 'hexagons') return (
-    <svg style={svgStyle} viewBox="0 0 300 300" opacity="0.08">
-      {[[50,50],[150,50],[250,50],[100,120],[200,120],[50,190],[150,190],[250,190]].map(([cx,cy],i) => (
-        <polygon key={i} points={`${cx},${cy-25} ${cx+22},${cy-12} ${cx+22},${cy+12} ${cx},${cy+25} ${cx-22},${cy+12} ${cx-22},${cy-12}`} fill="none" stroke="white" strokeWidth="1" />
+    <div style={s.tabs}>
+      {[['diseno', 'Diseño'], ['config', 'Configuración']].map(([id, label]) => (
+        <button key={id} onClick={() => onChange(id)} style={{
+          ...s.tab,
+          borderBottom: tab === id ? '2px solid #E65100' : '2px solid transparent',
+          color: tab === id ? '#E65100' : '#888',
+        }}>
+          {label}
+        </button>
       ))}
-    </svg>
-  )
-  if (tipo === 'gradient') return <div style={{ position:'absolute', inset:0, background:'linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 55%)', pointerEvents:'none', zIndex:0 }} />
-  if (tipo === 'confetti') return (
-    <svg style={svgStyle} viewBox="0 0 300 300" opacity="0.15">
-      {[[20,20],[80,40],[140,15],[200,35],[260,20],[40,90],[100,70],[160,90],[220,75],[280,85],[30,160],[90,180],[150,155],[210,175],[270,160]].map(([x,y],i) => (
-        <rect key={i} x={x} y={y} width="7" height="7" rx="1" fill="white" transform={`rotate(${i*23} ${x+3.5} ${y+3.5})`} />
-      ))}
-    </svg>
-  )
-  return null
-}
-
-function GridSellos({ numSellos, premios, selloIcon, premioIcon, cuadrado }) {
-  const cols = numSellos <= 8 ? 4 : 5
-  const marcados = 0
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '6px' }}>
-      {Array.from({ length: numSellos }).map((_, i) => {
-        const marcado = i < marcados
-        const esPremio = premios.some(p => p.sellos === i + 1)
-        return (
-          <div key={i} style={{
-            aspectRatio: '1',
-            borderRadius: cuadrado ? '8px' : '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: marcado ? (esPremio ? '#FFD700' : 'rgba(255,255,255,0.85)') : 'rgba(255,255,255,0.12)',
-            border: marcado ? 'none' : '1.5px solid rgba(255,255,255,0.25)',
-          }}>
-            {marcado && (
-              esPremio
-                ? <IconSVG path={premioIcon.path} size={11} color="#1C1C1E" />
-                : <IconSVG path={selloIcon.path} circle={selloIcon.circle} size={11} color="#1C1C1E" />
-            )}
-          </div>
-        )
-      })}
     </div>
   )
 }
 
-// ─── Estilo Blob (el que ya tenemos) ──────────────────────────
-
-function TarjetaBlob({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
-  const col = color || '#E65100'
-  const colDark = darkenColor(col)
-  const cols = numSellos <= 8 ? 4 : 5
-  const marcados = 0
-
-  return (
-    <div style={{ borderRadius: '28px', background: `linear-gradient(145deg, ${colDark} 0%, ${col} 60%, ${colDark} 100%)`, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 24px 64px ${col}55`, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      <Efecto tipo={efecto} />
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', fontStyle: 'italic', color: '#fff', fontFamily: 'Georgia,serif' }}>{nombre}</h3>
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '10px' }}>
-        {Array.from({ length: numSellos }).map((_, i) => {
-          const marcado = i < marcados
-          const esUltimo = i === numSellos - 1
-          return (
-            <div key={i} style={{ aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: marcado ? (esUltimo ? '#FFD700' : '#fff') : 'rgba(255,255,255,0.2)', border: marcado ? 'none' : '1.5px solid rgba(255,255,255,0.35)' }}>
-              {marcado && (esUltimo
-                ? <IconSVG path={premioIcon.path} size={14} color={col} />
-                : <IconSVG path={selloIcon.path} circle={selloIcon.circle} size={14} color={col} />
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center' }}>
-        <div style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '20px', padding: '5px 14px' }}>
-          <p style={{ margin: 0, fontSize: '12px', color: '#fff', fontWeight: '500' }}>🎁 Premio: {premios[premios.length - 1]?.texto || '...'}</p>
-        </div>
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1, height: '1px', background: 'rgba(255,255,255,0.15)' }} />
-
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
-        <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.75)', textAlign: 'center' }}>Muestra este QR para recibir tu sello</p>
-        <div style={{ background: '#fff', borderRadius: '16px', padding: '14px', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}>
-          {qrUrl
-            ? <QRCodeSVG value={qrUrl} size={140} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
-            : <div style={{ width: 140, height: 140, background: '#f0f0f0', borderRadius: '8px' }} />
-          }
-        </div>
-      </div>
-    </div>
-  )
+function SecLabel({ children }) {
+  return <p style={s.secLabel}>{children}</p>
 }
 
-// ─── Estilo Dark ──────────────────────────────────────────────
-
-function TarjetaDark({ efecto, color, nombre, numSellos, premios, selloIcon, premioIcon, qrUrl }) {
-  const col = color || '#E65100'
-  return (
-    <div style={{ borderRadius: '28px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.25)' }}>
-      {/* Zona superior — color con nombre y sellos */}
-      <div style={{ background: col, padding: '2rem 1.75rem', position: 'relative', overflow: 'hidden' }}>
-        <Efecto tipo={efecto} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <h3 style={{ margin: '0 0 1rem', color: '#fff', fontStyle: 'italic', fontFamily: 'Georgia,serif', fontSize: '1.75rem', fontWeight: '700' }}>{nombre}</h3>
-          <GridSellos numSellos={numSellos} premios={premios} selloIcon={selloIcon} premioIcon={premioIcon} cuadrado />
-          <div style={{ marginTop: '8px' }}>
-            <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.8)', fontWeight: '500' }}>🎁 Premio: {premios[premios.length - 1]?.texto || '...'}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Zona inferior — gris oscuro con QR */}
-      <div style={{ background: '#2a2a2a', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
-        <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>Muestra este QR para recibir tu sello</p>
-        <div style={{ background: '#fff', borderRadius: '16px', padding: '14px', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}>
-          {qrUrl
-            ? <QRCodeSVG value={qrUrl} size={140} fgColor="#1C1C1E" bgColor="#FFFFFF" level="M" />
-            : <div style={{ width: 140, height: 140, background: '#f0f0f0', borderRadius: '8px' }} />
-          }
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function TarjetaPreview(props) {
-  if (props.estilo === 'dark') return <TarjetaDark {...props} />
-  return <TarjetaBlob {...props} />
-}
-
-// ─── Componente principal ─────────────────────────────────────
-
+// ─── Página principal ─────────────────────────────────────────
 export default function MiTarjeta() {
-  const [negocio, setNegocio]           = useState(null)
-  const [user, setUser]                 = useState(null)
-  const [loading, setLoading]           = useState(true)
-  const [saving, setSaving]             = useState(false)
-  const [tab, setTab]                   = useState('diseno')
-  const [mobileView, setMobileView]     = useState('editar')
-  const [isMobile, setIsMobile]         = useState(window.innerWidth < 768)
-  const [estilo, setEstilo]             = useState('blob')
-  const [efecto, setEfecto]             = useState('blobs')
-  const [color, setColor]               = useState('#E65100')
-  const [selloIconId, setSelloIconId]   = useState('check')
-  const [premioIconId, setPremioIconId] = useState('gift')
-  const [numSellos, setNumSellos]       = useState(10)
-  const [numPremios, setNumPremios]     = useState(1)
-  const [premios, setPremios]           = useState([{ sellos: 10, texto: '' }])
-  const [caducidad, setCaducidad]       = useState(12)
-  const [error, setError]               = useState('')
-  const [guardado, setGuardado]         = useState(false)
+  const [negocio, setNegocio]         = useState(null)
+  const [user, setUser]               = useState(null)
+  const [loading, setLoading]         = useState(true)
+  const [saving, setSaving]           = useState(false)
+  const [tab, setTab]                 = useState('diseno')
+  const [isMobile, setIsMobile]       = useState(window.innerWidth < 768)
+  const [estilo, setEstilo]           = useState(DEFAULT_CARD.estilo)
+  const [efecto, setEfecto]           = useState(DEFAULT_CARD.efecto)
+  const [color, setColor]             = useState(DEFAULT_CARD.color)
+  const [selloIconId, setSelloIconId] = useState(DEFAULT_CARD.selloIcon)
+  const [premioIconId, setPremioIconId] = useState(DEFAULT_CARD.premioIcon)
+  const [numSellos, setNumSellos]     = useState(10)
+  const [numPremios, setNumPremios]   = useState(1)
+  const [premios, setPremios]         = useState([{ sellos: 10, texto: '' }])
+  const [caducidad, setCaducidad]     = useState(12)
+  const [error, setError]             = useState('')
+  const [guardado, setGuardado]       = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -323,25 +139,28 @@ export default function MiTarjeta() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { navigate('/negocio/login'); return }
       setUser(user)
+
       const { data } = await supabase.from('negocios').select('*').eq('user_id', user.id).single()
       if (!data) { navigate('/negocio/onboarding'); return }
       setNegocio(data)
       setNumSellos(data.num_sellos || 10)
       setCaducidad(data.caducidad_meses || 12)
+
       if (Array.isArray(data.premios) && data.premios.length > 0) {
         setPremios(data.premios)
         setNumPremios(data.premios.length)
       } else if (data.premio) {
         setPremios([{ sellos: data.num_sellos || 10, texto: data.premio }])
-        setNumPremios(1)
       }
+
       if (data.diseno && Object.keys(data.diseno).length > 0) {
-        setEstilo(data.diseno.estilo || 'blob')
-        setEfecto(data.diseno.efecto || 'bubbles')
-        setColor(data.diseno.color || '#E65100')
-        setSelloIconId(data.diseno.selloIcon || 'check')
-        setPremioIconId(data.diseno.premioIcon || 'gift')
+        setEstilo(data.diseno.estilo || DEFAULT_CARD.estilo)
+        setEfecto(data.diseno.efecto || DEFAULT_CARD.efecto)
+        setColor(data.diseno.color || DEFAULT_CARD.color)
+        setSelloIconId(data.diseno.selloIcon || DEFAULT_CARD.selloIcon)
+        setPremioIconId(data.diseno.premioIcon || DEFAULT_CARD.premioIcon)
       }
+
       setLoading(false)
     }
     init()
@@ -357,10 +176,6 @@ export default function MiTarjeta() {
     setNumSellos(val)
     const nuevos = generarPremios(numPremios, val)
     setPremios(prev => nuevos.map((p, i) => ({ ...p, texto: prev[i]?.texto || '' })))
-  }
-
-  const updatePremioTexto = (i, texto) => {
-    setPremios(prev => prev.map((p, idx) => idx === i ? { ...p, texto } : p))
   }
 
   const handleGuardar = async () => {
@@ -379,33 +194,19 @@ export default function MiTarjeta() {
     else { setGuardado(true); setTimeout(() => setGuardado(false), 2500) }
   }
 
-  if (loading) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #bf360c 0%, #E65100 60%, #d4380a 100%)' }}>
-      <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', letterSpacing: '0.12em' }}>SELLO</h1>
-    </div>
-  )
+  if (loading) return <LoadingScreen />
 
-  const iconosSello = ICONOS_SELLO_POR_TIPO[negocio?.tipo] || ICONOS_SELLO_POR_TIPO.default
-  const selloIcon   = iconosSello.find(s => s.id === selloIconId) || iconosSello[0]
-  const premioIcon  = ICONOS_PREMIO.find(p => p.id === premioIconId) || ICONOS_PREMIO[0]
-  const qrCliente   = `${window.location.origin}/negocio/escanear?tarjeta=preview`
+  const iconosSello  = ICONOS_SELLO_POR_TIPO[negocio?.tipo] || ICONOS_SELLO_POR_TIPO.default
+  const selloIcon    = iconosSello.find(i => i.id === selloIconId) || iconosSello[0]
+  const premioIcon   = ICONOS_PREMIO.find(i => i.id === premioIconId) || ICONOS_PREMIO[0]
+  const qrCliente    = `${window.location.origin}/negocio/escanear?tarjeta=preview`
   const previewProps = { estilo, efecto, color, nombre: negocio?.nombre, numSellos, premios, selloIcon, premioIcon, qrUrl: qrCliente }
-
-  const renderTabs = () => (
-    <div style={s.tabs}>
-      {[['diseno', 'Diseño'], ['config', 'Configuración']].map(([id, label]) => (
-        <button key={id} onClick={() => setTab(id)} style={{ ...s.tab, borderBottom: tab === id ? '2px solid #E65100' : '2px solid transparent', color: tab === id ? '#E65100' : '#888' }}>
-          {label}
-        </button>
-      ))}
-    </div>
-  )
 
   const renderDiseno = () => (
     <div>
-      <p style={s.secLabel}>Estilo de tarjeta</p>
+      <SecLabel>Estilo de tarjeta</SecLabel>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '8px', marginBottom: '1.25rem' }}>
-        {ESTILOS.map(e => (
+        {CARD_STYLES.map(e => (
           <button key={e.id} onClick={() => setEstilo(e.id)} style={{ padding: '0.75rem', borderRadius: '10px', cursor: 'pointer', textAlign: 'center', border: estilo === e.id ? '2px solid #E65100' : '1.5px solid #e8e8e8', backgroundColor: estilo === e.id ? '#FFF4EE' : '#fafafa' }}>
             <p style={{ margin: '0 0 2px', fontSize: '0.88rem', fontWeight: '600', color: '#1C1C1E' }}>{e.nombre}</p>
             <p style={{ margin: 0, fontSize: '0.75rem', color: '#888' }}>{e.desc}</p>
@@ -413,23 +214,23 @@ export default function MiTarjeta() {
         ))}
       </div>
 
-      <p style={s.secLabel}>Efecto decorativo</p>
+      <SecLabel>Efecto decorativo</SecLabel>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '6px', marginBottom: '1.25rem' }}>
-        {EFECTOS.map(e => (
+        {CARD_EFFECTS.map(e => (
           <button key={e.id} onClick={() => setEfecto(e.id)} style={{ padding: '0.45rem 0.2rem', borderRadius: '8px', cursor: 'pointer', textAlign: 'center', fontSize: '0.73rem', border: efecto === e.id ? '2px solid #E65100' : '1.5px solid #e8e8e8', backgroundColor: efecto === e.id ? '#FFF4EE' : '#fafafa', color: efecto === e.id ? '#E65100' : '#555', fontWeight: efecto === e.id ? '600' : '400' }}>
             {e.nombre}
           </button>
         ))}
       </div>
 
-      <p style={s.secLabel}>Color</p>
+      <SecLabel>Color</SecLabel>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1.25rem' }}>
-        {COLORES.map(c => (
+        {COLOR_PALETTE.map(c => (
           <button key={c} onClick={() => setColor(c)} style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: c, cursor: 'pointer', border: color === c ? '3px solid #E65100' : '2px solid transparent', outline: color === c ? '2px solid #e8e8e8' : 'none' }} />
         ))}
       </div>
 
-      <p style={s.secLabel}>Icono de sello</p>
+      <SecLabel>Icono de sello</SecLabel>
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
         {iconosSello.map(ico => (
           <button key={ico.id} onClick={() => setSelloIconId(ico.id)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', border: selloIconId === ico.id ? '2px solid #E65100' : '1.5px solid #e8e8e8', backgroundColor: selloIconId === ico.id ? '#FFF4EE' : '#fafafa' }}>
@@ -439,7 +240,7 @@ export default function MiTarjeta() {
         ))}
       </div>
 
-      <p style={s.secLabel}>Icono de premio</p>
+      <SecLabel>Icono de premio</SecLabel>
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {ICONOS_PREMIO.map(ico => (
           <button key={ico.id} onClick={() => setPremioIconId(ico.id)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', border: premioIconId === ico.id ? '2px solid #E65100' : '1.5px solid #e8e8e8', backgroundColor: premioIconId === ico.id ? '#FFF4EE' : '#fafafa' }}>
@@ -452,7 +253,7 @@ export default function MiTarjeta() {
 
   const renderConfig = () => (
     <div>
-      <p style={s.secLabel}>Total de sellos</p>
+      <SecLabel>Total de sellos</SecLabel>
       <div style={{ marginBottom: '1.25rem' }}>
         <input type="range" min="5" max="20" value={numSellos} onChange={e => handleNumSellosChange(Number(e.target.value))} style={{ width: '100%' }} />
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '4px' }}>
@@ -461,7 +262,7 @@ export default function MiTarjeta() {
         </div>
       </div>
 
-      <p style={s.secLabel}>Número de premios</p>
+      <SecLabel>Número de premios</SecLabel>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '1.25rem' }}>
         {[1, 2].map(n => (
           <button key={n} onClick={() => handleNumPremiosChange(n)} style={{ width: 44, height: 44, borderRadius: '10px', cursor: 'pointer', fontSize: '1rem', fontWeight: '600', border: numPremios === n ? '2px solid #E65100' : '1.5px solid #e8e8e8', backgroundColor: numPremios === n ? '#FFF4EE' : '#fafafa', color: numPremios === n ? '#E65100' : '#555' }}>
@@ -476,12 +277,12 @@ export default function MiTarjeta() {
             <p style={{ margin: '0 0 8px', fontSize: '0.78rem', fontWeight: '600', color: '#E65100' }}>
               {i === premios.length - 1 ? `Premio final — ${p.sellos} sellos` : `Premio intermedio — ${p.sellos} sellos`}
             </p>
-            <input type="text" placeholder={i === 0 && premios.length > 1 ? 'Ej: Café pequeño gratis' : 'Ej: Menú completo gratis'} value={p.texto} onChange={e => updatePremioTexto(i, e.target.value)} style={s.input} />
+            <input type="text" placeholder={i === 0 && premios.length > 1 ? 'Ej: Café pequeño gratis' : 'Ej: Menú completo gratis'} value={p.texto} onChange={e => setPremios(prev => prev.map((pr, idx) => idx === i ? { ...pr, texto: e.target.value } : pr))} style={s.input} />
           </div>
         ))}
       </div>
 
-      <p style={s.secLabel}>Caducidad</p>
+      <SecLabel>Caducidad</SecLabel>
       <div style={{ marginBottom: '1.5rem' }}>
         <input type="range" min="6" max="24" value={caducidad} onChange={e => setCaducidad(Number(e.target.value))} style={{ width: '100%' }} />
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '4px' }}>
@@ -512,10 +313,10 @@ export default function MiTarjeta() {
 
           {isMobile ? (
             <div>
-              {renderTabs()}
+              <TabBar tab={tab} onChange={setTab} />
               {tab === 'diseno' ? renderDiseno() : renderConfig()}
               <div style={{ marginTop: '1.5rem' }}>
-                <p style={s.secLabel}>Vista previa</p>
+                <SecLabel>Vista previa</SecLabel>
                 <TarjetaPreview {...previewProps} />
               </div>
               {btnGuardar}
@@ -523,12 +324,12 @@ export default function MiTarjeta() {
           ) : (
             <div style={s.layout}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                {renderTabs()}
+                <TabBar tab={tab} onChange={setTab} />
                 {tab === 'diseno' ? renderDiseno() : renderConfig()}
                 {btnGuardar}
               </div>
               <div style={{ width: 240, flexShrink: 0 }}>
-                <p style={s.secLabel}>Vista previa</p>
+                <SecLabel>Vista previa</SecLabel>
                 <div style={{ maxWidth: 240 }}>
                   <TarjetaPreview {...previewProps} />
                 </div>
@@ -551,5 +352,5 @@ const s = {
   tabs:      { display: 'flex', borderBottom: '1px solid #e8e8e8', marginBottom: '1.25rem' },
   tab:       { padding: '0.65rem 1.25rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' },
   secLabel:  { fontSize: '0.75rem', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 0.6rem' },
-  input:     { padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', backgroundColor: '#fff', color: '#1C1C1E', width: '100%', boxSizing: 'border-box', marginBottom: 0 },
+  input:     { padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', backgroundColor: '#fff', color: '#1C1C1E', width: '100%', boxSizing: 'border-box' },
 }
