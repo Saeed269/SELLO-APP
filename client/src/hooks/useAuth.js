@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
-
+import { negociosApi } from '../api'
 
 export function useAuth() {
   const [user, setUser]       = useState(null)
@@ -20,22 +20,28 @@ export function useAuth() {
         return
       }
 
-      const { data: negocioData } = await supabase
-        .from('negocios')
-        .select('*')
-        .eq('user_id', user.id)
-        .single()
+      // Obtenemos el token JWT para autenticarnos con el backend
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
 
-      if (!mounted) return
+      try {
+        const negocios = await negociosApi.getAll(token)
+        const negocioData = negocios[0] || null
 
-      if (!negocioData) {
-        navigate('/negocio/onboarding')
-        return
+        if (!mounted) return
+
+        if (!negocioData) {
+          navigate('/negocio/onboarding')
+          return
+        }
+
+        setUser(user)
+        setNegocio(negocioData)
+        setLoading(false)
+      } catch (err) {
+        console.error('Error obteniendo negocio:', err.message)
+        navigate('/negocio/login')
       }
-
-      setUser(user)
-      setNegocio(negocioData)
-      setLoading(false)
     }
 
     init()
