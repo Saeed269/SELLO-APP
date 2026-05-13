@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { supabase } from '../../../supabase'
 import { useNavigate } from 'react-router-dom'
+import { negociosApi } from '../../../api'
 import LoadingScreen from '../../../components/ui/LoadingScreen'
 import { COLORS } from '../../../constants'
 
 const CATEGORIAS = [
-  { nombre: 'Hostelería',        tipos: ['Cafetería', 'Restaurante', 'Panadería & Pastelería'] },
+  { nombre: 'Hostelería',          tipos: ['Cafetería', 'Restaurante', 'Panadería & Pastelería'] },
   { nombre: 'Belleza & Bienestar', tipos: ['Peluquería & Barbería', 'Manicura & Estética', 'Masajes & Spa'] },
-  { nombre: 'Deporte & Salud',   tipos: ['Yoga & Pilates', 'Entrenador Personal'] },
-  { nombre: 'Servicios',         tipos: ['Lavandería', 'Lavado de Coches', 'Comercio', 'Otro'] },
+  { nombre: 'Deporte & Salud',     tipos: ['Yoga & Pilates', 'Entrenador Personal'] },
+  { nombre: 'Servicios',           tipos: ['Lavandería', 'Lavado de Coches', 'Comercio', 'Otro'] },
 ]
 
 const TIPOS_CON_BONOS = new Set(['Yoga & Pilates', 'Entrenador Personal', 'Lavandería', 'Lavado de Coches', 'Comercio', 'Otro'])
@@ -156,13 +157,20 @@ export default function Onboarding() {
     setError('')
     if (!premio.trim()) { setError('Define el premio para tu cliente'); return }
     setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    const { error: updateError } = await supabase.from('negocios').update({
-      tipo, tipo_tarjeta: tipoTarjeta, num_sellos: numSellos, premio, caducidad_meses: caducidad,
-    }).eq('user_id', user.id)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token    = session?.access_token
+      const negocios = await negociosApi.getAll(token)
+      const negocio  = negocios[0]
+
+      await negociosApi.update(token, negocio.id, {
+        tipo, tipo_tarjeta: tipoTarjeta, num_sellos: numSellos, premio, caducidad_meses: caducidad,
+      })
+      navigate('/negocio/dashboard')
+    } catch (err) {
+      setError('Error al guardar: ' + err.message)
+    }
     setLoading(false)
-    if (updateError) { setError('Error al guardar: ' + updateError.message); return }
-    navigate('/negocio/dashboard')
   }
 
   const siguiente = () => {
@@ -209,16 +217,16 @@ export default function Onboarding() {
 }
 
 const s = {
-  root:       { minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backgroundColor: '#f9fafb', boxSizing: 'border-box' },
-  card:       { width: '100%', maxWidth: '480px', backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.07)', boxSizing: 'border-box' },
-  logo:       { fontSize: '1.8rem', fontWeight: 'bold', color: COLORS.primary, margin: 0, letterSpacing: '0.1em' },
-  subtitulo:  { margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#888' },
-  seccion:    { display: 'flex', flexDirection: 'column' },
-  h2:         { fontSize: '1.1rem', fontWeight: '700', color: '#1C1C1E', margin: '0 0 0.75rem' },
-  catLabel:   { fontSize: '0.72rem', fontWeight: '600', color: COLORS.primary, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 5px' },
-  fieldLabel: { fontSize: '0.85rem', color: '#555', fontWeight: '500', margin: '0 0 0.4rem' },
-  input:      { padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', backgroundColor: '#fafafa', color: '#1C1C1E', width: '100%', boxSizing: 'border-box', marginBottom: '1rem' },
-  btnPrimario:  { flex: 1, padding: '0.85rem', backgroundColor: COLORS.primary, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
-  btnSecundario:{ flex: 1, padding: '0.85rem', backgroundColor: 'transparent', color: COLORS.primary, border: `1.5px solid ${COLORS.primary}`, borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
-  error:      { color: COLORS.danger, fontSize: '0.82rem', margin: '0 0 0.5rem' },
+  root:          { minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backgroundColor: '#f9fafb', boxSizing: 'border-box' },
+  card:          { width: '100%', maxWidth: '480px', backgroundColor: '#fff', borderRadius: '20px', padding: '1.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.07)', boxSizing: 'border-box' },
+  logo:          { fontSize: '1.8rem', fontWeight: 'bold', color: COLORS.primary, margin: 0, letterSpacing: '0.1em' },
+  subtitulo:     { margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#888' },
+  seccion:       { display: 'flex', flexDirection: 'column' },
+  h2:            { fontSize: '1.1rem', fontWeight: '700', color: '#1C1C1E', margin: '0 0 0.75rem' },
+  catLabel:      { fontSize: '0.72rem', fontWeight: '600', color: COLORS.primary, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 5px' },
+  fieldLabel:    { fontSize: '0.85rem', color: '#555', fontWeight: '500', margin: '0 0 0.4rem' },
+  input:         { padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', backgroundColor: '#fafafa', color: '#1C1C1E', width: '100%', boxSizing: 'border-box', marginBottom: '1rem' },
+  btnPrimario:   { flex: 1, padding: '0.85rem', backgroundColor: COLORS.primary, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
+  btnSecundario: { flex: 1, padding: '0.85rem', backgroundColor: 'transparent', color: COLORS.primary, border: `1.5px solid ${COLORS.primary}`, borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
+  error:         { color: COLORS.danger, fontSize: '0.82rem', margin: '0 0 0.5rem' },
 }

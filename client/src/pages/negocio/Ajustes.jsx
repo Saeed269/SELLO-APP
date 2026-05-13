@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { supabase } from '../../supabase'
 import { useNavigate } from 'react-router-dom'
 import NavNegocio from '../../components/NavNegocio'
 import LoadingScreen from '../../components/ui/LoadingScreen'
 import { useAuth } from '../../hooks/useAuth'
+import { negociosApi } from '../../api'
 import { COLORS } from '../../constants'
 
-// ─── Subcomponentes ───────────────────────────────────────────
 function Modal({ titulo, onClose, children }) {
   return (
     <div style={s.overlay} onClick={onClose}>
@@ -56,44 +56,51 @@ function Row({ titulo, valor, onEdit }) {
   )
 }
 
-// ─── Página principal ─────────────────────────────────────────
 export default function Ajustes() {
   const { user, negocio, loading, setNegocio } = useAuth()
   const navigate = useNavigate()
   const [notificaciones, setNotificaciones] = useState(true)
 
-  // Modales
-  const [modalNombre,   setModalNombre]   = useState(false)
-  const [modalEmail,    setModalEmail]    = useState(false)
-  const [modalTelefono, setModalTelefono] = useState(false)
-  const [modalDireccion,setModalDireccion]= useState(false)
-  const [modalPassword, setModalPassword] = useState(false)
-  const [modalEliminar, setModalEliminar] = useState(false)
+  const [modalNombre,    setModalNombre]    = useState(false)
+  const [modalEmail,     setModalEmail]     = useState(false)
+  const [modalTelefono,  setModalTelefono]  = useState(false)
+  const [modalDireccion, setModalDireccion] = useState(false)
+  const [modalPassword,  setModalPassword]  = useState(false)
+  const [modalEliminar,  setModalEliminar]  = useState(false)
 
-  // Campos de formulario
-  const [nombre,         setNombre]         = useState('')
-  const [email,          setEmail]          = useState('')
-  const [emailActual,    setEmailActual]    = useState('')
-  const [emailConfirm,   setEmailConfirm]   = useState('')
-  const [telefono,       setTelefono]       = useState('')
-  const [direccion,      setDireccion]      = useState('')
-  const [passwordActual, setPasswordActual] = useState('')
-  const [passwordNuevo,  setPasswordNuevo]  = useState('')
-  const [passwordConfirm,setPasswordConfirm]= useState('')
-  const [confirmTexto,   setConfirmTexto]   = useState('')
+  const [nombre,          setNombre]          = useState('')
+  const [email,           setEmail]           = useState('')
+  const [emailActual,     setEmailActual]     = useState('')
+  const [emailConfirm,    setEmailConfirm]    = useState('')
+  const [telefono,        setTelefono]        = useState('')
+  const [direccion,       setDireccion]       = useState('')
+  const [passwordActual,  setPasswordActual]  = useState('')
+  const [passwordNuevo,   setPasswordNuevo]   = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [confirmTexto,    setConfirmTexto]    = useState('')
 
-  // Estado de guardado
   const [guardando,  setGuardando]  = useState(false)
   const [eliminando, setEliminando] = useState(false)
   const [msg,        setMsg]        = useState(null)
 
   const cerrar = (setter) => { setter(false); setMsg(null) }
 
+  const getToken = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token
+  }
+
   const guardarNombre = async () => {
     setGuardando(true); setMsg(null)
-    const { error } = await supabase.from('negocios').update({ nombre }).eq('id', negocio.id)
-    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { setNegocio(prev => ({ ...prev, nombre })); setMsg({ tipo: 'ok', texto: 'Nombre actualizado' }); setTimeout(() => cerrar(setModalNombre), 1200) }
+    try {
+      const token = await getToken()
+      await negociosApi.update(token, negocio.id, { nombre })
+      setNegocio(prev => ({ ...prev, nombre }))
+      setMsg({ tipo: 'ok', texto: 'Nombre actualizado' })
+      setTimeout(() => cerrar(setModalNombre), 1200)
+    } catch (err) {
+      setMsg({ tipo: 'error', texto: err.message })
+    }
     setGuardando(false)
   }
 
@@ -111,17 +118,29 @@ export default function Ajustes() {
 
   const guardarTelefono = async () => {
     setGuardando(true); setMsg(null)
-    const { error } = await supabase.from('negocios').update({ telefono }).eq('user_id', user.id)
-    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { setNegocio(prev => ({ ...prev, telefono })); setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' }); setTimeout(() => cerrar(setModalTelefono), 1200) }
+    try {
+      const token = await getToken()
+      await negociosApi.update(token, negocio.id, { telefono })
+      setNegocio(prev => ({ ...prev, telefono }))
+      setMsg({ tipo: 'ok', texto: 'Teléfono actualizado' })
+      setTimeout(() => cerrar(setModalTelefono), 1200)
+    } catch (err) {
+      setMsg({ tipo: 'error', texto: err.message })
+    }
     setGuardando(false)
   }
 
   const guardarDireccion = async () => {
     setGuardando(true); setMsg(null)
-    const { error } = await supabase.from('negocios').update({ direccion }).eq('user_id', user.id)
-    if (error) { setMsg({ tipo: 'error', texto: error.message }) }
-    else { setNegocio(prev => ({ ...prev, direccion })); setMsg({ tipo: 'ok', texto: 'Dirección actualizada' }); setTimeout(() => cerrar(setModalDireccion), 1200) }
+    try {
+      const token = await getToken()
+      await negociosApi.update(token, negocio.id, { direccion })
+      setNegocio(prev => ({ ...prev, direccion }))
+      setMsg({ tipo: 'ok', texto: 'Dirección actualizada' })
+      setTimeout(() => cerrar(setModalDireccion), 1200)
+    } catch (err) {
+      setMsg({ tipo: 'error', texto: err.message })
+    }
     setGuardando(false)
   }
 
@@ -138,9 +157,17 @@ export default function Ajustes() {
   const handleEliminar = async () => {
     if (confirmTexto !== 'ELIMINAR') return
     setEliminando(true)
-    await supabase.from('negocios').update({ pendiente_eliminar: true, fecha_eliminar: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() }).eq('id', negocio.id)
-    await supabase.auth.signOut()
-    navigate('/negocio/login')
+    try {
+      const token = await getToken()
+      await negociosApi.update(token, negocio.id, {
+        pendiente_eliminar: true,
+        fecha_eliminar: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      })
+      await supabase.auth.signOut()
+      navigate('/negocio/login')
+    } catch (err) {
+      setEliminando(false)
+    }
   }
 
   if (loading) return <LoadingScreen />
@@ -278,20 +305,20 @@ export default function Ajustes() {
 }
 
 const s = {
-  root:        { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
-  main:        { flex: 1, overflowY: 'auto', padding: 'clamp(1.5rem, 4vh, 4rem) 1.25rem 1.5rem' },
-  inner:       { maxWidth: 900, margin: '0 auto' },
-  titulo:      { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
-  subtitulo:   { margin: 0, fontSize: '0.9rem', color: '#888', textAlign: 'center' },
-  card:        { backgroundColor: '#fff', borderRadius: '14px', padding: '0 1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '10px' },
-  cardTitle:   { margin: 0, fontSize: '0.72rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', paddingTop: '1rem', textAlign: 'left' },
-  label:       { display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' },
-  input:       { width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', color: '#1C1C1E', boxSizing: 'border-box', fontFamily: 'inherit' },
-  btnPrimary:  { flex: 1, padding: '0.85rem', backgroundColor: COLORS.primary, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
-  btnSecondary:{ padding: '0.45rem 1rem', backgroundColor: '#F3F4F6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
-  btnPeligro:  { padding: '0.45rem 1rem', backgroundColor: '#FEF2F2', color: COLORS.danger, border: '1.5px solid #FCA5A5', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
-  btnEliminar: { flex: 1, padding: '0.85rem', backgroundColor: COLORS.danger, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
-  btnCancelar: { flex: 1, padding: '0.85rem', backgroundColor: '#f5f5f5', color: '#888', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
-  overlay:     { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
-  modal:       { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxHeight: '90dvh', overflowY: 'auto' },
+  root:         { display: 'flex', minHeight: '100dvh', backgroundColor: '#f5f5f5' },
+  main:         { flex: 1, overflowY: 'auto', padding: 'clamp(1.5rem, 4vh, 4rem) 1.25rem 1.5rem' },
+  inner:        { maxWidth: 900, margin: '0 auto' },
+  titulo:       { margin: '0 0 4px', fontSize: '1.6rem', fontWeight: '700', color: '#1C1C1E', textAlign: 'center' },
+  subtitulo:    { margin: 0, fontSize: '0.9rem', color: '#888', textAlign: 'center' },
+  card:         { backgroundColor: '#fff', borderRadius: '14px', padding: '0 1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '10px' },
+  cardTitle:    { margin: 0, fontSize: '0.72rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', paddingTop: '1rem', textAlign: 'left' },
+  label:        { display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' },
+  input:        { width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #e8e8e8', fontSize: '0.9rem', outline: 'none', color: '#1C1C1E', boxSizing: 'border-box', fontFamily: 'inherit' },
+  btnPrimary:   { flex: 1, padding: '0.85rem', backgroundColor: COLORS.primary, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
+  btnSecondary: { padding: '0.45rem 1rem', backgroundColor: '#F3F4F6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
+  btnPeligro:   { padding: '0.45rem 1rem', backgroundColor: '#FEF2F2', color: COLORS.danger, border: '1.5px solid #FCA5A5', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
+  btnEliminar:  { flex: 1, padding: '0.85rem', backgroundColor: COLORS.danger, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer' },
+  btnCancelar:  { flex: 1, padding: '0.85rem', backgroundColor: '#f5f5f5', color: '#888', border: 'none', borderRadius: '10px', fontSize: '0.92rem', fontWeight: '600', cursor: 'pointer' },
+  overlay:      { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
+  modal:        { backgroundColor: '#fff', borderRadius: '20px', padding: '1.75rem', width: '100%', maxWidth: '440px', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxHeight: '90dvh', overflowY: 'auto' },
 }

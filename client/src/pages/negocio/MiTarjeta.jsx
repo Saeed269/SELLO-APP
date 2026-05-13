@@ -5,8 +5,8 @@ import NavNegocio from '../../components/NavNegocio'
 import LoadingScreen from '../../components/ui/LoadingScreen'
 import TarjetaPreview from '../../components/tarjeta/TarjetaPreview'
 import { CARD_STYLES, CARD_EFFECTS, COLOR_PALETTE, DEFAULT_CARD } from '../../constants'
+import { negociosApi } from '../../api'
 
-// ─── Icono SVG inline simple ──────────────────────────────────
 function IconSVG({ path, circle, size = 14, color = 'currentColor' }) {
   const circleEl = circle
     ? `<circle cx="${circle.split(' ')[0]}" cy="${circle.split(' ')[1]}" r="${circle.split(' ')[2]}"/>`
@@ -19,7 +19,6 @@ function IconSVG({ path, circle, size = 14, color = 'currentColor' }) {
   )
 }
 
-// ─── Datos de iconos ──────────────────────────────────────────
 const ICONOS_SELLO_POR_TIPO = {
   'Cafetería': [
     { id: 'cup',     label: 'Taza',     path: 'M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z' },
@@ -78,7 +77,6 @@ const ICONOS_PREMIO = [
   { id: 'sparkle', path: 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z' },
 ]
 
-// ─── Helpers ──────────────────────────────────────────────────
 function generarPremios(cantidad, numSellos) {
   return Array.from({ length: cantidad }, (_, i) => ({
     sellos: Math.round((numSellos / cantidad) * (i + 1)),
@@ -86,7 +84,6 @@ function generarPremios(cantidad, numSellos) {
   }))
 }
 
-// ─── Subcomponentes de UI ─────────────────────────────────────
 function TabBar({ tab, onChange }) {
   return (
     <div style={s.tabs}>
@@ -107,25 +104,24 @@ function SecLabel({ children }) {
   return <p style={s.secLabel}>{children}</p>
 }
 
-// ─── Página principal ─────────────────────────────────────────
 export default function MiTarjeta() {
-  const [negocio, setNegocio]         = useState(null)
-  const [user, setUser]               = useState(null)
-  const [loading, setLoading]         = useState(true)
-  const [saving, setSaving]           = useState(false)
-  const [tab, setTab]                 = useState('diseno')
-  const [isMobile, setIsMobile]       = useState(window.innerWidth < 768)
-  const [estilo, setEstilo]           = useState(DEFAULT_CARD.estilo)
-  const [efecto, setEfecto]           = useState(DEFAULT_CARD.efecto)
-  const [color, setColor]             = useState(DEFAULT_CARD.color)
-  const [selloIconId, setSelloIconId] = useState(DEFAULT_CARD.selloIcon)
+  const [negocio, setNegocio]           = useState(null)
+  const [user, setUser]                 = useState(null)
+  const [loading, setLoading]           = useState(true)
+  const [saving, setSaving]             = useState(false)
+  const [tab, setTab]                   = useState('diseno')
+  const [isMobile, setIsMobile]         = useState(window.innerWidth < 768)
+  const [estilo, setEstilo]             = useState(DEFAULT_CARD.estilo)
+  const [efecto, setEfecto]             = useState(DEFAULT_CARD.efecto)
+  const [color, setColor]               = useState(DEFAULT_CARD.color)
+  const [selloIconId, setSelloIconId]   = useState(DEFAULT_CARD.selloIcon)
   const [premioIconId, setPremioIconId] = useState(DEFAULT_CARD.premioIcon)
-  const [numSellos, setNumSellos]     = useState(10)
-  const [numPremios, setNumPremios]   = useState(1)
-  const [premios, setPremios]         = useState([{ sellos: 10, texto: '' }])
-  const [caducidad, setCaducidad]     = useState(12)
-  const [error, setError]             = useState('')
-  const [guardado, setGuardado]       = useState(false)
+  const [numSellos, setNumSellos]       = useState(10)
+  const [numPremios, setNumPremios]     = useState(1)
+  const [premios, setPremios]           = useState([{ sellos: 10, texto: '' }])
+  const [caducidad, setCaducidad]       = useState(12)
+  const [error, setError]               = useState('')
+  const [guardado, setGuardado]         = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -134,31 +130,42 @@ export default function MiTarjeta() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const getToken = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token
+  }
+
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { navigate('/negocio/login'); return }
       setUser(user)
 
-      const { data } = await supabase.from('negocios').select('*').eq('user_id', user.id).single()
-      if (!data) { navigate('/negocio/onboarding'); return }
-      setNegocio(data)
-      setNumSellos(data.num_sellos || 10)
-      setCaducidad(data.caducidad_meses || 12)
+      try {
+        const token    = await getToken()
+        const negocios = await negociosApi.getAll(token)
+        const data     = negocios[0] || null
+        if (!data) { navigate('/negocio/onboarding'); return }
+        setNegocio(data)
+        setNumSellos(data.num_sellos || 10)
+        setCaducidad(data.caducidad_meses || 12)
 
-      if (Array.isArray(data.premios) && data.premios.length > 0) {
-        setPremios(data.premios)
-        setNumPremios(data.premios.length)
-      } else if (data.premio) {
-        setPremios([{ sellos: data.num_sellos || 10, texto: data.premio }])
-      }
+        if (Array.isArray(data.premios) && data.premios.length > 0) {
+          setPremios(data.premios)
+          setNumPremios(data.premios.length)
+        } else if (data.premio) {
+          setPremios([{ sellos: data.num_sellos || 10, texto: data.premio }])
+        }
 
-      if (data.diseno && Object.keys(data.diseno).length > 0) {
-        setEstilo(data.diseno.estilo || DEFAULT_CARD.estilo)
-        setEfecto(data.diseno.efecto || DEFAULT_CARD.efecto)
-        setColor(data.diseno.color || DEFAULT_CARD.color)
-        setSelloIconId(data.diseno.selloIcon || DEFAULT_CARD.selloIcon)
-        setPremioIconId(data.diseno.premioIcon || DEFAULT_CARD.premioIcon)
+        if (data.diseno && Object.keys(data.diseno).length > 0) {
+          setEstilo(data.diseno.estilo || DEFAULT_CARD.estilo)
+          setEfecto(data.diseno.efecto || DEFAULT_CARD.efecto)
+          setColor(data.diseno.color || DEFAULT_CARD.color)
+          setSelloIconId(data.diseno.selloIcon || DEFAULT_CARD.selloIcon)
+          setPremioIconId(data.diseno.premioIcon || DEFAULT_CARD.premioIcon)
+        }
+      } catch {
+        navigate('/negocio/login')
       }
 
       setLoading(false)
@@ -182,16 +189,21 @@ export default function MiTarjeta() {
     setError('')
     if (premios.some(p => !p.texto.trim())) { setError('Define el texto de todos los premios'); return }
     setSaving(true)
-    const { error: e } = await supabase.from('negocios').update({
-      num_sellos: numSellos,
-      premio: premios[premios.length - 1]?.texto || '',
-      caducidad_meses: caducidad,
-      premios,
-      diseno: { estilo, efecto, color, selloIcon: selloIconId, premioIcon: premioIconId },
-    }).eq('user_id', user.id)
+    try {
+      const token = await getToken()
+      await negociosApi.update(token, negocio.id, {
+        num_sellos: numSellos,
+        premio: premios[premios.length - 1]?.texto || '',
+        caducidad_meses: caducidad,
+        premios,
+        diseno: { estilo, efecto, color, selloIcon: selloIconId, premioIcon: premioIconId },
+      })
+      setGuardado(true)
+      setTimeout(() => setGuardado(false), 2500)
+    } catch (e) {
+      setError('Error al guardar: ' + e.message)
+    }
     setSaving(false)
-    if (e) { setError('Error al guardar: ' + e.message) }
-    else { setGuardado(true); setTimeout(() => setGuardado(false), 2500) }
   }
 
   if (loading) return <LoadingScreen />
