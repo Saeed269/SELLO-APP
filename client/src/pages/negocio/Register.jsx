@@ -32,12 +32,13 @@ export default function Register() {
     const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
     if (signUpError) { setError('Error al registrarse: ' + signUpError.message); setLoading(false); return }
     if (data?.user) {
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
-      const { negociosApi } = await import('../../api')
-      await negociosApi.create(token, { user_id: data.user.id, email, nombre: nombreNegocio })
-    }
-    navigate('/negocio/onboarding')
+  const token = data.session?.access_token
+  if (token) {
+    const { negociosApi } = await import('../../api')
+    await negociosApi.create(token, { user_id: data.user.id, email, nombre: nombreNegocio })
+  }
+}
+navigate('/negocio/onboarding')
     setLoading(false)
   }
 
